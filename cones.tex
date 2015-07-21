@@ -126,7 +126,7 @@ An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does n
 U_b(Z_b) \geq U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
 where \emph{at least one} of the above inequalities holds strictly. We denote the strict core by $SC(X,U)$. 
-\subsection{The Strict Core and Fixed Preallocations}
+\subsection{Fixed Preallocations and the Strict Core}
 Our method proceeds by identifying allocations $Y \in SC(X,U)$ with fixed points of an operator on preallocations, generalizing the construction in Echenique and Yenmez. 
 
 For each agent $a \in A$, we define 
@@ -148,12 +148,45 @@ First suppose that
 \eprf
 Thus, we have identified $\strcore$ with the set of \emph{coordinated} preallocations $\pre \in \coordpre$ such that $T \pre = \pre$. 
 This result shows that an algorithm that finds all $\pre \in \fix(T)$ will alsofind all strict core matchings. 
-However, it may also pick up extra \emph{uncoordinated} matchings if any of these are fixed by $T$. Fortunately, none are
-\begin{lemma} $\fix(T) \sub \coordpre$
-\end{lemma}
+However, if there are \emph{uncoordinated} matchings that are also fixed by $T$, such an algorithm may would return extraneous preallocations not associated with any strict core matching.
+Fortunately, there are no such prealloacations
+\begin{prop} $\fix(T) \sub \coordpre$
+\end{prop}
 \prf
 \eprf
 Note that this result strictly generalizes the analogous results in (Echenique, Kojima). 
+\subsection{The Lattice of Fixed Preallocations}
+In this section, we generalize constructions from Echenqiue and Yenmez showing the the fixed points of the squared operator $T^2$ form a lattice. 
+First, we define a natural partial order on the set of preallocations $\prealloc$.
+
+Say that $\pre > \pre'$ if and only if $\pre(a) \geq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
+Thus, we write $\pre \geq \pre'$ if and only if $\pre > \pre'$ or $\pre = \pre'$. 
+This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
+Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
+These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez. We show the first result to give a sense of the general flavor, and refer the reader to Echenique and Yenmez for the rest.
+\begin{lemma} $T$ is an antitone operator
+\end{lemma}
+\prf
+\eprf
+\begin{cor} $T^2$ is isotone, and $\fix(T^2)$ is a non-empty complete lattice. 
+\end{cor}
+\begin{lemma} No two preallocations $\pre$ and $\pre'$ can be compared under the partial order on $\prealloc$.
+\end{lemma}
+\begin{lemma} There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \geq \pre \geq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
+\end{lemma}
+\subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
+In this section, we improve upon the algorithm Echenique (2003) and Echenique and Yenmez (2013), showing how to fully exploit the geometry of the lattice $\fix(T)$ to more quickly find all strict core matchings. 
+
+
+
+
+
+
+
+
+
+\subsubsection{Discussion}
+As can be seen, the construction above is very general, requiring only that the fixed points we want to find are bounded by a lattice, and that we have a way to initialize new problems on sublattices whose solution sets bound the solution set of our original problem. 
 
 \section{Finding All Nash Equilibria in Games with Strategic Complements}
 \subsection{Model and Notation}
