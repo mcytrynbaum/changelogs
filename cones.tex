@@ -138,18 +138,31 @@ V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \geq
 Intuitively, $V(\pre, a)$ is the \emph{possibility set} for an agent $a$ at a preallocation $\pre$. 
 It contains all sets of contracts naming $a$ that are part of a larger economy $Y$ where every other agent $b \in d(Y)$ weakly prefers their contracts under $Y$ to their contracts under the pre-allocation $\pre$.  
 
-Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\geq_a$ for each $a \in A$. 
-Let $\fix(T)$ denote the fixed points of $T$, and define $\fecon(T) = \{Y \in 2^X: \, \pre_Y \in \fix(T)\}$, the collection of allocations $Y$ whose corresponding preallocation $\pre_Y$ is fixed by $T$. 
-With these definitions, we have a simple result
+Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\geq_a$ for each $a \in A$.
+Note that $\emptyset_a \in V(\pre,a)$ for any $\pre \in \prealloc$, so $T$ is well-defined. Let $\fix(T)$ denote the fixed points of $T$. Define $\fecon(T) = \{Y \in 2^X: \, \pre_Y \in \fix(T)\}$, the collection of allocations $Y$ whose corresponding preallocation $\pre_Y$ is fixed by $T$.
+
+Before our first result, we note a simple fact: if $\pre \in \coordpre$, then $\pre(a) \in V(\pre, a)$.
+To see this, note that $\pre \in \coordpre$ means that there exists $Y \sub X$ with $\pre = \pre_Y$. 
+Then $Y$ is an allocation satisfying the conditions in $V(\pre_Y,a)$, so that $Y_a  = \pre(a) \in V(\pre,a)$. 
+With the definitions above, we have a simple result
 \begin{lemma} $\fecon(T) = \strcore$
 \end{lemma}
 \prf
-First suppose that
+First, suppose that $Y \not \in \strcore$. Then by definition, there exists some blocking allocation $\emptyset \not = Z \sub X$ such $Z_b \geq_b Y_b$ for all $b \in d(Z)$.
+Let $a \in d(Z)$ be such that the inequality above is strict, and consider $\pre = \pre_Y$. 
+In particular, $Z_b \geq_b \pre_Y(b)$ for all $b \in d(Z) \setminus \{a\}$, so that $Z_a \in V(\pre_Y, a)$.
+Then $T \pre_Y(a) = \max V(\pre_Y, a) \geq_a Z_a >_a Y_a = \pre_Y(a)$, so $T\pre_Y(a) \not = \pre_Y(a)$, and $Y \not \in \fecon(T)$.  
+
+Suppose, conversely, that $Y \not \in \fecon(T)$ so that $\pre_Y \not \in \fix(T)$.  
+Then there exists an agent $a \in A$ such that $T\pre_Y(a) = Z_a \not = \pre_Y(a)$ for some allocation $Z$.  
+By the definition of $V(\pre_Y,a)$, we have $Z_b \geq_b \pre_Y(b) = Y_b$ for $b \in d(Z) \setminus \{a\}$.
+We know $\pre_Y$ is coordinated, so by the simple fact above $\pre_Y(a) \in V(\pre_Y,a)$.
+Then $Z_a = T \pre_Y(a) >_a \pre_Y(a) =  Y_a$. Then $Z$ is a blocking coalition for $Y$, so $Y \not \in \strcore$.  
 \eprf
 Thus, we have identified $\strcore$ with the set of \emph{coordinated} preallocations $\pre \in \coordpre$ such that $T \pre = \pre$. 
-This result shows that an algorithm that finds all $\pre \in \fix(T)$ will alsofind all strict core matchings. 
-However, if there are \emph{uncoordinated} matchings that are also fixed by $T$, such an algorithm may would return extraneous preallocations not associated with any strict core matching.
-Fortunately, there are no such prealloacations
+This result shows that an algorithm that finds all $\pre \in \fix(T)$ will also find all strict core matchings. 
+However, if there are \emph{uncoordinated} preallocations that are also fixed by $T$, such an algorithm may return extraneous solutions not associated with any strict core matching.
+Fortunately, there are no such prealloacations, as our next result shows
 \begin{prop} $\fix(T) \sub \coordpre$
 \end{prop}
 \prf
@@ -163,11 +176,18 @@ Say that $\pre > \pre'$ if and only if $\pre(a) \geq_a \pre'(a)$ for all $a \in 
 Thus, we write $\pre \geq \pre'$ if and only if $\pre > \pre'$ or $\pre = \pre'$. 
 This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
 Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
-These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez. We show the first result to give a sense of the general flavor, and refer the reader to Echenique and Yenmez for the rest.
+These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez.
+For convenience, we reproduce the first result in our framework - the rest follow from work in Echenique in and Yenmez. 
 \begin{lemma} $T$ is an antitone operator
 \end{lemma}
 \prf
+Let $\pre \leq \pre'$ be preallocations.
+Fix $a \in A$, and let $Z \in V(\pre',a)$.
+Then there is an allocation $Y \sub X$ with $Y_a = Z$ such that $Y_b \geq_b \pre'(b)$ for $b \in d(Y) \setminus \{a\}$.
+Then $Y_b \geq_b \pre'(b) \geq_b \pre_b$ also for all such agents, so we also have $Z \in V(\pre,a)$.
+Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \geq T\pre'(a)$. $a$ was arbitrary, so $T\pre \geq T\pre'$ under our partial order. 
 \eprf
+The following lemmas follow exactly as in Echenique and Yenmez, using the antitonicity of $T$. 
 \begin{cor} $T^2$ is isotone, and $\fix(T^2)$ is a non-empty complete lattice. 
 \end{cor}
 \begin{lemma} No two preallocations $\pre$ and $\pre'$ can be compared under the partial order on $\prealloc$.
@@ -176,6 +196,7 @@ These results are an almost direct extension Lemmas 4.x through 4.y of Echenique
 \end{lemma}
 \subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
 In this section, we improve upon the algorithm Echenique (2003) and Echenique and Yenmez (2013), showing how to fully exploit the geometry of the lattice $\fix(T)$ to more quickly find all strict core matchings. 
+
 
 
 
