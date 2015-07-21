@@ -1,0 +1,170 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage{amssymb,mathrsfs,color}
+\usepackage{pinlabel}
+\usepackage{graphicx}
+\usepackage{graphics} 
+
+\graphicspath{ {c:/users/mcytrynbaum/documents/rfigures/} {c:/users/mcytrynbaum/Desktop/package/} }
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+\usepackage{amsmath} % for all math functions and operations
+\usepackage{amsfonts} % use this to write different scripts (e.g. Real nums, etc)
+\usepackage{mathtools} %for other math stuff not included in packages above
+\usepackage{amsthm} % in case you want the THM: COR: LEMMA: setup
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry} %for setting the margins
+
+%\setlength\parindent{0pt}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{examp}[thm]{Example}
+\newtheorem{remark}[thm]{Remark}
+\setcounter{equation}{0}
+\numberwithin{equation}{section}
+
+\newcommand{\prf}{\begin{proof}}
+\newcommand{\eprf}{\end{proof}}
+\newcommand{\lft}{\left(}
+\newcommand{\rt}{\right)}
+\newcommand{\be}{\beta}
+\newcommand{\eps}{\epsilon}
+\newcommand{\wh}{\widehat}
+\newcommand{\wt}{\widetilde}
+\newcommand{\al}{\alpha}
+\newcommand{\bp}{\begin{pmatrix}}
+\newcommand{\ep}{\end{pmatrix}}
+\newcommand{\inv}{^{-1}}
+\newcommand{\var}{\text{Var}}
+\newcommand{\cov}{\text{Cov}}
+\newcommand{\corr}{\text{Corr}}
+\newcommand{\ssumi}{\sum_{i=1}^n}
+\newcommand{\ssumj}{\sum_{j=1}^n}
+\newcommand{\ssumk}{\sum_{k=1}^n}
+\newcommand{\im}{\text{Im}}
+\newcommand{\mc}{\mathcal}
+\newcommand{\mr}{\mathbb{R}}
+\newcommand{\ol}{\overline}
+\newcommand{\ul}{\underline}
+\newcommand{\prob}{\mathbb{P}}
+\newcommand{\ital}{\emph}
+\newcommand{\tb}{\textbf}
+\newcommand{\pa}{\partial}
+\newcommand{\et}{\eta}
+
+\newcommand{\pre}{\phi}
+\newcommand{\econ}{e}
+\newcommand{\coordpre}{CP}
+\newcommand{\prealloc}{(2^X)^A}
+\newcommand{\sub}{\subseteq}
+\newcommand{\strcore}{SC(X,U)}
+\newcommand{\core}{C(X,U)}
+\newcommand{\stable}{S(X,U)}
+\newcommand{\fecon}{E}
+\newcommand{\fix}{\mathcal{E}}
+
+
+\title{Using Lattice Geometry to Find All Stable Allocations}
+\author{Max Cytrynbaum and Scott Duke Kominers}
+
+\begin{document}
+\maketitle
+
+We consider a finite set of contracts $X$, each of which is associated with at least one agent $a\in A$. 
+We call a subset $Y\sub X$ an \emph{allocation}, and let $2^X$ denote the set of all allocations. 
+Let $d(x)$ be the set agents associated with a contract $x\in X$, and extend this definition to allocations by writing $d(Y) \equiv \bigcup_{y\in Y} d(y)$. Note that, in general, we may have $|d(x)| > 2$ for multilateral contracts.
+
+For $a\in A$, we let $Y_a = \{y\in Y: \, a\in d(y)\}$ denote the set of contracts associated with that agent (note that we may have $Y_a = \emptyset$). Thus, $2^{X_a}$ denotes the set of all allocations naming an agent $a\in A$. 
+We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where the utility of an allocation is given by the one-to-one function $U_a: 2^{X_a} \to \mr$. Let $>_a$ denote the strict preference relation induced by these utility functions over bundles $Y \in 2^{X_a}$, with $\geq_a$ denoting the weak relation. Thus, $Y \geq_a  Z \iff$ $Y >_a Z$ or $Y = Z$.
+
+We define choice functions in the usual way for $Y\in 2^{X_a}$ by 
+\[
+C_a(Y) = \max_{Z\subseteq Y} \, U_a(Z)
+\]
+and, by an abuse of notation, extend choice functions to $Y\in 2^X$ by setting $C_a(Y) \equiv C_a(Y_a)$.
+Throughout the matching portion of this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
+\section{Finding All Stable Matchings} 
+In this section, we illustrate the technique in the classical Hatfield and Milgrom model -- literature, etc... 
+\subsection{Model and Notation} 
+Let $A = D\times H$, where we think of $D$ as ``doctors'' and $H$ as ``Hospitals''. We may think of the set of contracts as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
+
+An allocation $Y$ is said to be \emph{stable} if it is 
+\begin{enumerate}
+\item \emph{individually rational} - $C_a(Y) = Y_a$ for all $a \in A$
+\item \emph{unblocked} - There is no allocation $Z \not = \emptyset$ such that $Z_b \sub C_b(Y\cup Z)$ for all $b \in d(Z)$. 
+\end{enumerate}
+We let $S(X,U)$ denote the set of all stable matchings.
+
+\section{Finding All Strict Core Matchings}
+Talk about Echenique's contribution and what we are going to do, strict core is equivalent to...
+Note how incredibly general our construction is - multilateral discrete matching in networks, essentially no structure, fully manipulates lattice structure of strict core matchings.   
+\subsection{Model and Notation}
+We construct an appropriate framework in which to generalize the fixed point construction in Echenique and Yenmez. 
+We start by generalizing the classical notion of a \emph{prematching}. 
+
+\begin{defn}[Preallocation] We call a map $\pre: A \to 2^X$ a \emph{preallocation} if $\pre(a) \in 2^{X_a}$ for all $a\in A$. Let $(2^X)^A$ denote the set of all preallocations.  
+\end{defn}
+
+Intuitively, a preallocation assigns each agent to a bundle of contracts naming him or her. We can think of $\pre(a)$ as the set of contracts ``held'' by agent $a$.   
+For a preallocation $\pre$, we define the \emph{economy} associated with $\pre$ by $\econ(\pre) \equiv \bigcup_{a\in A}\pre(a)$ 
+
+We can associate each allocation $Y\subseteq X$ with a unique preallocation $\pre_Y$ in a natural way by setting $\pre_Y(a) = Y_a$.
+\begin{remark} Note, however, that not all preallocations can be derived from allocations in this way.
+For example, consider the case where $\emptyset \not = \pre(a)_b \not = \pre(b)_a$. In the preallocation $\pre$, $a$ holds contracts naming $b$ that are \emph{not} in the bundle of contracts held by $b$ naming $a$.  
+In particular, there does not exist an allocation $Y$ such that $\pre = \pre_Y$. 
+\end{remark}
+
+With this example in mind, we say that $\pre \in \prealloc$ is a \emph{coordinated} preallocation if there exists an allocation $Y$ such that $\pre = \pre_Y$. 
+We denote the set of all cooordinated preallocations by $\coordpre\sub \prealloc$.
+Note that $\pre \in \coordpre$ if and only if $ \pre = \pre_{\econ(\pre)}$
+
+An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does not exist a blocking set $Z \sub X$ such that 
+\[
+U_b(Z_b) \geq U_b(Y_b) \qquad  \forall b\in d(Z)
+\]
+where \emph{at least one} of the above inequalities holds strictly. We denote the strict core by $SC(X,U)$. 
+\subsection{The Strict Core and Fixed Preallocations}
+Our method proceeds by identifying allocations $Y \in SC(X,U)$ with fixed points of an operator on preallocations, generalizing the construction in Echenique and Yenmez. 
+
+For each agent $a \in A$, we define 
+
+\[
+V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \geq_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \}
+\]
+
+Intuitively, $V(\pre, a)$ is the \emph{possibility set} for an agent $a$ at a preallocation $\pre$. 
+It contains all sets of contracts naming $a$ that are part of a larger economy $Y$ where every other agent $b \in d(Y)$ weakly prefers their contracts under $Y$ to their contracts under the pre-allocation $\pre$.  
+
+Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\geq_a$ for each $a \in A$. 
+Let $\fix(T)$ denote the fixed points of $T$, and define $\fecon(T) = \{Y \in 2^X: \, \pre_Y \in \fix(T)\}$, the collection of allocations $Y$ whose corresponding preallocation $\pre_Y$ is fixed by $T$. 
+With these definitions, we have a simple result
+\begin{lemma} $\fecon(T) = \strcore$
+\end{lemma}
+\prf
+First suppose that
+\eprf
+Thus, we have identified $\strcore$ with the set of \emph{coordinated} preallocations $\pre \in \coordpre$ such that $T \pre = \pre$. 
+This result shows that an algorithm that finds all $\pre \in \fix(T)$ will alsofind all strict core matchings. 
+However, it may also pick up extra \emph{uncoordinated} matchings if any of these are fixed by $T$. Fortunately, none are
+\begin{lemma} $\fix(T) \sub \coordpre$
+\end{lemma}
+\prf
+\eprf
+Note that this result strictly generalizes the analogous results in (Echenique, Kojima). 
+
+\section{Finding All Nash Equilibria in Games with Strategic Complements}
+\subsection{Model and Notation}
+
+
+
+
+
+
+
+
+
+\end{document}
+
