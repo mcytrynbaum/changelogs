@@ -54,6 +54,7 @@
 \newcommand{\tb}{\textbf}
 \newcommand{\pa}{\partial}
 \newcommand{\et}{\eta}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
 
 \newcommand{\pre}{\phi}
 \newcommand{\econ}{e}
@@ -65,6 +66,7 @@
 \newcommand{\stable}{S(X,U)}
 \newcommand{\fecon}{E}
 \newcommand{\fix}{\mathcal{E}}
+
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -82,7 +84,7 @@ We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where 
 
 We define choice functions in the usual way for $Y\in 2^{X_a}$ by 
 \[
-C_a(Y) = \max_{Z\subseteq Y} \, U_a(Z)
+C_a(Y) = \argmax_{Z\subseteq Y} \, U_a(Z)
 \]
 and, by an abuse of notation, extend choice functions to $Y\in 2^X$ by setting $C_a(Y) \equiv C_a(Y_a)$.
 Throughout the matching portion of this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
@@ -166,6 +168,44 @@ Fortunately, there are no such prealloacations, as our next result shows
 \begin{prop} $\fix(T) \sub \coordpre$
 \end{prop}
 \prf
+To begin, we prove the following important fact, which will be used repeatedly.
+Suppose that $\pre \in \fix(T)$. Then for any $a \in A$, we have $\pre(a) = T\pre(a) \in V(\pre,a)$.
+Thus, there exists an allocation $Y$ such that $Y_a = \pre(a)$, and $Y_b \geq_b \pre(b)$ for all $b \in d(Y) \setminus \{a\}$.
+Since $Y_a = \pre(a)$, then in fact $Y_b \geq_b \pre(b)$ holds \emph{for all} $b \in d(Y)$. Then for any $b \in d(Y)$, $Y$ satisfies the conditions in the definition of $V(\pre,b)$, so $Y_b \in V(\pre,b)$. 
+Therefore, $\pre(b) = T\pre(b) \geq Y_b \geq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
+
+Fix $a_1 \in A$. Since $\pre \in \fix(T)$, the argument above shows that there exists an allocation $Y$ such that $Y_{a_1} = \pre(a_1)$, and, in particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
+Therefore, $W(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \geq \pre(b)\}$ is non-empty, so there exists an allocation 
+
+\[
+Y^1 \in \argmax_{Y \in W(\pre,a)} |d(Y)|
+\]
+
+Let $A_1 = d(Y^1)$. If $A_1 = A$, then we are done, since then by above $Y^1_a = \pre(a)$ for all $a \in A$, so $\pre = \pre_Y^1$. 
+Then assume this is not the case, and pick $a_2 \in A \setminus A_1$. By the fact we proved at the beginning of the proof, there exists an allocation $Z$ such that $Z_{a_2} = \pre(a_2)$, and, in fact, $\pre(b) = Z_b$ for all $b \in d(Z)$. 
+Define $A_2 = d(Z) \cap A_1^c$, which is non-empty by construction.
+Let $b \in A_2$. We will show that $d(\pre(b)) \cap A_1 = \emptyset$.
+
+Suppose not, so that there exists $c \in A_1 \cap d(\pre(b))$.
+Then, in particular, $c \in d(\pre(b)) = d(Z_b) \sub d(Z)$, so $Z_c = \pre(c) = Y^1_c$. 
+But $c \in d(Z_b)$, so there exists a contract $z \in Z$ naming both $c$ and $b$.
+Then $b \in Z_c = Y^1_c$, so $b \in d(Y^1_c) \sub d(Y^1) = A_1$, so $b \in A_1 \cap A_2 = \emptyset$. 
+This is a contradiction, so it must be the case that $d(\pre(b)) \cap A_1 = \emptyset$ for all $b \in A_2$. 
+
+Define $Y^2 = \bigcup_{b \in A_2} \pre(b)$. Then we have shown $d(Y^2) \sub A_1^c$.
+We also have $d(Y^2) = \bigcup_{b \in A_2} d(\pre(b)) = \bigcup_{b \in A_2} d(Z_b) \subset d(Z)$, so $d(Y^2) \subset A_1^c \cap d(Z) = A_2$.
+Clearly $b \in d(\pre(b))$ for all $b \in A_2$, so by construction $A_2 \sub d(Y^2)$, so $A_2 = d(Y^2)$. 
+Set $Y^* = Y^1 \cup Y^2$. Then we have shown the following facts
+
+\begin{enumerate}
+\item $Y^*_b = Y^1_b = \pre(b)$ for $b \in A_1$, in particular $Y^*_a = \pre(a)$. 
+\item $Y^*_b = Y^2_b = \pre(b)$ for $b \in A_2$.
+\item $A_2 \not = \emptyset$ and $A_2 \cap A_1 = \emptyset$. 
+\end{enumerate}
+
+Then apparently $Y^* \in W(\pre,a)$, but we have $|d(Y^*)| > d(Y^1)$, which contradicts our choice of $Y^1$.
+This finishes the proof.
+
 \eprf
 Note that this result strictly generalizes the analogous results in (Echenique, Kojima). 
 \subsection{The Lattice of Fixed Preallocations}
