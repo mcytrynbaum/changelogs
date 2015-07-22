@@ -58,14 +58,18 @@
 
 \newcommand{\pre}{\phi}
 \newcommand{\econ}{e}
-\newcommand{\coordpre}{CP}
+\newcommand{\coordpre}{\mathrm{CP}}
 \newcommand{\prealloc}{(2^X)^A}
 \newcommand{\sub}{\subseteq}
-\newcommand{\strcore}{SC(X,U)}
-\newcommand{\core}{C(X,U)}
-\newcommand{\stable}{S(X,U)}
+\newcommand{\strcore}{\mathrm{SC}(X,U)}
+\newcommand{\core}{\mathrm{C}(X,U)}
+\newcommand{\stable}{\mathrm{S}(X,U)}
 \newcommand{\fecon}{E}
 \newcommand{\fix}{\mathcal{E}}
+\newcommand{\seq}{\succeq}
+\newcommand{\peq}{\preceq}
+\newcommand{\su}{\succ}
+\newcommand{\pe}{\prec}
 
 
 
@@ -77,10 +81,12 @@
 
 We consider a finite set of contracts $X$, each of which is associated with at least one agent $a\in A$. 
 We call a subset $Y\sub X$ an \emph{allocation}, and let $2^X$ denote the set of all allocations. 
-Let $d(x)$ be the set agents associated with a contract $x\in X$, and extend this definition to allocations by writing $d(Y) \equiv \bigcup_{y\in Y} d(y)$. Note that, in general, we may have $|d(x)| > 2$ for multilateral contracts.
+Let $d(x)$ be the set agents associated with a contract $x\in X$, and extend this definition to allocations by writing $d(Y) \equiv \bigcup_{y\in Y} d(y)$.
+Note that, in general, we may have $|d(x)| > 2$ for multilateral contracts.
 
 For $a\in A$, we let $Y_a = \{y\in Y: \, a\in d(y)\}$ denote the set of contracts associated with that agent (note that we may have $Y_a = \emptyset$). Thus, $2^{X_a}$ denotes the set of all allocations naming an agent $a\in A$. 
-We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where the utility of an allocation is given by the one-to-one function $U_a: 2^{X_a} \to \mr$. Let $>_a$ denote the strict preference relation induced by these utility functions over bundles $Y \in 2^{X_a}$, with $\geq_a$ denoting the weak relation. Thus, $Y \geq_a  Z \iff$ $Y >_a Z$ or $Y = Z$.
+We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where the utility of an allocation is given by the one-to-one function $U_a: 2^{X_a} \to \mr$.
+Let $\su_a$ denote the strict preference relation induced by these utility functions over bundles $Y \in 2^{X_a}$, with $\seq_a$ denoting the weak relation. Thus, $Y \seq_a  Z \iff$ $Y \su_a Z$ or $Y = Z$.
 
 We define choice functions in the usual way for $Y\in 2^{X_a}$ by 
 \[
@@ -111,7 +117,6 @@ We start by generalizing the classical notion of a \emph{prematching}.
 \end{defn}
 
 Intuitively, a preallocation assigns each agent to a bundle of contracts naming him or her. We can think of $\pre(a)$ as the set of contracts ``held'' by agent $a$.   
-For a preallocation $\pre$, we define the \emph{economy} associated with $\pre$ by $\econ(\pre) \equiv \bigcup_{a\in A}\pre(a)$ 
 
 We can associate each allocation $Y\subseteq X$ with a unique preallocation $\pre_Y$ in a natural way by setting $\pre_Y(a) = Y_a$.
 \begin{remark} Note, however, that not all preallocations can be derived from allocations in this way.
@@ -121,7 +126,6 @@ In particular, there does not exist an allocation $Y$ such that $\pre = \pre_Y$.
 
 With this example in mind, we say that $\pre \in \prealloc$ is a \emph{coordinated} preallocation if there exists an allocation $Y$ such that $\pre = \pre_Y$. 
 We denote the set of all cooordinated preallocations by $\coordpre\sub \prealloc$.
-Note that $\pre \in \coordpre$ if and only if $ \pre = \pre_{\econ(\pre)}$
 
 An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does not exist a blocking set $Z \sub X$ such that 
 \[
@@ -134,13 +138,13 @@ Our method proceeds by identifying allocations $Y \in SC(X,U)$ with fixed points
 For each agent $a \in A$, we define 
 
 \[
-V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \geq_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \}
+V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \}
 \]
 
 Intuitively, $V(\pre, a)$ is the \emph{possibility set} for an agent $a$ at a preallocation $\pre$. 
 It contains all sets of contracts naming $a$ that are part of a larger economy $Y$ where every other agent $b \in d(Y)$ weakly prefers their contracts under $Y$ to their contracts under the pre-allocation $\pre$.  
 
-Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\geq_a$ for each $a \in A$.
+Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\seq_a$ for each $a \in A$.
 Note that $\emptyset_a \in V(\pre,a)$ for any $\pre \in \prealloc$, so $T$ is well-defined. Let $\fix(T)$ denote the fixed points of $T$. Define $\fecon(T) = \{Y \in 2^X: \, \pre_Y \in \fix(T)\}$, the collection of allocations $Y$ whose corresponding preallocation $\pre_Y$ is fixed by $T$.
 
 Before our first result, we note a simple fact: if $\pre \in \coordpre$, then $\pre(a) \in V(\pre, a)$.
@@ -150,39 +154,43 @@ With the definitions above, we have a simple result
 \begin{lemma} $\fecon(T) = \strcore$
 \end{lemma}
 \prf
-First, suppose that $Y \not \in \strcore$. Then by definition, there exists some blocking allocation $\emptyset \not = Z \sub X$ such $Z_b \geq_b Y_b$ for all $b \in d(Z)$.
+First, suppose that $Y \not \in \strcore$. Then by definition, there exists some blocking allocation $\emptyset \not = Z \sub X$ such $Z_b \seq_b Y_b$ for all $b \in d(Z)$.
 Let $a \in d(Z)$ be such that the inequality above is strict, and consider $\pre = \pre_Y$. 
-In particular, $Z_b \geq_b \pre_Y(b)$ for all $b \in d(Z) \setminus \{a\}$, so that $Z_a \in V(\pre_Y, a)$.
-Then $T \pre_Y(a) = \max V(\pre_Y, a) \geq_a Z_a >_a Y_a = \pre_Y(a)$, so $T\pre_Y(a) \not = \pre_Y(a)$, and $Y \not \in \fecon(T)$.  
+In particular, $Z_b \seq_b \pre_Y(b)$ for all $b \in d(Z) \setminus \{a\}$, so that $Z_a \in V(\pre_Y, a)$.
+Then $T \pre_Y(a) = \max V(\pre_Y, a) \seq_a Z_a \su_a Y_a = \pre_Y(a)$, so $T\pre_Y(a) \not = \pre_Y(a)$, and $Y \not \in \fecon(T)$.  
 
 Suppose, conversely, that $Y \not \in \fecon(T)$ so that $\pre_Y \not \in \fix(T)$.  
 Then there exists an agent $a \in A$ such that $T\pre_Y(a) = Z_a \not = \pre_Y(a)$ for some allocation $Z$.  
-By the definition of $V(\pre_Y,a)$, we have $Z_b \geq_b \pre_Y(b) = Y_b$ for $b \in d(Z) \setminus \{a\}$.
+By the definition of $V(\pre_Y,a)$, we have $Z_b \seq_b \pre_Y(b) = Y_b$ for $b \in d(Z) \setminus \{a\}$.
 We know $\pre_Y$ is coordinated, so by the simple fact above $\pre_Y(a) \in V(\pre_Y,a)$.
-Then $Z_a = T \pre_Y(a) >_a \pre_Y(a) =  Y_a$. Then $Z$ is a blocking coalition for $Y$, so $Y \not \in \strcore$.  
+Then $Z_a = T \pre_Y(a) \su_a \pre_Y(a) =  Y_a$. Then $Z$ is a blocking coalition for $Y$, so $Y \not \in \strcore$.  
 \eprf
 Thus, we have identified $\strcore$ with the set of \emph{coordinated} preallocations $\pre \in \coordpre$ such that $T \pre = \pre$. 
 This result shows that an algorithm that finds all $\pre \in \fix(T)$ will also find all strict core matchings. 
+
 However, if there are \emph{uncoordinated} preallocations that are also fixed by $T$, such an algorithm may return extraneous solutions not associated with any strict core matching.
-Fortunately, there are no such prealloacations, as our next result shows
-\begin{prop} $\fix(T) \sub \coordpre$
-\end{prop}
+The following lemma, which is essential for the construction of our algorithm, shows that there are no such preallocations.
+Note that this result significantly generalizes the corresponding lemma in Echenique and Yenmez and also subsumes the main theorem of Kojima (xxxx). 
+
+\begin{lemma} $\fix(T) \sub \coordpre$
+\end{lemma}
 \prf
-To begin, we prove an important fact that will be used repeatedly.
+We begin with an important fact that will be used repeatedly.
 Suppose that $\pre \in \fix(T)$. Then for any $a \in A$, we have $\pre(a) = T\pre(a) \in V(\pre,a)$.
-Thus, there exists an allocation $Y$ such that $Y_a = \pre(a)$, and $Y_b \geq_b \pre(b)$ for all $b \in d(Y) \setminus \{a\}$.
-Since $Y_a = \pre(a)$, then in fact $Y_b \geq_b \pre(b)$ holds \emph{for all} agents $b \in d(Y)$. 
+Thus, there exists an allocation $Y$ such that $Y_a = \pre(a)$, and $Y_b \seq_b \pre(b)$ for all $b \in d(Y) \setminus \{a\}$.
+Since $Y_a = \pre(a)$, then in fact $Y_b \seq_b \pre(b)$ holds \emph{for all} agents $b \in d(Y)$. 
 For any $b \in d(Y)$, $Y$ then satisfies the conditions in the definition of $V(\pre,b)$, so $Y_b \in V(\pre,b)$. 
-Therefore, $\pre(b) = T\pre(b) \geq Y_b \geq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
+Therefore, $\pre(b) = T\pre(b) \seq Y_b \seq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
 
 Fix $a_1 \in A$. Since $\pre \in \fix(T)$, the argument above shows that there exists an allocation $Y$ such that $Y_{a_1} = \pre(a_1)$, and, in particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
-Therefore, $U(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \geq \pre(b)\}$ is non-empty, so there exists an allocation 
+Therefore, $U(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \seq \pre(b)\}$, the collection of global allocations available to $a_1$ at $\pre$, is non-empty, so there exists an allocation 
 
 \[
 Y \in \argmax_{Z \in U(\pre,a_1)} |d(Z)|
 \]
 
-Let $A_1 = d(Y)$. If $A_1 = A$, we are done, since then by the construction above $Y_a = \pre(a)$ for all $a \in A$, so $\pre = \pre_Y$. 
+Let $A_1 = d(Y)$. If $A_1 = A$, we are done, since then by the construction above $Y_a = \pre(a)$ for all $a \in A$, so $\pre = \pre_Y$ and $\pre \in \coordpre$. 
+
 Then assume that $A_1 \not = A$, and pick $a_2 \in A \setminus A_1$. By the fact at the beginning of the proof, there exists an allocation $Z$ such that $Z_{a_2} = \pre(a_2)$, and, in fact, $\pre(b) = Z_b$ for all $b \in d(Z)$. 
 Define $A_2 = d(Z) \cap A_1^c$, which is non-empty by construction.
 Let $b \in A_2$. We will show that $d(\pre(b)) \cap A_1 = \emptyset$.
@@ -195,27 +203,28 @@ Then $b \in Z_c = Y_c$, so $b \in d(Y_c) \sub d(Y) = A_1$, so $b \in A_1 \cap A_
 This is a contradiction, so it must be the case that $d(\pre(b)) \cap A_1 = \emptyset$ for all $b \in A_2$. 
 
 Define $S = \bigcup_{b \in A_2} \pre(b)$. We have just shown that $d(S) \sub A_1^c$.
-We also have $d(S) = \bigcup_{b \in A_2} d(\pre(b)) = \bigcup_{b \in A_2} d(Z_b) \subset d(Z)$, so $d(S) \subset A_1^c \cap d(Z) = A_2$.
+We also have $d(S) = \bigcup_{b \in A_2} d(\pre(b)) = \bigcup_{b \in A_2} d(Z_b) \sub d(Z)$, so $d(S) \sub A_1^c \cap d(Z) = A_2$.
 Clearly $b \in d(\pre(b))$ for all $b \in A_2$, so $A_2 \sub d(S)$. Then $A_2 = d(S)$. 
-Set $W = Y \cup S$. We have now shown that 
+
+Set $W = Y \cup S$. We have now shown that $A_2 \not = \emptyset$ and $A_1 \cap A_2 = \emptyset$.
+Since $d(Y) = A_1$ and $d(W) = A_2$, it follows that $W \cap Y = \emptyset$, so we have  
 
 \begin{enumerate}
-\item $A_2 \not = \emptyset$ and $A_2 \cap A_1 = \emptyset$. 
-\item $W_b = Y_b = \pre(b)$ for $b \in A_1$; in particular, $W_a = \pre(a)$. 
-\item $W_b = S_b = \pre(b)$ for $b \in A_2$.
+\item $W_b = Y_b = \pre(b)$ for all $b \in A_1$; in particular, $W_{a_1} = \pre(a_1)$. 
+\item $W_b = S_b = \pre(b)$ for all $b \in A_2$.
 \end{enumerate}
 
-Then apparently $W \in U(\pre,a)$ as defined above. However, by construction $|d(W)| > |d(Y)|$, which contradicts our original choice of $Y$.
+Then apparently $W \in U(\pre,a_1)$ as defined above. However, by construction $|d(W)| > |d(Y)|$, which contradicts our original choice of $Y$.
 This finishes the proof.
-
 \eprf
-Note that this result strictly generalizes the analogous results in (Echenique, Kojima). 
+Combining these lemmas, we see that searching for strict core allocations in a very general model of multilateral matching with contracts is equivalent to searching for the fixed points of our operator $T$. 
+
 \subsection{The Lattice of Fixed Preallocations}
 In this section, we generalize constructions from Echenqiue and Yenmez showing the the fixed points of the squared operator $T^2$ form a lattice. 
 First, we define a natural partial order on the set of preallocations $\prealloc$.
 
-Say that $\pre > \pre'$ if and only if $\pre(a) \geq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
-Thus, we write $\pre \geq \pre'$ if and only if $\pre > \pre'$ or $\pre = \pre'$. 
+Say that $\pre \su \pre'$ if and only if $\pre(a) \seq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
+Thus, we write $\pre \seq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
 This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
 Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
 These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez.
@@ -225,16 +234,16 @@ For convenience, we reproduce the first result in our framework - the rest follo
 \prf
 Let $\pre \leq \pre'$ be preallocations.
 Fix $a \in A$, and let $Z \in V(\pre',a)$.
-Then there is an allocation $Y \sub X$ with $Y_a = Z$ such that $Y_b \geq_b \pre'(b)$ for $b \in d(Y) \setminus \{a\}$.
-Then $Y_b \geq_b \pre'(b) \geq_b \pre_b$ also for all such agents, so we also have $Z \in V(\pre,a)$.
-Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \geq T\pre'(a)$. $a$ was arbitrary, so $T\pre \geq T\pre'$ under our partial order. 
+Then there is an allocation $Y \sub X$ with $Y_a = Z$ such that $Y_b \seq_b \pre'(b)$ for $b \in d(Y) \setminus \{a\}$.
+Then $Y_b \seq_b \pre'(b) \seq_b \pre_b$ also for all such agents, so we also have $Z \in V(\pre,a)$.
+Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \seq T\pre'(a)$. $a$ was arbitrary, so $T\pre \seq T\pre'$ under our partial order. 
 \eprf
 The following lemmas follow exactly as in Echenique and Yenmez, using the antitonicity of $T$. 
 \begin{cor} $T^2$ is isotone, and $\fix(T^2)$ is a non-empty complete lattice. 
 \end{cor}
 \begin{lemma} No two preallocations $\pre$ and $\pre'$ can be compared under the partial order on $\prealloc$.
 \end{lemma}
-\begin{lemma} There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \geq \pre \geq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
+\begin{lemma} There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \seq \pre \seq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
 \end{lemma}
 \subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
 In this section, we improve upon the algorithm Echenique (2003) and Echenique and Yenmez (2013), showing how to fully exploit the geometry of the lattice $\fix(T)$ to more quickly find all strict core matchings. 
