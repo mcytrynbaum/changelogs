@@ -183,7 +183,7 @@ For any $b \in d(Y)$, $Y$ then satisfies the conditions in the definition of $V(
 Therefore, $\pre(b) = T\pre(b) \seq Y_b \seq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
 
 Fix $a_1 \in A$. Since $\pre \in \fix(T)$, the argument above shows that there exists an allocation $Y$ such that $Y_{a_1} = \pre(a_1)$, and, in particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
-Therefore, $U(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \seq \pre(b)\}$, the collection of global allocations available to $a_1$ at $\pre$, is non-empty, so there exists an allocation 
+Therefore, $U(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \seq \pre(b)\: \forall b \in d(Y)\setminus \{a_1\}\}$, the collection of global allocations available to $a_1$ at $\pre$, is non-empty, so there exists an allocation 
 
 \[
 Y \in \argmax_{Z \in U(\pre,a_1)} |d(Z)|
@@ -217,8 +217,12 @@ Since $d(Y) = A_1$ and $d(W) = A_2$, it follows that $W \cap Y = \emptyset$, so 
 Then apparently $W \in U(\pre,a_1)$ as defined above. However, by construction $|d(W)| > |d(Y)|$, which contradicts our original choice of $Y$.
 This finishes the proof.
 \eprf
-Combining these lemmas, we see that searching for strict core allocations in a very general model of multilateral matching with contracts is equivalent to searching for the fixed points of our operator $T$. 
+\subsubsection{Discussion}
+Combining these lemmas, we see that searching for strict core allocations in a very general model of multilateral matching with contracts is equivalent to searching for the fixed points of $T$. 
+Our algorithm depends heavily on this result, which shows, critically, that the fixed points $\fix(T)$ are only as dense in $\prealloc$ as the strict core outcomes.
 
+Our maximal domain results will show that this is not the case for the natural extension of this method to \emph{true} core outcomes $\core$.
+For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations. 
 \subsection{The Lattice of Fixed Preallocations}
 In this section, we generalize constructions from Echenqiue and Yenmez showing the the fixed points of the squared operator $T^2$ form a lattice. 
 First, we define a natural partial order on the set of preallocations $\prealloc$.
@@ -245,6 +249,7 @@ The following lemmas follow exactly as in Echenique and Yenmez, using the antito
 \end{lemma}
 \begin{lemma} There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \seq \pre \seq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
 \end{lemma}
+
 \subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
 In this section, we improve upon the algorithm of Echenique (2003) and Echenique and Yenmez (2013), showing how to fully exploit the geometry of the lattice $\fix(T)$ to more quickly find all strict core matchings. 
 
