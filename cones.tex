@@ -54,7 +54,9 @@
 \newcommand{\tb}{\textbf}
 \newcommand{\pa}{\partial}
 \newcommand{\et}{\eta}
-\newcommand{\argmax}{\operatornamewithlimits{argmax}}
+\newcommand{\argmax}{\operatornamewithlimits{argmax} \,}
+\newcommand{\lag}{\langle}
+\newcommand{\rag}{\rangle}
 
 \newcommand{\pre}{\phi}
 \newcommand{\econ}{e}
@@ -66,10 +68,11 @@
 \newcommand{\stable}{\mathrm{S}(X,U)}
 \newcommand{\fecon}{E}
 \newcommand{\fix}{\mathcal{E}}
-\newcommand{\seq}{\succeq}
+\newcommand{\suq}{\succeq}
 \newcommand{\peq}{\preceq}
 \newcommand{\su}{\succ}
 \newcommand{\pe}{\prec}
+\newcommand{\toppre}{\ol{\pre}}
 
 
 
@@ -86,7 +89,7 @@ Note that, in general, we may have $|d(x)| > 2$ for multilateral contracts.
 
 For $a\in A$, we let $Y_a = \{y\in Y: \, a\in d(y)\}$ denote the set of contracts associated with that agent (note that we may have $Y_a = \emptyset$). Thus, $2^{X_a}$ denotes the set of all allocations naming an agent $a\in A$. 
 We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where the utility of an allocation is given by the one-to-one function $U_a: 2^{X_a} \to \mr$.
-Let $\su_a$ denote the strict preference relation induced by these utility functions over bundles $Y \in 2^{X_a}$, with $\seq_a$ denoting the weak relation. Thus, $Y \seq_a  Z \iff$ $Y \su_a Z$ or $Y = Z$.
+Let $\su_a$ denote the strict preference relation induced by these utility functions over bundles $Y \in 2^{X_a}$, with $\suq_a$ denoting the weak relation. Thus, $Y \suq_a  Z \iff$ $Y \su_a Z$ or $Y = Z$.
 
 We define choice functions in the usual way for $Y\in 2^{X_a}$ by 
 \[
@@ -144,7 +147,7 @@ V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_
 Intuitively, $V(\pre, a)$ is the \emph{possibility set} for an agent $a$ at a preallocation $\pre$. 
 It contains all sets of contracts naming $a$ that are part of a larger economy $Y$ where every other agent $b \in d(Y)$ weakly prefers their contracts under $Y$ to their contracts under the pre-allocation $\pre$.  
 
-Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\seq_a$ for each $a \in A$.
+Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\suq_a$ for each $a \in A$.
 Note that $\emptyset_a \in V(\pre,a)$ for any $\pre \in \prealloc$, so $T$ is well-defined. Let $\fix(T)$ denote the fixed points of $T$. Define $\fecon(T) = \{Y \in 2^X: \, \pre_Y \in \fix(T)\}$, the collection of allocations $Y$ whose corresponding preallocation $\pre_Y$ is fixed by $T$.
 
 Before our first result, we note a simple fact: if $\pre \in \coordpre$, then $\pre(a) \in V(\pre, a)$.
@@ -154,14 +157,14 @@ With the definitions above, we have a simple result
 \begin{lemma} $\fecon(T) = \strcore$
 \end{lemma}
 \prf
-First, suppose that $Y \not \in \strcore$. Then by definition, there exists some blocking allocation $\emptyset \not = Z \sub X$ such $Z_b \seq_b Y_b$ for all $b \in d(Z)$.
+First, suppose that $Y \not \in \strcore$. Then by definition, there exists some blocking allocation $\emptyset \not = Z \sub X$ such $Z_b \suq_b Y_b$ for all $b \in d(Z)$.
 Let $a \in d(Z)$ be such that the inequality above is strict, and consider $\pre = \pre_Y$. 
-In particular, $Z_b \seq_b \pre_Y(b)$ for all $b \in d(Z) \setminus \{a\}$, so that $Z_a \in V(\pre_Y, a)$.
-Then $T \pre_Y(a) = \max V(\pre_Y, a) \seq_a Z_a \su_a Y_a = \pre_Y(a)$, so $T\pre_Y(a) \not = \pre_Y(a)$, and $Y \not \in \fecon(T)$.  
+In particular, $Z_b \suq_b \pre_Y(b)$ for all $b \in d(Z) \setminus \{a\}$, so that $Z_a \in V(\pre_Y, a)$.
+Then $T \pre_Y(a) = \max V(\pre_Y, a) \suq_a Z_a \su_a Y_a = \pre_Y(a)$, so $T\pre_Y(a) \not = \pre_Y(a)$, and $Y \not \in \fecon(T)$.  
 
 Suppose, conversely, that $Y \not \in \fecon(T)$ so that $\pre_Y \not \in \fix(T)$.  
 Then there exists an agent $a \in A$ such that $T\pre_Y(a) = Z_a \not = \pre_Y(a)$ for some allocation $Z$.  
-By the definition of $V(\pre_Y,a)$, we have $Z_b \seq_b \pre_Y(b) = Y_b$ for $b \in d(Z) \setminus \{a\}$.
+By the definition of $V(\pre_Y,a)$, we have $Z_b \suq_b \pre_Y(b) = Y_b$ for $b \in d(Z) \setminus \{a\}$.
 We know $\pre_Y$ is coordinated, so by the simple fact above $\pre_Y(a) \in V(\pre_Y,a)$.
 Then $Z_a = T \pre_Y(a) \su_a \pre_Y(a) =  Y_a$. Then $Z$ is a blocking coalition for $Y$, so $Y \not \in \strcore$.  
 \eprf
@@ -177,13 +180,13 @@ Note that this result significantly generalizes the corresponding lemma in Echen
 \prf
 We begin with an important fact that will be used repeatedly.
 Suppose that $\pre \in \fix(T)$. Then for any $a \in A$, we have $\pre(a) = T\pre(a) \in V(\pre,a)$.
-Thus, there exists an allocation $Y$ such that $Y_a = \pre(a)$, and $Y_b \seq_b \pre(b)$ for all $b \in d(Y) \setminus \{a\}$.
-Since $Y_a = \pre(a)$, then in fact $Y_b \seq_b \pre(b)$ holds \emph{for all} agents $b \in d(Y)$. 
+Thus, there exists an allocation $Y$ such that $Y_a = \pre(a)$, and $Y_b \suq_b \pre(b)$ for all $b \in d(Y) \setminus \{a\}$.
+Since $Y_a = \pre(a)$, then in fact $Y_b \suq_b \pre(b)$ holds \emph{for all} agents $b \in d(Y)$. 
 For any $b \in d(Y)$, $Y$ then satisfies the conditions in the definition of $V(\pre,b)$, so $Y_b \in V(\pre,b)$. 
-Therefore, $\pre(b) = T\pre(b) \seq Y_b \seq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
+Therefore, $\pre(b) = T\pre(b) \suq Y_b \suq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
 
 Fix $a_1 \in A$. Since $\pre \in \fix(T)$, the argument above shows that there exists an allocation $Y$ such that $Y_{a_1} = \pre(a_1)$, and, in particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
-Therefore, $U(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \seq \pre(b)\: \forall b \in d(Y)\setminus \{a_1\}\}$, the collection of global allocations available to $a_1$ at $\pre$, is non-empty, so there exists an allocation 
+Therefore, $U(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \suq \pre(b)\: \forall b \in d(Y)\setminus \{a_1\}\}$, the collection of global allocations available to $a_1$ at $\pre$, is non-empty, so there exists an allocation 
 
 \[
 Y \in \argmax_{Z \in U(\pre,a_1)} |d(Z)|
@@ -227,10 +230,10 @@ For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a l
 In this section, we generalize constructions from Echenqiue and Yenmez showing the the fixed points of the squared operator $T^2$ form a lattice. 
 First, we define a natural partial order on the set of preallocations $\prealloc$.
 
-Say that $\pre \su \pre'$ if and only if $\pre(a) \seq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
-Thus, we write $\pre \seq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
+Say that $\pre \su \pre'$ if and only if $\pre(a) \suq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
+Thus, we write $\pre \suq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
 This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
-Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
+Next, we give a suquence of results concerning the operator $T$ and its fixed points. 
 These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez.
 For convenience, we reproduce the first result in our framework - the rest follow from work in Echenique in and Yenmez. 
 \begin{lemma} $T$ is antitone 
@@ -238,24 +241,70 @@ For convenience, we reproduce the first result in our framework - the rest follo
 \prf
 Let $\pre \leq \pre'$ be preallocations.
 Fix $a \in A$, and let $Z \in V(\pre',a)$.
-Then there is an allocation $Y \sub X$ with $Y_a = Z$ such that $Y_b \seq_b \pre'(b)$ for $b \in d(Y) \setminus \{a\}$.
-Then $Y_b \seq_b \pre'(b) \seq_b \pre_b$ also for all such agents, so we also have $Z \in V(\pre,a)$.
-Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \seq T\pre'(a)$. $a$ was arbitrary, so $T\pre \seq T\pre'$ under our partial order. 
+Then there is an allocation $Y \sub X$ with $Y_a = Z$ such that $Y_b \suq_b \pre'(b)$ for $b \in d(Y) \setminus \{a\}$.
+Then $Y_b \suq_b \pre'(b) \suq_b \pre_b$ also for all such agents, so we also have $Z \in V(\pre,a)$.
+Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \suq T\pre'(a)$. $a$ was arbitrary, so $T\pre \suq T\pre'$ under our partial order. 
 \eprf
 The following lemmas follow exactly as in Echenique and Yenmez, using the antitonicity of $T$. 
 \begin{cor} $T^2$ is isotone, and $\fix(T^2)$ is a non-empty complete lattice. 
 \end{cor}
 \begin{lemma} No two preallocations $\pre$ and $\pre'$ can be compared under the partial order on $\prealloc$.
 \end{lemma}
-\begin{lemma} There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \seq \pre \seq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
+\begin{lemma} There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \suq \pre \suq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
 \end{lemma}
 
 \subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
-In this section, we improve upon the algorithm of Echenique (2003) and Echenique and Yenmez (2013), showing how to fully exploit the geometry of the lattice $\fix(T)$ to more quickly find all strict core matchings. 
+\subsubsection{Introduction}
+In this section, we give an algorithm that finds \emph{all} strict core allocations in the multilateral matching with contracts model considered above.
+Our algorithm builds upon the on the original approach in Echenique and Yenmez xxxxx.
+We differ, however, in that we show how to fully exploit the geometric structure of the lattice constructed in section xxxx.
+
+At a basic level, the algorithm proceeds by successively initializing modified versions of the original matching problem, where each agent has a truncated preference list.
+Our specific contribution is to realize that many of the subproblems created while we search the lattice $\fix(T^2)$ for strict core allocations contain geometric information relevant for other subproblems. 
+Using cone geometry, we show how to efficiently combine this information to more quickly identify the strict core matchings. 
+
+From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether a specific allocation $Y$ is in the strict core.
+This operation can be very costly even in classical matching models.
+Our algorithm attempts to minimize the number of evaluations of $T^2$, using lattice geometry to combine information obtained in distinct subproblems.  
+\subsubsection{Notation and Intuition} 
+Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
+That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for all $a \in A$.
+Suppose that the total number of agents $|A| = m > 0$.
+We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, where each agent $a$'s preference list is truncated to all allocations in $2^{X_a}$ below $\pre(a)$, inclusive. 
+Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \pe \pre\}$. 
+
+By Tarski's theorem, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
+If $T \toppre = \toppre$, then by lemma xxxx we know $\fix(T) = \{\toppre\}$.
+Suppose then that this is not the case. 
+Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iterating $T^2$, we have learned that $\pre \peq \toppre$ for all $\pre \in \fix(T^2)$, so $\pre \peq \toppre$ for all $\pre \in \fix(T)$ as well.
+
+That is, iterating $T^2$ from the problem's maximal point $\pre^*$ gives us a guarantee that $\fix(T)$ is contained in the cone $\{\pre' \in \prealloc: \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}.$ 
+In what follows, we will often denote this type of cone relation by $\fix(T) \peq \toppre$. 
+
+Since $T\toppre \not = \toppre$, apparently $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, where $e_i$ is the standard unit vector in $\mr^m$ \footnote{identifying $\prealloc$ with a grid in $\mr^m$ as above}. 
+Consider a subproblem of the form $\lag \pre - e_i \rag$, and let $T_i$ be the corresponding operator for agents preferences truncated above $\pre - e_i$.
+The key insight of Echenique (2003), generalized to the current setting, is that $\fix(T) \cap \{\pre' \leq \pre - e_i\} \sub \pre(T_i) \sub \fix(T_i^2)$, where the last subset relation holds for any operator.
+Thus, information about fixed points of $T_i^2$ can be used to bound $\fix(T)$. 
+Generally, we have that 
+\begin{lemma}
+Suppose $\pre \peq \wh{\pre}$, and let $\wh{T}$ denote the standard operator for the problem $\lag \wh{\pre} \rag$.
+Then if $\pre \in \fix(T)$, $\pre \in \fix(\wh{T})$.
+In particular, $\fix(T) \cap \{\pre \leq \wh{\pre}\} \sub \fix(\wh{T}^2)$. 
+\end{lemma}
+\prf
+\eprf 
+In the context above 
+Give example of crash (pic)
+Give example of chaning (pic) 
+Give algo and proofs 
 
 
 
 
+
+
+
+%complexity 
 
 
 \subsubsection{Discussion}
@@ -268,8 +317,18 @@ As can be seen, the construction above is very general, requiring only that the 
 
 
 
+\section{extra text} 
 
+Specifically, we show that our algorithm also gives a faster method of finding all Nash equilibria in games with strategic complementarities (GSC), extending the original work in Echenqiue xxxxx.  
+We also show how a version of the cone geometry approach can be used to find all \emph{stable} matchings in the contracts model of Hatfield and Milgrom xxxx.  
 
+Note that the set of preallocations $\prealloc$ is a finite product set endowed with a product order.
+Thus, we can identify $\prealloc$ with a grid in Euclidena space, where, for instance, $\pre \in \prealloc$ corresponds to a point in $|A|$ dimensional Euclidean space with components given by the rank of $\pre(a)$ under the order $\su_a$. 
+
+Our approach is very general, relying only on the lattice structure of the problem and the ability to define subproblems whose solutions contain the original points of interest.  
+
+Therefore, by isotonicity of $T^2$, we have $T^4 \pre^* \pe \T^2 \pre^*$ and so on, so, by iterating $T^2$, we obtain a monotonically decreasing sequence, which, by finiteness of $\prealloc$ converges to a fixed point, which we call $\toppre$.
+By a standard argument \footnote{insert standard argument}, $\toppre$ is the largest fixed point 
 
 
 \end{document}
