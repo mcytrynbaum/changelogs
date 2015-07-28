@@ -54,7 +54,7 @@
 \newcommand{\tb}{\textbf}
 \newcommand{\pa}{\partial}
 \newcommand{\et}{\eta}
-\newcommand{\argmax}{\operatornamewithlimits{argmax} \,}
+\newcommand{\argmax}{\operatornamewithlimits{argmax}}
 \newcommand{\lag}{\langle}
 \newcommand{\rag}{\rangle}
 
@@ -255,7 +255,7 @@ The following lemmas follow exactly as in Echenique and Yenmez, using the antito
 
 \subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
 \subsubsection{Introduction}
-In this section, we give an algorithm that finds \emph{all} strict core allocations in the multilateral matching with contracts model considered above.
+In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
 Our algorithm builds upon the on the original approach in Echenique and Yenmez xxxxx.
 We differ, however, in that we show how to fully exploit the geometric structure of the lattice constructed in section xxxx.
 
@@ -271,32 +271,50 @@ Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
 That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for all $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
 We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, where each agent $a$'s preference list is truncated to all allocations in $2^{X_a}$ below $\pre(a)$, inclusive. 
-Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \pe \pre\}$. 
+Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$. 
 
-By Tarski's theorem, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
-If $T \toppre = \toppre$, then by lemma xxxx we know $\fix(T) = \{\toppre\}$.
-Suppose then that this is not the case. 
-Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iterating $T^2$, we have learned that $\pre \peq \toppre$ for all $\pre \in \fix(T^2)$, so $\pre \peq \toppre$ for all $\pre \in \fix(T)$ as well.
+By Tarski's theorem, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$\footnote{add standard Tarski argument}.
+If $T \toppre = \toppre$, then by lemma xxxx, $\fix(T) = \{\toppre\}$.
+Then suppose that $T \toppre \not = \toppre$. 
+Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iteratively applying $T^2$, we have learned that $\fix(T) \sub \fix (T^2) \sub \{\pre': \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}$. We will often denote cone relations of this type by $\fix(T) \peq \toppre$. 
 
-That is, iterating $T^2$ from the problem's maximal point $\pre^*$ gives us a guarantee that $\fix(T)$ is contained in the cone $\{\pre' \in \prealloc: \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}.$ 
-In what follows, we will often denote this type of cone relation by $\fix(T) \peq \toppre$. 
-
-Since $T\toppre \not = \toppre$, apparently $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, where $e_i$ is the standard unit vector in $\mr^m$ \footnote{identifying $\prealloc$ with a grid in $\mr^m$ as above}. 
-Consider a subproblem of the form $\lag \pre - e_i \rag$, and let $T_i$ be the corresponding operator for agents preferences truncated above $\pre - e_i$.
-The key insight of Echenique (2003), generalized to the current setting, is that $\fix(T) \cap \{\pre' \leq \pre - e_i\} \sub \pre(T_i) \sub \fix(T_i^2)$, where the last subset relation holds for any operator.
-Thus, information about fixed points of $T_i^2$ can be used to bound $\fix(T)$. 
-Generally, we have that 
+Since $T\toppre \not = \toppre$, apparently $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, where $e_i$ denotes the standard unit vector in $\mr^m$ \footnote{identifying $\prealloc$ with a grid in $\mr^m$ as above.}. 
+Consider a subproblem of the form $\lag \pre - e_i \rag$, and let $T_i$ be the corresponding operator, where agents' preferences are truncated above $\pre - e_i$.
+The key insight of Echenique (2003), generalized to the current model, is that $\fix(T) \cap \{\pre' \leq \pre - e_i\} \sub \fix(T_i)$.
+That is, we don't lose any fixed points of $T$ below $\pre - e_i$ by just working with the restricted problem $\lag \pre - e_i \rag$. 
+Since $\fix(T_i) \sub \fix(T_i^2)$ for any operator, information about the lattice of fixed points of $T_i^2$ can be used to bound $\fix(T)$.
+The general result in our setting is as follows 
 \begin{lemma}
 Suppose $\pre \peq \wh{\pre}$, and let $\wh{T}$ denote the standard operator for the problem $\lag \wh{\pre} \rag$.
 Then if $\pre \in \fix(T)$, $\pre \in \fix(\wh{T})$.
 In particular, $\fix(T) \cap \{\pre \leq \wh{\pre}\} \sub \fix(\wh{T}^2)$. 
 \end{lemma}
 \prf
+Let $\wh{V}(\pre, a)$ be the defining set for $\wh{T}$ in the subproblem.
+Then for any $a \in A$ and $\pre \in \prealloc$ we have 
+$\wh{V}(\pre,a)  = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, \wh{\pre}(b) \suq_b Y_b \suq_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \}$
+then clearly $\wh{V}(\pre,a) \sub V(\pre,a)$.  
+We can compute $\wh{T}\pre(a) = \max \wh{V}(\pre,a) \leq \max V(\pre,a) = T\pre(a)$ for any preallocation $\pre$. 
+
+Now, suppose that $\pre \in \fix(T)\cap\{\pre' \peq \wh{\pre}\}$.
+Then we have have $\pre(a) = T\pre(a) \suq_a \wh{T}\pre(a)$ for all $a \in A$. 
+By lemma xxxx above, $\fix(T) \sub \coordpre$, so $\pre = \pre_Y$ for some allocation $Y \in 2^X$.
+In particular, $Y_a = \pre(a) \peq_a \wh{\pre}(a)$, so $\pre(a) \in \wh{V}(\pre,a)$.
+Then by the definition of $\wh{T}$, we get $\wh{T}\pre(a) \suq_a \pre(a)$. 
+
+Combining this with the statement above, we have $\pre(a) = \wh{T} \pre(a)$, so $\pre \in \fix(\wh{T})$. 
 \eprf 
-In the context above 
-Give example of crash (pic)
-Give example of chaning (pic) 
-Give algo and proofs 
+Returning to the discussion above, we showed that $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, a union of cones in the lattice of preallocations. 
+In particular, $\fix(T) \sub \bigcup_{i = 1}^m \fix(\toppre - e_i)$.
+Fix $i$ and consider $\fix(\toppre - e_i)$, the fixed points of $T$ below $\toppre - e_i$.
+Denote $S_i \equiv T_i^2$ and $\toppre_i \equiv \toppre - e_i$.
+Starting from $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, each iteration of $S_i$ gives a cone guarantee on $\fix(T)$ of the form $\fix(\pre - e_i) \peq S_i^k (\toppre - e_i)$, where we have used lemma xxxx and the Tarski argument above. 
+
+Pursuing this strategy for each $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$. 
+In the full algorithm, we generate $m$ additional subproblems whenever the sequence $S^k \pre$ converges to a fixed point of $S$, allowing us to continue to learn about $\fix(T)$ and eventually find the full set of strict core allocations. 
+
+
+
 
 
 
