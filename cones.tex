@@ -341,7 +341,7 @@ That is, by combining the information from subproblem 2 with subproblem 1, we ha
 
 /
 
-////// INSERT FIGURE //////
+////// INSERT FIGURE - standard 2-dim cone drawing  //////
 
 /
 
@@ -356,21 +356,51 @@ After initializing subproblems at $(9,10,10)$, $(10,9,10)$ and $(10,10,9)$, supp
 As argued above, this shows that $\fix(\toppre_1) \peq (9,8,10) \peq (10,9,10) = \toppre_2$, so that $\fix(\toppre_1) \sub \fix(\toppre_2)$. 
 Similarly, our calculations with $S_2$ and $S_3$ show that $\fix(\toppre_2) \sub \fix(\toppre_3)$ and $\fix(\toppre_3) \sub \fix(\toppre_1)$. 
 Combining all these relations, apparently $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq (9,8,7)$, so the subproblems are equivalent.  
+Thus, we can collapse these 3 subproblems to a new subproblem started at $\pre_4 = (9,8,7)$ without losing any fixed points of the original operator $T$. 
 
-Here, we see that collisions between subproblem cones give information relations of the form $\fix(\toppre_i) \sub \fix(\toppre_j$.
+Here, we see that collisions between subproblem cones give information relations of the form $\fix(\toppre_i) \sub \fix(\toppre_j)$.
 Consider a digraph (directed graph) that tracks these collisions.
 Then this digraph has the form shown below, where subproblems correspond to vertices and directed edges to collision relations.  
+Since the digraph has a directed edge $(i,j)$ only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
 
 /
 
-////// INSERT FIGURE //////
+////// INSERT FIGURE - collision digraph and problem tree //////
 
 /
 
-Since there is a directed edge $(i,j)$ in the digraph only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
 
-Consider now a hypothetical subproblem 
+Suppose now that $\toppre$ is found at some intermediate step in the algorithm, and consider a hypothetical subproblem near $\toppre$ started at $\pre = (11,11,11)$ with associated isotone operator $S$.
+We begin iterating and find that $S \pre = (10,10,8)$, which shows $\fix(\pre) \sub \fix(\toppre_3)$ 
+Then one iteration of $S$ has shown us that $\fix(\pre) \sub \fix(\toppre_3) \peq (9,8,7)$ from the relations above. 
+Of course, the same conclusion would hold if we found that  $S \pre \peq \toppre_i$ for any $i$. 
 
+ We found that $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq \pre_4$. 
+We can track these subproblem relations efficiently with a collection of rooted trees as follows. 
+Thus, let $1,2,3$ be children of $4$, which we denote by $c(4) = \{1,2,3\}$.
+For any vertex $j$, we let $r(j)$ denote the root of the tree to which $j$ belongs, so, for instance, $r(1) = 4$. 
+By an abuse of notation, we will similarly write e.g. $r(\toppre_1) = \pre_4$ 
+In our example and for the tree shown, we have $\fix(\toppre_i) \sub \fix(r(\toppre_i))$ for all $i$. 
+Also, $\fix(\toppre_i) = \fix(\toppre_j)$ for all $i,j$ children of the same node. 
+
+Suppose we maintain a collection of trees for which nodes and roots are related as discussed above. 
+Consider a solved subproblem $\lag \pre_i \rag$ with $r(\pre_i) = \pre_k$.
+Then if at some step of the algorithm we obtain a guarantee that $\fix(\pre_j) \sub \fix(\pre_i)$ for some active subproblem $\lag \pre_j \rag$, we can conclude inductively that, in fact, $\fix(\pre_j) \sub \fix(\pre_k)$, potentially skipping a large region of problem space that we would otherwise have to search for elements of $\fix(T)$. 
+This dynamic gives our algorithm a ``Chutes and Ladders'' effect. 
+In particular, we make efficient use of both the geometric information shared between problems as well as the information gained during previous steps of the algorithm. 
+
+\subsubsection{Algorithm - Short Description} 
+
+First, we recall some graph-theoretic notation
+
+
+\subsubsection{Full Algorithm and Correctness} 
+
+\subsubsection{notes}
+Write about what is used in a list 
+Give graph theoretic notation 
+Give short description 
+Full algo and proofs 
 
 
 
