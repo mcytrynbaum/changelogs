@@ -257,21 +257,21 @@ The following lemmas follow exactly as in Echenique and Yenmez, using the antito
 \subsubsection{Introduction}
 In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
 Our algorithm builds upon the on the original approach in Echenique and Yenmez xxxxx.
-We differ, however, in that we show how to fully exploit the geometric structure of the lattice constructed in section xxxx.
+Modifying Echenique and Yenmez's original algorithm, we show how to fully exploit the geometric structure of the problem to efficiently find the full set of strict core matchings. 
 
-At a basic level, the algorithm proceeds by successively initializing modified versions of the original matching problem, where each agent has a truncated preference list.
+At a basic level, the algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
 Our specific contribution is to realize that many of the subproblems created while we search the lattice $\fix(T^2)$ for strict core allocations contain geometric information relevant for other subproblems. 
 Using cone geometry, we show how to efficiently combine this information to more quickly identify the strict core matchings. 
 
-From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether a specific allocation $Y$ is in the strict core.
+From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether or not a specific allocation $Y$ is in the strict core.
 This operation can be very costly even in classical matching models.
-Our algorithm attempts to minimize the number of evaluations of $T^2$, using lattice geometry to combine information obtained in distinct subproblems.  
+Our algorithm attempts to minimize the number of evaluations of $T^2$, using lattice structure to combine information obtained in related subproblems in a geometrically appealing way.  
 \subsubsection{Notation and Intuition} 
 Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
-That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for all $a \in A$.
+That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for each $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
-We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, where each agent $a$'s preference list is truncated to all allocations in $2^{X_a}$ below $\pre(a)$, inclusive. 
-Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$. 
+We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, in which each agent $a$'s preference list is truncated allocations in $2^{X_a}$ ranked below $\pre(a)$ by agent $a$, inclusive. 
+Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$ denote the fixed points of $T$ below $\pre$.  
 
 By Tarski's theorem, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$\footnote{add standard Tarski argument}.
 If $T \toppre = \toppre$, then by lemma xxxx, $\fix(T) = \{\toppre\}$.
@@ -305,13 +305,26 @@ Then by the definition of $\wh{T}$, we get $\wh{T}\pre(a) \suq_a \pre(a)$.
 Combining this with the statement above, we have $\pre(a) = \wh{T} \pre(a)$, so $\pre \in \fix(\wh{T})$. 
 \eprf 
 Returning to the discussion above, we showed that $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, a union of cones in the lattice of preallocations. 
-In particular, $\fix(T) \sub \bigcup_{i = 1}^m \fix(\toppre - e_i)$.
+That is, $\fix(T) \sub \bigcup_{i = 1}^m \fix(\toppre - e_i)$.
 Fix $i$ and consider $\fix(\toppre - e_i)$, the fixed points of $T$ below $\toppre - e_i$.
 Denote $S_i \equiv T_i^2$ and $\toppre_i \equiv \toppre - e_i$.
-Starting from $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, each iteration of $S_i$ gives a cone guarantee on $\fix(T)$ of the form $\fix(\pre - e_i) \peq S_i^k (\toppre - e_i)$, where we have used lemma xxxx and the Tarski argument above. 
+Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, each iteration of $S_i$ gives a ``cone guarantee'' on $\fix(T)$ of the form $\fix(\pre - e_i) \peq S_i^k (\toppre - e_i)$, where we have applied lemma xxxx and the Tarski argument from above. 
 
-Pursuing this strategy for each $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$. 
-In the full algorithm, we generate $m$ additional subproblems whenever the sequence $S^k \pre$ converges to a fixed point of $S$, allowing us to continue to learn about $\fix(T)$ and eventually find the full set of strict core allocations. 
+Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of cones corresponding to each subproblem. 
+Continuing recursively in this way, and generating $m$ new subproblems whenever a sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$, Echenique and Yenmez. 
+
+This strategy is actually similar to greedy search.
+In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.
+
+As we will show, the strategy described above can be significantly improved by capitalizing on the geometric structure of the lattice of preallocations to allow subproblems to share information with each other. 
+With this modification, evaluation of the full Tarski sequence $S_i^k \toppre_i$ is often unnecessary. 
+In fact, it is often the case that subproblems can be stopped or removed entirly after a few iterations. 
+We illustrate this with a couple of simple examples.  
+\subsubsection{Example 1 - Colliding Subproblem Cones}
+
+\subsubsection{Example 2 - Equivalent Problems}
+
+
 
 
 
