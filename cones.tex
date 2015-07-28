@@ -307,28 +307,69 @@ Combining this with the statement above, we have $\pre(a) = \wh{T} \pre(a)$, so 
 Returning to the discussion above, we showed that $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, a union of cones in the lattice of preallocations. 
 That is, $\fix(T) \sub \bigcup_{i = 1}^m \fix(\toppre - e_i)$.
 Fix $i$ and consider $\fix(\toppre - e_i)$, the fixed points of $T$ below $\toppre - e_i$.
-Denote $S_i \equiv T_i^2$ and $\toppre_i \equiv \toppre - e_i$.
-Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, each iteration of $S_i$ gives a ``cone guarantee'' on $\fix(T)$ of the form $\fix(\pre - e_i) \peq S_i^k (\toppre - e_i)$, where we have applied lemma xxxx and the Tarski argument from above. 
+For convenience, denote $S_i \equiv T_i^2$ and $\toppre_i \equiv \toppre - e_i$.
+Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, each iteration of $S_i$ gives a ``cone guarantee'' on the fixed points $\fix(T)$ of the form $\fix(\toppre_i) \peq S_i^k \toppre_i$, where we have applied lemma xxxx and the Tarski argument used above. 
 
-Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of cones corresponding to each subproblem. 
-Continuing recursively in this way, and generating $m$ new subproblems whenever a sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$, Echenique and Yenmez. 
+Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of subproblem cones. 
+We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$, we eventually find the full set of strict core outcomes, directly extending the algorithm of Echenique and Yenmez to the present setting.  
 
-This strategy is actually similar to greedy search.
+The strategy described above is actually similar to greedy search.
 In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.
 
-As we will show, the strategy described above can be significantly improved by capitalizing on the geometric structure of the lattice of preallocations to allow subproblems to share information with each other. 
+As we will show, many of the subproblems generated in this way are either redundant or do not need to be solved completely.
+In particular, we can significantly improve this algorithm by capitalizing on the structure of the preallocation lattice, which allows subproblems to share geometric information with each other. 
 With this modification, evaluation of the full Tarski sequence $S_i^k \toppre_i$ is often unnecessary. 
-In fact, it is often the case that subproblems can be stopped or removed entirly after a few iterations. 
+In fact, it is often the case that subproblems can be stopped or removed entirely after a few iterations. 
 We illustrate this with a couple of simple examples.  
 \subsubsection{Example 1 - Colliding Subproblem Cones}
+In this section, we give a simple example of how subproblems can share information.
+For easy of visualization, we consider the case $|A| = 2$. As noted previously, we may identify $\prealloc$ with a grid, in this case in $\mr^2$.
+As above, we iterate $T^2$ to find $\toppre = \max \fix(T^2)$, which we identify, for instance, with the integer lattice point $(10,10) = \toppre$. 
+Using the notation above, we have operators $S_1$ and $S_2$ corresponding to the subproblems $\lag \toppre - e_1 \rag$ and $\lag \toppre - e_2 \rag$, respectively. 
 
-\subsubsection{Example 2 - Equivalent Problems}
+Beginning with subproblem $1$, suppose that $S_1 (9,10) = (8,10)$, $S_1^2 (9,10) = (7,10)$, and $S_1^3 (9,10) = (7,9)$.
+By the work above, we now have a cone guarantee on the fixed points in the first subproblem; specifically, $\fix(T) \cap \{(x,y) \peq (9,10)\} \peq (7,9) \peq (10,9)$.
+Therefore, $\fix(\toppre_1) = \fix(T) \cap \{(x,y) \peq (9,10)\} \sub \fix(T) \cap \{(x,y) \peq (10,9)\} = \fix(\toppre_2)$. 
+That is, the solutions to subproblem 1 - the fixed points of $T$ in $\{(x,y) \peq (9,10)\}$ - are \emph{contained} in the solutions to subproblem 2.  
 
+Now suppose that we stop working on subproblem 1 and begin iterating with $S_2$.
+Suppose that $S_2(10,9) = S_2^2(10,9) = (10,6)$, so the sequence stops.
+Then we have learned that $\fix(\toppre_1) \sub \fix(\toppre_2) \peq (10,6)$. 
+However, by iterating $S_1$, we also learned that $\fix(\toppre_1) \peq (7,9)$. 
+Then apparently $\fix(\toppre_1)$ is contained in the cone intersection $\{(x,y) \peq (7,9)\} \cap \{(x,y) \peq (10, 6)\} = \{(x,y) \peq (7,6) \}$. 
+That is, by combining the information from subproblem 2 with subproblem 1, we have learned that $\fix(\toppre_1) \peq (7,6)$. 
 
+/
 
+////// INSERT FIGURE //////
 
+/
 
+Note that although iterating $S_1$ shows that $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
+If, for instance, we instead had $S_2(10,9) = S_2^2(10,9) = (9,6)$, then we would also know that $\fix(\toppre_2) \sub \fix(\toppre_1)$, so that $\fix(\toppre_2) \peq \min((9,6),(7,9)) = (7,6)$ and, in fact, $\fix(\toppre_1) = \fix(\toppre_2)$.
+This idea is explored further in the next example. 
 
+\subsubsection{Example 2 - The Collision Graph}
+In this section, we show how to efficiently combine information and track the relations between different subproblem cones. 
+Consider the case $|A| = 3$, where we identify $(10,10,10) = \toppre = \max \fix(T)$. 
+After initializing subproblems at $(9,10,10)$, $(10,9,10)$ and $(10,10,9)$, suppose that we find $S_1(9,10,10) = (9,8,10)$, $S_2(10,9,10) = (10,9,7)$, and $S_3(10,10,9) = (9,10,9)$. 
+As argued above, this shows that $\fix(\toppre_1) \peq (9,8,10) \peq (10,9,10) = \toppre_2$, so that $\fix(\toppre_1) \sub \fix(\toppre_2)$. 
+Similarly, our calculations with $S_2$ and $S_3$ show that $\fix(\toppre_2) \sub \fix(\toppre_3)$ and $\fix(\toppre_3) \sub \fix(\toppre_1)$. 
+Combining all these relations, apparently $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq (9,8,7)$, so the subproblems are equivalent.  
+
+Here, we see that collisions between subproblem cones give information relations of the form $\fix(\toppre_i) \sub \fix(\toppre_j$.
+Consider a digraph (directed graph) that tracks these collisions.
+Then this digraph has the form shown below, where subproblems correspond to vertices and directed edges to collision relations.  
+
+/
+
+////// INSERT FIGURE //////
+
+/
+
+Since there is a directed edge $(i,j)$ in the digraph only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
+
+Consider now a hypothetical subproblem 
 
 
 
