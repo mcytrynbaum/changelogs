@@ -73,6 +73,7 @@
 \newcommand{\su}{\succ}
 \newcommand{\pe}{\prec}
 \newcommand{\toppre}{\ol{\pre}}
+\newcommand{\strongc}{\mathcal{G}}
 
 
 
@@ -320,7 +321,20 @@ As we will show, many of the subproblems generated in this way are either redund
 In particular, we can significantly improve this algorithm by capitalizing on the structure of the preallocation lattice, which allows subproblems to share geometric information with each other. 
 With this modification, evaluation of the full Tarski sequence $S_i^k \toppre_i$ is often unnecessary. 
 In fact, it is often the case that subproblems can be stopped or removed entirely after a few iterations. 
-We illustrate this with a couple of simple examples.  
+We will illustrate this idea with a couple of simple examples.  
+
+First, we recall some graph-theoretic notation, which will be useful in the coming sections. A \emph{graph} is a pair $(V,E)$, where $V$ is a collection of vertices and $E \sub V \times V$ is a collection of edges.
+In a \emph{directed graph}, the order of vertices in an edge matters. 
+A \emph{directed path} is a sequence $e^1 \hdots e^n$ of edges, where $e_2^k = e_1^{k+1}$ for $k \leq n-1$. 
+A subset $W \sub V$ is \emph{strongly connected} if for any $v_i, v_j \in W$, there exist directed paths $v_i \to v_j$ and $v_j \to v_i$ using only vertices in $W$. 
+Strong connectedness is an equivalence relation on $V$, and the (disjoint) maximal strongly connected subsets of $V$ are called the \emph{strong components} of $G$, which we denote by $\strongc$. 
+Weak connectedness is defined similarly for an undirected graph, where an (undirected) path is as above, ignoring the order on vertices in an edge. 
+The \emph{reachable set} from a vertex $v$ is the set of all $w \in V$ such that there exists a directed path $v \to w$. 
+
+By a \emph{rooted tree}, we mean a graph that is connected with no cycles (paths starting and ending at the same vertex) with one vertex designated as the \emph{root}. 
+Vertices on a rooted tree are naturally oriented away from the root. 
+If we have a collection of rooted trees, we let $r(v)$ denote the root of the tree containing $v$. 
+For a vertex $v$, we let $c(v)$ denote the \emph{children} of $v$ as above - the vertices connected by an edge to $v$ on a path away from the root. 
 \subsubsection{Example 1 - Colliding Subproblem Cones}
 In this section, we give a simple example of how subproblems can share information.
 For easy of visualization, we consider the case $|A| = 2$. As noted previously, we may identify $\prealloc$ with a grid, in this case in $\mr^2$.
@@ -391,14 +405,12 @@ In particular, we make efficient use of both the geometric information shared be
 
 \subsubsection{Algorithm - Short Description} 
 
-First, we recall some graph-theoretic notation
+In this section, we give a brief explanation of the full algorithm, building on the examples and intuition above. 
 
 
 \subsubsection{Full Algorithm and Correctness} 
 
 \subsubsection{notes}
-Write about what is used in a list 
-Give graph theoretic notation 
 Give short description 
 Full algo and proofs 
 
