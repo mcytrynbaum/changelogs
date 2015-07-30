@@ -74,6 +74,11 @@
 \newcommand{\pe}{\prec}
 \newcommand{\toppre}{\ol{\pre}}
 \newcommand{\strongc}{\mathcal{G}}
+\newcommand{\acto}{Q_a^{0}} 
+\newcommand{\act}{(Q_a)} 
+\newcommand{\preo}{\pre^{0}} 
+\newcommand{\pref}{\pre^{f}} 
+
 
 
 
@@ -257,37 +262,38 @@ The following lemmas follow exactly as in Echenique and Yenmez, using the antito
 \subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
 \subsubsection{Introduction}
 In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
-Our algorithm builds upon the on the original approach in Echenique and Yenmez xxxxx.
+Our algorithm builds upon the original approach in Echenique and Yenmez xxxxx.
 Modifying Echenique and Yenmez's original algorithm, we show how to fully exploit the geometric structure of the problem to efficiently find the full set of strict core matchings. 
 
 At a basic level, the algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
-Our specific contribution is to realize that many of the subproblems created while we search the lattice $\fix(T^2)$ for strict core allocations contain geometric information relevant for other subproblems. 
-Using cone geometry, we show how to efficiently combine this information to more quickly identify the strict core matchings. 
+Our contribution is to realize that many of the subproblems created while we search the lattice $\fix(T^2)$  are either completely redundant or share information with other subproblems.
+Using cone geometry, we show how to efficiently combine this shared information to more quickly identify the strict core matchings. 
 
 From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether or not a specific allocation $Y$ is in the strict core.
-This operation can be very costly even in classical matching models.
-Our algorithm attempts to minimize the number of evaluations of $T^2$, using lattice structure to combine information obtained in related subproblems in a geometrically appealing way.  
+This operation can be very costly even in classical matching models\footnote{add some concrete complexity reference}.
+Our algorithm attempts to minimize the number of evaluations of $T^2$ by using lattice structure to combine geometric information from related subproblems. 
+
 \subsubsection{Notation and Intuition} 
 Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
 That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for each $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
-We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, in which each agent $a$'s preference list is truncated allocations in $2^{X_a}$ ranked below $\pre(a)$ by agent $a$, inclusive. 
+We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, in which each agent $a$'s preference list is truncated to allocations in $2^{X_a}$ ranked below $\pre(a)$ by agent $a$ (inclusive). 
 Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$ denote the fixed points of $T$ below $\pre$.  
 
-By Tarski's theorem, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$\footnote{add standard Tarski argument}.
+By Tarski's Theorem\footnote{add standard Tarski argument}, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
 If $T \toppre = \toppre$, then by lemma xxxx, $\fix(T) = \{\toppre\}$.
-Then suppose that $T \toppre \not = \toppre$. 
+So suppose that $T \toppre \not = \toppre$. 
 Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iteratively applying $T^2$, we have learned that $\fix(T) \sub \fix (T^2) \sub \{\pre': \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}$. We will often denote cone relations of this type by $\fix(T) \peq \toppre$. 
 
 Since $T\toppre \not = \toppre$, apparently $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, where $e_i$ denotes the standard unit vector in $\mr^m$ \footnote{identifying $\prealloc$ with a grid in $\mr^m$ as above.}. 
-Consider a subproblem of the form $\lag \pre - e_i \rag$, and let $T_i$ be the corresponding operator, where agents' preferences are truncated above $\pre - e_i$.
-The key insight of Echenique (2003), generalized to the current model, is that $\fix(T) \cap \{\pre' \leq \pre - e_i\} \sub \fix(T_i)$.
-That is, we don't lose any fixed points of $T$ below $\pre - e_i$ by just working with the restricted problem $\lag \pre - e_i \rag$. 
-Since $\fix(T_i) \sub \fix(T_i^2)$ for any operator, information about the lattice of fixed points of $T_i^2$ can be used to bound $\fix(T)$.
+Consider a subproblem of the form $\lag \toppre - e_i \rag$, and let $T_i$ be the operator corresponding to this subproblem, where agents' preferences are truncated above $\toppre - e_i$.
+The key insight of Echenique (2003), which generalizes to the current model, is that $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i)$.
+That is, the fixed points of $T$ contained in the cone $\{\pre' \peq \toppre - e_i\}$ are also fixed points of the subproblem $\lag \toppre - e_i \rag$ with operator $T_i$. 
+Then apparently we have $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i) \sub \fix(T_i^2)$, so information about the lattice of fixed points of $T_i^2$ can be used to bound $\fix(T)$.
 The general result in our setting is as follows 
 \begin{lemma}
-Suppose $\pre \peq \wh{\pre}$, and let $\wh{T}$ denote the standard operator for the problem $\lag \wh{\pre} \rag$.
-Then if $\pre \in \fix(T)$, $\pre \in \fix(\wh{T})$.
+Suppose $\pre \peq \wh{\pre}$, and let $\wh{T}$ denote the strict core operator for the problem $\lag \wh{\pre} \rag$.
+If $\pre \in \fix(T)$, then $\pre \in \fix(\wh{T})$.
 In particular, $\fix(T) \cap \{\pre \leq \wh{\pre}\} \sub \fix(\wh{T}^2)$. 
 \end{lemma}
 \prf
@@ -309,49 +315,50 @@ Returning to the discussion above, we showed that $\fix(T) \sub \bigcup_{i = 1}^
 That is, $\fix(T) \sub \bigcup_{i = 1}^m \fix(\toppre - e_i)$.
 Fix $i$ and consider $\fix(\toppre - e_i)$, the fixed points of $T$ below $\toppre - e_i$.
 For convenience, denote $S_i \equiv T_i^2$ and $\toppre_i \equiv \toppre - e_i$.
-Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, each iteration of $S_i$ gives a ``cone guarantee'' on the fixed points $\fix(T)$ of the form $\fix(\toppre_i) \peq S_i^k \toppre_i$, where we have applied lemma xxxx and the Tarski argument used above. 
+Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, lemma xxxx and the Tarski argument used above show that each iteration of $S_i$ gives a ``cone guarantee'' on the fixed points $\fix(T)$ of the form $\fix(\toppre_i) \peq S_i^k \toppre_i$.
 
 Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of subproblem cones. 
-We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$, we eventually find the full set of strict core outcomes, directly extending the algorithm of Echenique and Yenmez to the present setting.  
+We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$. 
+In this way, we can eventually find the full set of strict core outcomes, directly extending the algorithm of Echenique and Yenmez to the present setting.  
 
-The strategy described above is actually similar to greedy search.
+Depending on the structure of the lattice $\fix(T^2)$, the strategy described above can actually be quite similar to greedy search.  
 In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.
 
-As we will show, many of the subproblems generated in this way are either redundant or do not need to be solved completely.
+As we will show, many of the subproblems generated by this strategy are either redundant or do not need to be solved completely.
 In particular, we can significantly improve this algorithm by capitalizing on the structure of the preallocation lattice, which allows subproblems to share geometric information with each other. 
 With this modification, evaluation of the full Tarski sequence $S_i^k \toppre_i$ is often unnecessary. 
 In fact, it is often the case that subproblems can be stopped or removed entirely after a few iterations. 
 We will illustrate this idea with a couple of simple examples.  
 
-First, we recall some graph-theoretic notation, which will be useful in the coming sections. A \emph{graph} is a pair $(V,E)$, where $V$ is a collection of vertices and $E \sub V \times V$ is a collection of edges.
-In a \emph{directed graph}, the order of vertices in an edge matters. 
+First, we recall some graph-theoretic notation, which will be useful in the coming sections. A \emph{graph} is a pair $(V,E)$, where $V$ is a collection of \emph{vertices} and $E \sub V \times V$ is a collection of \emph{edges}.
+In a \emph{directed graph} (digraph), the order of vertices in an edge matters. 
 A \emph{directed path} is a sequence $e^1 \hdots e^n$ of edges, where $e_2^k = e_1^{k+1}$ for $k \leq n-1$. 
 A subset $W \sub V$ is \emph{strongly connected} if for any $v_i, v_j \in W$, there exist directed paths $v_i \to v_j$ and $v_j \to v_i$ using only vertices in $W$. 
 Strong connectedness is an equivalence relation on $V$, and the (disjoint) maximal strongly connected subsets of $V$ are called the \emph{strong components} of $G$, which we denote by $\strongc$. 
-Weak connectedness is defined similarly for an undirected graph, where an (undirected) path is as above, ignoring the order on vertices in an edge. 
+Weak connectedness is defined similarly for an undirected graph, where an (undirected) path is defined as above, ignoring the order on vertices in an edge. 
 The \emph{reachable set} from a vertex $v$ is the set of all $w \in V$ such that there exists a directed path $v \to w$. 
 
-By a \emph{rooted tree}, we mean a graph that is connected with no cycles (paths starting and ending at the same vertex) with one vertex designated as the \emph{root}. 
-Vertices on a rooted tree are naturally oriented away from the root. 
-If we have a collection of rooted trees, we let $r(v)$ denote the root of the tree containing $v$. 
-For a vertex $v$, we let $c(v)$ denote the \emph{children} of $v$ as above - the vertices connected by an edge to $v$ on a path away from the root. 
+By a \emph{rooted tree}, we mean a graph that is connected with no cycles (paths starting and ending at the same vertex) and has one vertex designated as the \emph{root}. 
+Edges on a rooted tree are naturally oriented away from the root. 
+A collection of such rooted trees is called a \emph{forest} and, for such a collection, for a vertex $v$ we let $r(v)$ denote the root of the tree containing $v$, and we let $c(v)$ denote the \emph{children} of $v$ as above - the vertices connected by an edge to $v$ on a path away from the root - and $p(v)$ denote the parent vertex of $v$, defined similarly.  
+
 \subsubsection{Example 1 - Colliding Subproblem Cones}
 In this section, we give a simple example of how subproblems can share information.
-For easy of visualization, we consider the case $|A| = 2$. As noted previously, we may identify $\prealloc$ with a grid, in this case in $\mr^2$.
+For easy of visualization, consider the case $|A| = 2$. As noted previously, we may identify $\prealloc$ with a grid, in this case in $\mr^2$.
 As above, we iterate $T^2$ to find $\toppre = \max \fix(T^2)$, which we identify, for instance, with the integer lattice point $(10,10) = \toppre$. 
-Using the notation above, we have operators $S_1$ and $S_2$ corresponding to the subproblems $\lag \toppre - e_1 \rag$ and $\lag \toppre - e_2 \rag$, respectively. 
+Using the notation above, there are isotone operators $S_1 = T_1^2$ and $S_2 = T_2^2$ corresponding to the subproblems $\lag \toppre - e_1 \rag$ and $\lag \toppre - e_2 \rag$, respectively. 
 
-Beginning with subproblem $1$, suppose that $S_1 (9,10) = (8,10)$, $S_1^2 (9,10) = (7,10)$, and $S_1^3 (9,10) = (7,9)$.
-By the work above, we now have a cone guarantee on the fixed points in the first subproblem; specifically, $\fix(T) \cap \{(x,y) \peq (9,10)\} \peq (7,9) \peq (10,9)$.
+Beginning with subproblem 1, suppose that $S_1 (9,10) = (8,10)$, $S_1^2 (9,10) = (7,10)$, and $S_1^3 (9,10) = (7,9)$.
+By our arguments above, we now have a cone guarantee on the fixed points in the first subproblem; specifically, $\fix(T) \cap \{(x,y) \peq (9,10)\} \peq (7,9) \peq (10,9) = \toppre_2$.
 Therefore, $\fix(\toppre_1) = \fix(T) \cap \{(x,y) \peq (9,10)\} \sub \fix(T) \cap \{(x,y) \peq (10,9)\} = \fix(\toppre_2)$. 
-That is, the solutions to subproblem 1 - the fixed points of $T$ in $\{(x,y) \peq (9,10)\}$ - are \emph{contained} in the solutions to subproblem 2.  
+That is, the solutions to subproblem 1 - the fixed points of $T$ in $\{(x,y) \peq (9,10)\}$ - are \emph{contained} in the set of solutions to subproblem 2.  
 
 Now suppose that we stop working on subproblem 1 and begin iterating with $S_2$.
-Suppose that $S_2(10,9) = S_2^2(10,9) = (10,6)$, so the sequence stops.
+Suppose that $S_2(10,9) = (10,6) = S_2^2(10,9)$, so the sequence stops.
 Then we have learned that $\fix(\toppre_1) \sub \fix(\toppre_2) \peq (10,6)$. 
 However, by iterating $S_1$, we also learned that $\fix(\toppre_1) \peq (7,9)$. 
 Then apparently $\fix(\toppre_1)$ is contained in the cone intersection $\{(x,y) \peq (7,9)\} \cap \{(x,y) \peq (10, 6)\} = \{(x,y) \peq (7,6) \}$. 
-That is, by combining the information from subproblem 2 with subproblem 1, we have learned that $\fix(\toppre_1) \peq (7,6)$. 
+That is, by \emph{combining the information} from subproblem 2 with subproblem 1, we have learned that $\fix(\toppre_1) \peq (7,6)$. 
 
 /
 
@@ -359,23 +366,23 @@ That is, by combining the information from subproblem 2 with subproblem 1, we ha
 
 /
 
-Note that although iterating $S_1$ shows that $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
-If, for instance, we instead had $S_2(10,9) = S_2^2(10,9) = (9,6)$, then we would also know that $\fix(\toppre_2) \sub \fix(\toppre_1)$, so that $\fix(\toppre_2) \peq \min((9,6),(7,9)) = (7,6)$ and, in fact, $\fix(\toppre_1) = \fix(\toppre_2)$.
-This idea is explored further in the next example. 
+Note that, even if we learn $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
+If, for instance, the outcome for subbproblem 2 was instead that $S_2(10,9) =  = (9,6) = S_2^2(10,9)$, then we would also know that $\fix(\toppre_2) \sub \fix(\toppre_1)$, so that $\fix(\toppre_2) \peq \min((9,6),(7,9)) = (7,6)$ and, in fact, $\fix(\toppre_1) = \fix(\toppre_2)$.
+The idea of equivalent subproblems is explored further in the next example. 
 
 \subsubsection{Example 2 - The Collision Graph}
-In this section, we show how to efficiently combine information and track the relations between different subproblem cones. 
+In this section, we give intuition for how to efficiently combine information and track the relations between different subproblem cones. 
 Consider the case $|A| = 3$, where we identify $(10,10,10) = \toppre = \max \fix(T)$. 
 After initializing subproblems at $(9,10,10)$, $(10,9,10)$ and $(10,10,9)$, suppose that we find $S_1(9,10,10) = (9,8,10)$, $S_2(10,9,10) = (10,9,7)$, and $S_3(10,10,9) = (9,10,9)$. 
 As argued above, this shows that $\fix(\toppre_1) \peq (9,8,10) \peq (10,9,10) = \toppre_2$, so that $\fix(\toppre_1) \sub \fix(\toppre_2)$. 
 Similarly, our calculations with $S_2$ and $S_3$ show that $\fix(\toppre_2) \sub \fix(\toppre_3)$ and $\fix(\toppre_3) \sub \fix(\toppre_1)$. 
 Combining all these relations, apparently $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq (9,8,7)$, so the subproblems are equivalent.  
-Thus, we can collapse these 3 subproblems to a new subproblem started at $\pre_4 = (9,8,7)$ without losing any fixed points of the original operator $T$. 
+Thus, we can collapse all of these subproblems to a new subproblem started at $\pre_4 = (9,8,7)$ \emph{without losing any fixed points} of the original operator $T$. 
 
-Here, we see that collisions between subproblem cones give information relations of the form $\fix(\toppre_i) \sub \fix(\toppre_j)$.
-Consider a digraph (directed graph) that tracks these collisions.
-Then this digraph has the form shown below, where subproblems correspond to vertices and directed edges to collision relations.  
-Since the digraph has a directed edge $(i,j)$ only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
+We have seen that collisions between subproblem cones give information relations of the form $\fix(\toppre_i) \sub \fix(\toppre_j)$ regarding the fixed points of $T$.
+Consider a digraph that tracks these collisions.
+Then this digraph has the form shown below, where subproblems correspond to vertices, and there is an edge $i \to j$ only if problem $i$ ``collides'' with problem $j$ (made precise below). 
+Since, in particular, the digraph has a directed edge $(i,j)$ only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
 
 /
 
@@ -386,27 +393,53 @@ Since the digraph has a directed edge $(i,j)$ only if $\fix(\pre_i) \sub \fix(\p
 
 Suppose now that $\toppre$ is found at some intermediate step in the algorithm, and consider a hypothetical subproblem near $\toppre$ started at $\pre = (11,11,11)$ with associated isotone operator $S$.
 We begin iterating and find that $S \pre = (10,10,8)$, which shows $\fix(\pre) \sub \fix(\toppre_3)$ 
-Then one iteration of $S$ has shown us that $\fix(\pre) \sub \fix(\toppre_3) \peq (9,8,7)$ from the relations above. 
+Then a \emph{single iteration} of $S$ has shown us that $\fix(\pre) \sub \fix(\toppre_3) \peq (9,8,7)$, using the relations above. 
 Of course, the same conclusion would hold if we found that  $S \pre \peq \toppre_i$ for any $i$. 
 
- We found that $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq \pre_4$. 
-We can track these subproblem relations efficiently with a collection of rooted trees as follows. 
-Thus, let $1,2,3$ be children of $4$, which we denote by $c(4) = \{1,2,3\}$.
-For any vertex $j$, we let $r(j)$ denote the root of the tree to which $j$ belongs, so, for instance, $r(1) = 4$. 
-By an abuse of notation, we will similarly write e.g. $r(\toppre_1) = \pre_4$ 
-In our example and for the tree shown, we have $\fix(\toppre_i) \sub \fix(r(\toppre_i))$ for all $i$. 
+We know that $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq \pre_4$. 
+We can track these subproblem relations efficiently with a collection of rooted trees as follows: let $1,2,3$ be children of $4$, which we denote by $c(4) = \{1,2,3\}$.
+Using the notation in the previous section, we have the root-vertex relation $r(i) = 4$ for $i = 1,2,3$. 
+By an abuse of notation, we will similarly write e.g. $r(\toppre_1) = \pre_4$. 
+By our construction, we have $\fix(\toppre_i) \sub \fix(r(\toppre_i))$ for all $i$. 
 Also, $\fix(\toppre_i) = \fix(\toppre_j)$ for all $i,j$ children of the same node. 
 
-Suppose we maintain a collection of trees for which nodes and roots are related as discussed above. 
-Consider a solved subproblem $\lag \pre_i \rag$ with $r(\pre_i) = \pre_k$.
-Then if at some step of the algorithm we obtain a guarantee that $\fix(\pre_j) \sub \fix(\pre_i)$ for some active subproblem $\lag \pre_j \rag$, we can conclude inductively that, in fact, $\fix(\pre_j) \sub \fix(\pre_k)$, potentially skipping a large region of problem space that we would otherwise have to search for elements of $\fix(T)$. 
+Suppose we maintain a collection of trees for which nodes, roots, and children are all related in this way. 
+Consider a solved subproblem $\lag \pre_i \rag$ with $r(\pre_i) = \pre_k$; that is, $k$ is the root of $i$ in our problem tree.
+Then if at some step of the algorithm we obtain a guarantee that $\fix(\pre_j) \sub \fix(\pre_i)$ for an active subproblem $\lag \pre_j \rag$, the relations built into our problem tree imply that, in fact, $\fix(\pre_j) \sub \fix(\pre_k)$, potentially \emph{skipping a large region of lattice space} that we would otherwise have to search for elements of $\fix(T)$. 
 This dynamic gives our algorithm a ``Chutes and Ladders'' effect. 
-In particular, we make efficient use of both the geometric information shared between problems as well as the information gained during previous steps of the algorithm. 
+In particular, we make efficient use of both the geometric information shared between active problems as well as the information gained during previous steps of the algorithm. 
 
 \subsubsection{Algorithm - Short Description} 
 
-In this section, we give a brief explanation of the full algorithm, building on the examples and intuition above. 
+In this section, we introduce notation and give a brief, intuitive explanation of the full algorithm, building on the examples above.
+Pseudocode and correctness proofs for the full algorithm follow. 
+The algorithm consists of two alternating stages. 
 
+\emph{Stage 1 - Information acquisiton}: In the first stage, we consider a set of preallocations $\acto$, each of which corresponds to the initial point of an active subproblem. 
+As above, each problem $\lag \preo_i \rag$ is associated with an isotone operator $S_i = T_i^2$.
+In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$.
+We define two more collections of preallocations.
+First, $\act$ reflects the information we have learned about each subproblem $\preo_i$ during the iteration stage.  
+Second, we let $Q$ be a set of preallocations $\acto \sub Q$, which we think of as the past and current subproblems that still contain relevant information.  
+We successively iterate $\preo_i \to S_i^k \preo_i \equiv \pre_i$ until one of the following occurs 
+\begin{enumerate}
+\item $\pre_i \peq \ul{\pre} = \min \fix(T^2)$ 
+\item $S_i \pre_i = \pre_i$
+\item $\pre_i \peq \pre$ for some $\pre \in Q$ with $\preo_i \not \peq \pre$ 
+\end{enumerate} 
+
+In case (1), $\fix(\preo_i) \peq \min \fix(T^2)$, so $\fix(\preo_i) = \emptyset$, and we may stop iteration. 
+In case (2), the Tarski sequence for $\preo_i$ stops, so we stop $\preo_i$ and form new subproblems $\lag \pre_i - e_j \rag$, which we add to $\acto$.  
+In case (3), we have learned that $\fix(\pre_i) \sub \fix(\pre_j)$ for some other problem, so we stop work on $\preo_i$, waiting to combine its information with that of problem $\preo_j$ in the next stage of the algorithm.  In each case, we store the active problem's final value, denoted by $\pref_i$
+
+\emph{Stage 2 - Information combination}: In this stage, we inductively assume the existence of a \emph{problem forest}, which we define as a collection of rooted trees such that 
+
+\begin{enumerate}
+\item If there exists a $k$ such that $v_i, v_j \in c(v_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. 
+\item If $v_i = p(v_j)$, then $\fix(\pre_j) \sub \fix(\pre_i)$. 
+\end{itemize} 
+
+We call a forest the obeys these relations \emph{correctly constructed}. 
 
 \subsubsection{Full Algorithm and Correctness} 
 
