@@ -78,7 +78,8 @@
 \newcommand{\act}{(Q_a)} 
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
-
+\newcommand{\coll}{I}
+\newcommand{\reach}{R}
 
 
 
@@ -432,21 +433,38 @@ In case (1), $\fix(\preo_i) \peq \min \fix(T^2)$, so $\fix(\preo_i) = \emptyset$
 In case (2), the Tarski sequence for $\preo_i$ stops, so we stop $\preo_i$ and form new subproblems $\lag \pre_i - e_j \rag$, which we add to $\acto$.  
 In case (3), we have learned that $\fix(\pre_i) \sub \fix(\pre_j)$ for some other problem, so we stop work on $\preo_i$, waiting to combine its information with that of problem $\preo_j$ in the next stage of the algorithm.  In each case, we store the active problem's final value, denoted by $\pref_i$
 
-\emph{Stage 2 - Information combination}: In this stage, we inductively assume the existence of a \emph{problem forest}, which we define as a collection of rooted trees such that 
+This stage eventually terminates, for instance, because $\prealloc$ is finite, so $\acto$ can only grow so large before problems must either collide (3) or move out of the lattice (1).
+
+\emph{Stage 2 - Information combination}: In this stage, we construct a digraph that allows us to efficiently combine information from related problems.
+Define a \emph{problem forest} to be a collection of rooted trees such that 
 
 \begin{enumerate}
 \item If there exists a $k$ such that $v_i, v_j \in c(v_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. 
 \item If $v_i = p(v_j)$, then $\fix(\pre_j) \sub \fix(\pre_i)$. 
 \end{itemize} 
 
-We call a forest the obeys these relations \emph{correctly constructed}. 
+Thus, siblings share fixed points, and the fixed points of a parent are contained in the fixed points of each of its children.
+We inductively assume the existence of such a forest. 
+
+Denote by $\coll \sub \acto$ the set of preallocations that stop in stage 1 by colliding with another problem cone, as in (3) above.   
+For each $\preo_i \in \acto$, form a digraph $G = (V,E)$ by letting $(i,j) \in E$ if and only if there exists $\pre_j \in Q$ such that (i) $\pref_i \peq \pre_j$, (ii) $\preo_i \not \peq \pre_j$, and (iii) $r(j) = k$.  
+Next, form the strong components\footnote{Tarjan's algorithm for computing $\stongc$ runs in time $\mathcal{O}(|V| + |E|)$ for an arbitrary digraph $G$.}
+of the digraph $G$, denoted by $\strongc = \{W_j\}_{j\in \mathcal{J}}$, where $\mathcal{J}$ is some index set. 
+For $j \in \mathcal{J}$, pick $v \in W_j$ and compute the reachable set of $v$, denoted by $\reach_j$, for instance by breadth-first search. 
+Since strong components are strongly connected, this definition is independent of the choice of $v$. 
+Note that, by the definitions above, we have $\fix(\pre_i) \sub$ 
 
 \subsubsection{Full Algorithm and Correctness} 
 
 \subsubsection{notes}
-Give short description 
-Full algo and proofs 
+talk about digraph containment props
+take a min 
+form new problems 
+repeat 
+explain repetition
 
+real pseudo-code 
+proofs 
 
 
 
