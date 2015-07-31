@@ -3,12 +3,14 @@
 \usepackage{pinlabel}
 \usepackage{graphicx}
 \usepackage{graphics} 
+\usepackage{algorithm}
+\usepackage{algorithmic}
 
 \graphicspath{ {c:/users/mcytrynbaum/documents/rfigures/} {c:/users/mcytrynbaum/Desktop/package/} }
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 
 \usepackage{amsmath} % for all math functions and operations
-\usepackage{amsfonts} % use this to write different scripts (e.g. Real nums, etc)
+\usepackage{amsfonts} % use this to write scripts (e.g. Real nums, etc)
 \usepackage{mathtools} %for other math stuff not included in packages above
 \usepackage{amsthm} % in case you want the THM: COR: LEMMA: setup
 \usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry} %for setting the margins
@@ -450,7 +452,7 @@ We inductively assume the existence of such a forest.
 Denote by $\coll \sub \acto$ the set of preallocations that stop in stage 1 by colliding with another problem cone, as in (3) above.   
 For each $\preo_i \in \acto$, form a digraph $G = (V,E)$ by letting $(i,k) \in E$ if and only if there exists $\pre_j \in Q$ such that (i) $\pref_i \peq \pre_j$, (ii) $\preo_i \not \peq \pre_j$, and (iii) $r(j) = k$.  
 
-Next, we form the strong components\footnote{Tarjan's algorithm for computing $\stongc$ runs in time $\mathcal{O}(|V| + |E|)$ for an arbitrary digraph $G$.}
+Next, we form the strong components\footnote{Tarjan's algorithm for computing strong components of an arbitrary digraph $G$ runs in $\mathcal{O}(|V| + |E|)$ time.}
 of the digraph $G$, denoted by $\strongc = \{W_j\}_{j\in \mathcal{J}}$, where $\mathcal{J}$ is some index set. 
 For $j \in \mathcal{J}$, pick $v \in W_j$ and compute the reachable set of $v$, by which we define $\reach_j$, the reachable set of component $j$. 
 Since strong components are strongly connected, this definition is independent of the choice of $v$. 
@@ -469,13 +471,14 @@ After stage 2 terminates, we return to stage 1 with the new active set $\acto$.
 In general, we would like to spend more time in stage 2, since stage 2 improves the progress of the search by using fast (linear in $|V| + |E|$) digraph algorithms, as opposed to the costly process (how costly) of computing the operator $T$, which is equivalent to checking whether an allocation strict core.  
 
 
-
-
 \subsubsection{Full Algorithm and Correctness} 
+In this section, we state the full algorithm and provide correctness proofs. 
+
+\begin{algorithm}
+\end{algorithm} 
+
 
 \subsubsection{notes}
-talk about digraph containment props
-take a min 
 form new problems 
 repeat 
 explain repetition
