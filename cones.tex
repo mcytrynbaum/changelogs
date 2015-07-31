@@ -75,11 +75,12 @@
 \newcommand{\toppre}{\ol{\pre}}
 \newcommand{\strongc}{\mathcal{G}}
 \newcommand{\acto}{Q_a^{0}} 
-\newcommand{\act}{(Q_a)} 
+\newcommand{\act}{Q_a} 
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
 \newcommand{\coll}{I}
 \newcommand{\reach}{R}
+\newcommand{\forest}{F}
 
 
 
@@ -410,7 +411,7 @@ Then if at some step of the algorithm we obtain a guarantee that $\fix(\pre_j) \
 This dynamic gives our algorithm a ``Chutes and Ladders'' effect. 
 In particular, we make efficient use of both the geometric information shared between active problems as well as the information gained during previous steps of the algorithm. 
 
-\subsubsection{Algorithm - Short Description} 
+\subsubsection{Algorithm - Description and Intuition} 
 
 In this section, we introduce notation and give a brief, intuitive explanation of the full algorithm, building on the examples above.
 Pseudocode and correctness proofs for the full algorithm follow. 
@@ -420,8 +421,8 @@ The algorithm consists of two alternating stages.
 As above, each problem $\lag \preo_i \rag$ is associated with an isotone operator $S_i = T_i^2$.
 In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$.
 We define two more collections of preallocations.
-First, $\act$ reflects the information we have learned about each subproblem $\preo_i$ during the iteration stage.  
-Second, we let $Q$ be a set of preallocations $\acto \sub Q$, which we think of as the past and current subproblems that still contain relevant information.  
+Let $\act$ be the collection of preallocations of the form $\{S^k \pre: \pre \in \acto\}$ that, at any point during the algorithm, contains the current value of the Tarski sequence for each active subproblem.  
+Let $Q$ be a set of preallocations $\acto \sub Q$, which we think of as the past and current subproblems that still contain relevant information.  
 We successively iterate $\preo_i \to S_i^k \preo_i \equiv \pre_i$ until one of the following occurs 
 \begin{enumerate}
 \item $\pre_i \peq \ul{\pre} = \min \fix(T^2)$ 
@@ -431,28 +432,44 @@ We successively iterate $\preo_i \to S_i^k \preo_i \equiv \pre_i$ until one of t
 
 In case (1), $\fix(\preo_i) \peq \min \fix(T^2)$, so $\fix(\preo_i) = \emptyset$, and we may stop iteration. 
 In case (2), the Tarski sequence for $\preo_i$ stops, so we stop $\preo_i$ and form new subproblems $\lag \pre_i - e_j \rag$, which we add to $\acto$.  
-In case (3), we have learned that $\fix(\pre_i) \sub \fix(\pre_j)$ for some other problem, so we stop work on $\preo_i$, waiting to combine its information with that of problem $\preo_j$ in the next stage of the algorithm.  In each case, we store the active problem's final value, denoted by $\pref_i$
-
-This stage eventually terminates, for instance, because $\prealloc$ is finite, so $\acto$ can only grow so large before problems must either collide (3) or move out of the lattice (1).
+In case (3), we have learned that $\fix(\pre_i) \sub \fix(\pre_j)$ for some other problem, so we stop work on $\preo_i$, waiting to combine its information with that of problem $\preo_j$ in the next stage of the algorithm. 
+In each case, we store the active problem's final value, denoted by $\pref_i$. 
+In the appendix xxxx, we show that this stage eventually terminates. 
 
 \emph{Stage 2 - Information combination}: In this stage, we construct a digraph that allows us to efficiently combine information from related problems.
-Define a \emph{problem forest} to be a collection of rooted trees such that 
+Define a \emph{problem forest} $F$ to be a collection of rooted trees such that 
 
 \begin{enumerate}
-\item If there exists a $k$ such that $v_i, v_j \in c(v_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. 
+\item If there exists a $v_k \in F$ such that $v_i, v_j \in c(v_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. 
 \item If $v_i = p(v_j)$, then $\fix(\pre_j) \sub \fix(\pre_i)$. 
 \end{itemize} 
 
-Thus, siblings share fixed points, and the fixed points of a parent are contained in the fixed points of each of its children.
+Thus, siblings in a tree share fixed points of $T$, and the fixed points of a parent are contained in the fixed points of each of its children.
 We inductively assume the existence of such a forest. 
 
 Denote by $\coll \sub \acto$ the set of preallocations that stop in stage 1 by colliding with another problem cone, as in (3) above.   
-For each $\preo_i \in \acto$, form a digraph $G = (V,E)$ by letting $(i,j) \in E$ if and only if there exists $\pre_j \in Q$ such that (i) $\pref_i \peq \pre_j$, (ii) $\preo_i \not \peq \pre_j$, and (iii) $r(j) = k$.  
-Next, form the strong components\footnote{Tarjan's algorithm for computing $\stongc$ runs in time $\mathcal{O}(|V| + |E|)$ for an arbitrary digraph $G$.}
+For each $\preo_i \in \acto$, form a digraph $G = (V,E)$ by letting $(i,k) \in E$ if and only if there exists $\pre_j \in Q$ such that (i) $\pref_i \peq \pre_j$, (ii) $\preo_i \not \peq \pre_j$, and (iii) $r(j) = k$.  
+
+Next, we form the strong components\footnote{Tarjan's algorithm for computing $\stongc$ runs in time $\mathcal{O}(|V| + |E|)$ for an arbitrary digraph $G$.}
 of the digraph $G$, denoted by $\strongc = \{W_j\}_{j\in \mathcal{J}}$, where $\mathcal{J}$ is some index set. 
-For $j \in \mathcal{J}$, pick $v \in W_j$ and compute the reachable set of $v$, denoted by $\reach_j$, for instance by breadth-first search. 
+For $j \in \mathcal{J}$, pick $v \in W_j$ and compute the reachable set of $v$, by which we define $\reach_j$, the reachable set of component $j$. 
 Since strong components are strongly connected, this definition is independent of the choice of $v$. 
-Note that, by the definitions above, we have $\fix(\pre_i) \sub$ 
+
+By our construction of the collision digraph and inductive assumption on the forest $\forest$, we have $\fix(\pre_i) \sub \fix(\pre_j)$ for any $i,j$ such that $v_k \in W_k$ and $v_j \in \reach_k$, that is, whenever $v_j$ is in the reachable set of the strong component containing $v_i$. 
+
+Let $Q' = \emptyset$ and, for each strong component $W_j \in \strongc$, add $\pre = \min\limits_{v_k \in \reach_j} \pre_k$ to $Q'$. 
+By the guarantees above, we can combine all previous problems into a new active set by letting $\acto = Q'$ without missing any points of $\fix(T)$.  
+
+Note that, by changing $\acto$ in this way, we may have caused more cone collisions.
+We can combine the geometric information from these collisions as above to weakly improve the progress of the algorithm.
+Thus, we run stage 2 iteratively until there are no more cone collisions. 
+This process terminates, as discussed in the appendix.  
+After stage 2 terminates, we return to stage 1 with the new active set $\acto$.
+
+In general, we would like to spend more time in stage 2, since stage 2 improves the progress of the search by using fast (linear in $|V| + |E|$) digraph algorithms, as opposed to the costly process (how costly) of computing the operator $T$, which is equivalent to checking whether an allocation strict core.  
+
+
+
 
 \subsubsection{Full Algorithm and Correctness} 
 
