@@ -6,6 +6,7 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 
+
 \graphicspath{ {c:/users/mcytrynbaum/documents/rfigures/} {c:/users/mcytrynbaum/Desktop/package/} }
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 
@@ -28,6 +29,8 @@
 \setcounter{equation}{0}
 \numberwithin{equation}{section}
 
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
 \newcommand{\prf}{\begin{proof}}
 \newcommand{\eprf}{\end{proof}}
 \newcommand{\lft}{\left(}
@@ -77,14 +80,15 @@
 \newcommand{\toppre}{\ol{\pre}}
 \newcommand{\strongc}{\mathcal{G}}
 \newcommand{\acto}{Q_a^{0}} 
-\newcommand{\act}{Q_a} 
+\newcommand{\acta}{Q_a} 
+\newcommand{\actf}{Q_a^{f}} 
+\newcommand{\act}{Q} 
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
 \newcommand{\coll}{I}
 \newcommand{\reach}{R}
 \newcommand{\forest}{F}
-
-
+\newcommand{\fixfind}{\wh{\mathcal{E}}
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum and Scott Duke Kominers}
@@ -423,7 +427,7 @@ The algorithm consists of two alternating stages.
 As above, each problem $\lag \preo_i \rag$ is associated with an isotone operator $S_i = T_i^2$.
 In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$.
 We define two more collections of preallocations.
-Let $\act$ be the collection of preallocations of the form $\{S^k \pre: \pre \in \acto\}$ that, at any point during the algorithm, contains the current value of the Tarski sequence for each active subproblem.  
+Let $\acta$ be the collection of preallocations of the form $\{S^k \pre: \pre \in \acto\}$ that, at any point during the algorithm, contains the current value of the Tarski sequence for each active subproblem.  
 Let $Q$ be a set of preallocations $\acto \sub Q$, which we think of as the past and current subproblems that still contain relevant information.  
 We successively iterate $\preo_i \to S_i^k \preo_i \equiv \pre_i$ until one of the following occurs 
 \begin{enumerate}
@@ -472,13 +476,53 @@ In general, we would like to spend more time in stage 2, since stage 2 improves 
 
 
 \subsubsection{Full Algorithm and Correctness} 
-In this section, we state the full algorithm and provide correctness proofs. 
+In this section, we state the full algorithm and provide correctness proofs.
+First we define the main subroutines, which implement each of the stages discussed above. 
 
 \begin{algorithm}
-\end{algorithm} 
+\caption{InformationAcquire} 
+\label{infac}
+\begin{algorithmic}
+\REQUIRE $\acto$, $\act$, $\forest$ 
+\IF something
+    \STATE something else
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
 
+\begin{algorithm}
+\caption{InformationCombine} 
+\label{infcomb}
+\begin{algorithmic}
+\REQUIRE $\acto$, $\act$, $\forest$, $\coll$
+\IF something
+    \STATE something else
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
+
+To initialize, let $\fixfind = \emptyset$. 
+Let $\pre^*$ and $\pre_*$ the maximal and minimal allocations in $\prealloc$, and apply $T^2$ to each to find $\toppre = max \fix(T^2)$ and $\ul{\pre}$, respectively.
+If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
+If $T\ul{\pre} = \ul{\pre}$ and terminate. 
+Otherwise, set $\act = \acto = \bigcup\limits_{i =1}^m \{\toppre - e_i\}$ and run 
+
+\begin{algorithm}
+\caption{do this thing} 
+\label{the alg}
+\begin{algorithmic}
+\REQUIRE $\acto$, $\act$
+\ENSURE $\fixfind$
+
+\IF something
+    \STATE something else
+\ENDIF
+\end{algorithmic}
+\end{algorithm}
 
 \subsubsection{notes}
+prealloc notation is not exactly correct
+add something above about how the algorithm makes use of certain facts 
 form new problems 
 repeat 
 explain repetition
