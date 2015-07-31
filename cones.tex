@@ -31,6 +31,7 @@
 
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
+\renewcommand{\algorithmiccomment[1]}{ \hfill // \eqparbox{}{#1} }
 \newcommand{\prf}{\begin{proof}}
 \newcommand{\eprf}{\end{proof}}
 \newcommand{\lft}{\left(}
@@ -78,14 +79,16 @@
 \newcommand{\su}{\succ}
 \newcommand{\pe}{\prec}
 \newcommand{\toppre}{\ol{\pre}}
+\newcommand{\bopre}{\ul{\pre}}
 \newcommand{\strongc}{\mathcal{G}}
 \newcommand{\acto}{Q_a^{0}} 
 \newcommand{\acta}{Q_a} 
 \newcommand{\actf}{Q_a^{f}} 
+\newcommand{\act}{Q} 
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
-\newcommand{\act}{Q} 
 \newcommand{\coll}{I}
+\newcommand{\res}{\act_{int}}
 \newcommand{\reach}{R}
 \newcommand{\forest}{F}
 \newcommand{\fixfind}{\widehat{\mathcal{E}}}
@@ -429,16 +432,19 @@ In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$.
 We define two more collections of preallocations.
 Let $\acta$ be the collection of preallocations of the form $\{S^k \pre: \pre \in \acto\}$ that, at any point during the algorithm, contains the current value of the Tarski sequence for each active subproblem.  
 Let $Q$ be a set of preallocations $\acto \sub Q$, which we think of as the past and current subproblems that still contain relevant information.  
-We successively iterate $\preo_i \to S_i^k \preo_i \equiv \pre_i$ until one of the following occurs 
+We successively iterate $\preo_i \to S_i^k \preo_i \equiv \pre_i$ until one of the following occurs \emph{stopping conditions} occurs
 \begin{enumerate}
-\item $\pre_i \peq \ul{\pre} = \min \fix(T^2)$ 
+\item[stop1] $\pre_i \peq \ul{\pre} = \min \fix(T^2)$ 
+\item $T_i \pre_i = \pre_i$
 \item $S_i \pre_i = \pre_i$
 \item $\pre_i \peq \pre$ for some $\pre \in Q$ with $\preo_i \not \peq \pre$ 
 \end{enumerate} 
 
 In case (1), $\fix(\preo_i) \peq \min \fix(T^2)$, so $\fix(\preo_i) = \emptyset$, and we may stop iteration. 
 In case (2), the Tarski sequence for $\preo_i$ stops, so we stop $\preo_i$ and form new subproblems $\lag \pre_i - e_j \rag$, which we add to $\acto$.  
-In case (3), we have learned that $\fix(\pre_i) \sub \fix(\pre_j)$ for some other problem, so we stop work on $\preo_i$, waiting to combine its information with that of problem $\preo_j$ in the next stage of the algorithm. 
+In case (3), $\pre_i$ is fixed by $T_i$, so by lemma xxxx, $\fix(T) \cap \{\pre' \pe \pre_i = \emptyset$.
+That is, we can stop searching this problem.
+In case (4), we have learned that $\fix(\pre_i) \sub \fix(\pre_j)$ for some other problem, so we stop work on $\preo_i$, waiting to combine its information with that of problem $\preo_j$ in the next stage of the algorithm. 
 In each case, we store the active problem's final value, denoted by $\pref_i$. 
 In the appendix xxxx, we show that this stage eventually terminates. 
 
@@ -472,42 +478,90 @@ Thus, we run stage 2 iteratively until there are no more cone collisions.
 This process terminates, as discussed in the appendix.  
 After stage 2 terminates, we return to stage 1 with the new active set $\acto$.
 
-In general, we would like to spend more time in stage 2, since stage 2 improves the progress of the search by using fast (linear in $|V| + |E|$) digraph algorithms, as opposed to the costly process (how costly) of computing the operator $T$, which is equivalent to checking whether an allocation strict core.  
+In general, we would like to spend more time in stage 2, since stage 2 improves the progress of the search by using fast ($\mathcal{O}\left(|V| + |E|)\right$) digraph algorithms, as opposed to the costly process (how costly xxxx) of computing the operator $T$, which is equivalent to checking whether an allocation strict core.  
 
 
 \subsubsection{Full Algorithm and Correctness} 
 In this section, we state the full algorithm and provide correctness proofs.
 First we define the main subroutines, which implement each of the stages discussed above. 
 Throughout, we maintain global variables $\forest$, a problem forest, and $\act$, a collection of preallocations corresponding to both active and inactive problem cone. 
-
+ 
 \begin{algorithm}
-\caption{InformationAcquire} 
+\caption{InformationAcquire}  
 \label{infac}
-\begin{algorithmic}
+\begin{algorithmic}[1]
 \REQUIRE $\acto$
-    \STATE $\acta \leftarrow \acto$
-    \FOR{$\pre \in \acto$}   %processing
-        \IF{$\exists \pre' \in \acto$ s.t. $\pre \peq \pre'$}
-            \STATE $\acta \leftarrow \acta \setminus \pre$
+    \STATE Set $\acta \leftarrow \acto$
+    \STATE Set $\coll = \emptyset$
+    \FOR{$\preo \in \acto$}   
+        \IF[Stop redundant problems]{$\exists \pre' \in \acto$ s.t. $\preo \peq \pre'$}
+            \STATE Remove $\pre$ from $\acta$
+            \STATE Add $\pre'$ to $I(\preo)$
         \ENDIF
+    \ENDFOR
     \WHILE{$\acta \not = \emptyset$}
-        \FOR{\pre \in \acta} 
-            \STATE $\pre' \leftarrow T\pre$
-            \IF $\pre' = \pre$
-                \STATE Remove $\pre$ from $\acto, \acta$
-
-
+        \FOR{$\pre \in \acta$} 
+            \IF[Stopping Condition 1]{$T\pre = \pre$} 
+                \STATE Remove $\pre$ from $\acto$ and $\acta$
+                \STATE Set $\pref \leftarrow \pre$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\preo)$
+            \ELSIF[Stopping Condition 2]{$T^2 \pre = \pre$}
+                \STATE Remove $\pre$ from $\acto$ and $\acta$
+                \FOR{$i = 1$ to $m$}
+                    \STATE Add $\pre - e_i$ to $\acto$ and $\acta$
+                \ENDFOR
+                \STATE Set $\pref \leftarrow \pre$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\preo)$
+            \ELSIF[Stopping Condition 3]{$\pre' \equiv T^2 \pre \peq \bopre$}  
+                \STATE Remove $\preo$ from $\acto$ and $\pre$ from $\acta$ 
+                \STATE Set $\pref \leftarrow \pre'$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\preo)$
+            \ELSE[Stopping Condition 4]
+                \STATE Set $\pre' = T^2 \pre$
+                \FOR{$\pre'' \in Q$}
+                    \IF{$\pre' \peq \pre''$ \AND $\preo \not \peq \pre''$} 
+                        \STATE Remove $\pre$ from $\acta$
+                        \STATE Set $\pref \leftarrow \pre'$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\preo)$ 
+                        \STATE Add $\pre''$ to $\coll(\preo)$
+                    \ENDIF
+                \ENDFOR
+            \ENDIF
+        \ENDFOR
+    \ENDWHILE
+    \RETURN{$(\acto, \coll)$} 
 \end{algorithmic}
 \end{algorithm}
+
+Next, consider the information combination algorithm. 
 
 \begin{algorithm}
 \caption{InformationCombine} 
 \label{infcomb}
-\begin{algorithmic}
-\REQUIRE $\acto$
-\IF something
-    \STATE something else
-\ENDIF
+\begin{algorithmic}[1]
+\REQUIRE $\acto$, $\coll$
+    \STATE Set $V = E = \emptyset$
+    \STATE Set $Q' = \emptyset$
+    \STATE Set $\coll = \emptyset$
+    \FOR{$\pre_i \in \acto$}
+        \STATE Add $v_i$ to $V$
+        \FOR{$\pre_j \in \coll(\pre_i)$}
+            \STATE Add $(i,j)$ to $E$
+        \ENDFOR
+    \ENDFOR
+    \STATE Set  $G = (V,E)$
+    \STATE Compute strong components $\strongc = \{W_j\}_{j \in \mathcal{J}}$ using Tarjan's Algorithm  
+    \FOR{$j \in \mathcal{J}$}
+        \STATE Compute $\reach_j$, the reachable set of $W_j$
+        \STATE Compute $\pre_{int} = \min\limits_{\pre: v(\pre) \in \reach_j} r(\pre')$
+        \STATE Add $\pre' = \min(\pre_{int}, r(\pre))$ to $Q'$
+        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_i: v_i \in W_j\}$
+    \ENDFOR
+    \FOR{$\pre_i \in Q'$} 
+        \FOR{$\pre \in Q$}
+            \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre$ \AND $\pre_j \not \peq \pre$}
+                \STATE Add $\pre$ to $\coll(\pre_i)$
+            \ENDIF
+        \ENDFOR
+    \ENDFOR
+    \STATE Set $\acto \leftarrow \act$ 
+\RETURN{$(\acto,\coll)$} 
 \end{algorithmic}
 \end{algorithm}
 
@@ -533,6 +587,15 @@ Otherwise, let $\act = \acto = \bigcup\limits_{i =1}^m \{\toppre - e_i\}$ and ru
 \end{algorithm}
 
 \subsubsection{notes}
+add something about using correct operator
+can you cross a new cone on collation iteration? 
+for clarity, w's and v's 
+need to make all this index linking less opaque 
+add something about liniking indices 
+define the intersection set appropriately
+let's take care of self intersection later i.e. combine isect with own information 
+maybe we should produce intersection indices // yes we actually have to 
+add notes about refs for final, initial problems
 add removal code above 
 a problem tree should correspond to a problem - notes 
 can e.g. have notes after each subroutine
