@@ -82,13 +82,13 @@
 \newcommand{\acto}{Q_a^{0}} 
 \newcommand{\acta}{Q_a} 
 \newcommand{\actf}{Q_a^{f}} 
-\newcommand{\act}{Q} 
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
+\newcommand{\act}{Q} 
 \newcommand{\coll}{I}
 \newcommand{\reach}{R}
 \newcommand{\forest}{F}
-\newcommand{\fixfind}{\wh{\mathcal{E}}
+\newcommand{\fixfind}{\widehat{\mathcal{E}}}
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum and Scott Duke Kominers}
@@ -478,15 +478,25 @@ In general, we would like to spend more time in stage 2, since stage 2 improves 
 \subsubsection{Full Algorithm and Correctness} 
 In this section, we state the full algorithm and provide correctness proofs.
 First we define the main subroutines, which implement each of the stages discussed above. 
+Throughout, we maintain global variables $\forest$, a problem forest, and $\act$, a collection of preallocations corresponding to both active and inactive problem cone. 
 
 \begin{algorithm}
 \caption{InformationAcquire} 
 \label{infac}
 \begin{algorithmic}
-\REQUIRE $\acto$, $\act$, $\forest$ 
-\IF something
-    \STATE something else
-\ENDIF
+\REQUIRE $\acto$
+    \STATE $\acta \leftarrow \acto$
+    \FOR{$\pre \in \acto$}   %processing
+        \IF{$\exists \pre' \in \acto$ s.t. $\pre \peq \pre'$}
+            \STATE $\acta \leftarrow \acta \setminus \pre$
+        \ENDIF
+    \WHILE{$\acta \not = \emptyset$}
+        \FOR{\pre \in \acta} 
+            \STATE $\pre' \leftarrow T\pre$
+            \IF $\pre' = \pre$
+                \STATE Remove $\pre$ from $\acto, \acta$
+
+
 \end{algorithmic}
 \end{algorithm}
 
@@ -494,7 +504,7 @@ First we define the main subroutines, which implement each of the stages discuss
 \caption{InformationCombine} 
 \label{infcomb}
 \begin{algorithmic}
-\REQUIRE $\acto$, $\act$, $\forest$, $\coll$
+\REQUIRE $\acto$
 \IF something
     \STATE something else
 \ENDIF
@@ -502,25 +512,30 @@ First we define the main subroutines, which implement each of the stages discuss
 \end{algorithm}
 
 To initialize, let $\fixfind = \emptyset$. 
-Let $\pre^*$ and $\pre_*$ the maximal and minimal allocations in $\prealloc$, and apply $T^2$ to each to find $\toppre = max \fix(T^2)$ and $\ul{\pre}$, respectively.
+Let $\pre^*$ and $\pre_*$ the maximal and minimal allocations in $\prealloc$, and apply $T^2$ to each to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
 If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
-If $T\ul{\pre} = \ul{\pre}$ and terminate. 
-Otherwise, set $\act = \acto = \bigcup\limits_{i =1}^m \{\toppre - e_i\}$ and run 
+Similarly, if $T\ul{\pre} = \ul{\pre}$ and terminate. 
+Otherwise, let $\act = \acto = \bigcup\limits_{i =1}^m \{\toppre - e_i\}$ and run the algorithm.
 
 \begin{algorithm}
-\caption{do this thing} 
-\label{the alg}
-\begin{algorithmic}
-\REQUIRE $\acto$, $\act$
+\caption{FindStrictCore} 
+\label{mainalg}
+\begin{algorithmic}[1]
+\REQUIRE $\acto$
 \ENSURE $\fixfind$
-
-\IF something
-    \STATE something else
-\ENDIF
+    \WHILE{$\acto \not = \emptyset$}
+        \STATE $(\acto, \coll) \leftarrow InformationAcquire(\acto)$ 
+        \WHILE{$\coll \not = \emptyset$}
+            \STATE $(\acto,\coll) \leftarrow InformationCombine(\acto,\coll)$ 
+        \ENDWHILE
+    \ENDWHILE
 \end{algorithmic}
 \end{algorithm}
 
 \subsubsection{notes}
+add removal code above 
+a problem tree should correspond to a problem - notes 
+can e.g. have notes after each subroutine
 prealloc notation is not exactly correct
 add something above about how the algorithm makes use of certain facts 
 form new problems 
