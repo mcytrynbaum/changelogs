@@ -85,13 +85,14 @@
 \newcommand{\acto}{Q_{0}} 
 \newcommand{\acta}{Q_A} 
 \newcommand{\act}{Q} 
+\newcommand{\actt}{Q_{temp}} 
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
 \newcommand{\coll}{I}
 \newcommand{\res}{\act_{int}}
 \newcommand{\reach}{R}
 \newcommand{\forest}{F}
-\newcommand{\fixfind}{\widehat{\mathcal{E}}}
+\newcommand{\fixfind}{\mathcal{E}}
 \newcommand{\fixtemp}{\mathcal{E}'}
 \newcommand{\stp}{\mathrm{STOP}}
 
@@ -508,6 +509,7 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
 \label{infac}
 \begin{algorithmic}[1]
 \REQUIRE $\acto$
+    \STATE $\acta \leftarrow \acto$ 
     \STATE Set $I = \emptyset = \fixtemp$
     \FOR{$\pre_i \in \acto$}   
         \IF[Stop redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \peq \pre_j$}
@@ -517,12 +519,11 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
     \ENDFOR
     \WHILE{$\acta \not = \emptyset$}
         \FOR{$\pre_i \in \acta$} 
-        \STATE $\stp =$ \FALSE
         \STATE $\pre \leftarrow \pre_i$
-            \WHILE{$\stp = $ \FALSE} 
+            \WHILE{$\pre_i \in \acta$} 
                 \STATE Compute $\pre' = T_i^2 \pre$
                 \IF{$\pre' = \pre$}
-                    \STATE Remove $\pre_i$ from $\acto$ and $\pre$ from $\acta$ 
+                    \STATE Remove $\pre_i$ from $\acto$ and $\acta$ 
                     \STATE Set $\pref \leftarrow \pre$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\pre_i)$
                     \IF[Stopping Condition 1]{$T\pre = \pre$} 
                         \STATE Add $\pre$ to $\fixtemp$
@@ -532,15 +533,13 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
                         \ENDFOR
                     \ENDIF
                 \ELSIF[Stopping Condition 3]{$\pre' \peq \bopre$}  
-                    \STATE Remove $\pre_i$ from $\acto$ and $\pre$ from $\acta$ 
+                    \STATE Remove $\pre_i$ from $\acto$ and $\acta$ 
                     \STATE Set $\pref \leftarrow \pre'$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\preo)$
                 \ELSE
-                    \STATE Add $\pre'$ to $\acta$; Remove $\pre$ from $\acta$
-                    \FOR{$\pre'' \in Q$}
-                        \IF{$\pre' \peq \pre''$ \AND $\preo \not \peq \pre''$} 
-                            \STATE Remove $\pre$ from $\acta$
-                            \STATE Set $\pref \leftarrow \pre'$; Add $w(\pref)$ to $F$ with $c(w(\pref)) = w(\preo)$ 
-                            \STATE Add $\pre''$ to $\coll(\preo)$
+                    \FOR{$\pre_j \in Q$}
+                        \IF[Stopping Condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
+                            \STATE Set $\pref \leftarrow \pre'$; Add $w(\pref)$ to $F$ with $c(w(\pref)) = w(\pre_i)$ 
+                            \STATE Add $j$ to $\coll(i)$
                         \ENDIF
                     \ENDFOR
                 \ENDWHILE
@@ -559,30 +558,30 @@ Next, consider the information combination algorithm.
 \begin{algorithmic}[1]
 \REQUIRE $\acto$, $\coll$
     \STATE Set $V = E = \emptyset$
-    \STATE Set $Q' = \emptyset$
-    \STATE Set $\coll = \emptyset$
-    \FOR{$\pre_i \in \acto$}
+    \STATE Set $\actt = \emptyset$
+    \FOR[Build Collision Digraph]{$\pre_i \in \acto$}
         \STATE Add $v_i$ to $V$
-        \FOR{$\pre_j \in \coll(\pre_i)$}
-            \STATE Add $(i,j)$ to $E$
+        \FOR{$j \in \coll(i)$}
+            \STATE Add $(v_i,v_j)$ to $E$
         \ENDFOR
     \ENDFOR
     \STATE Set  $G = (V,E)$
-    \STATE Compute strong components $\strongc = \{W_j\}_{j \in \mathcal{J}}$ using Tarjan's Algorithm  
-    \FOR{$j \in \mathcal{J}$}
-        \STATE Compute $\reach_j$, the reachable set of $W_j$
-        \STATE Compute $\pre_{int} = \min\limits_{\pre: v(\pre) \in \reach_j} r(\pre')$
-        \STATE Add $\pre' = \min(\pre_{int}, r(\pre))$ to $Q'$
-        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_i: v_i \in W_j\}$
+    \STATE Compute\footnote{Using Tarjan's Algorithm, for instance.} the strong components $\strongc = \{\strongcomp_j\}_{j \in \mathcal{J}}$
+    \FOR[Use $G$ to Combine Information]{$j \in \mathcal{J}$}
+        \STATE Compute reachable component $\reach_j$ 
+        \STATE Compute $K_j = \{w_k \in F: \exists i\in \mathcal{I} \; s.t. \; w_k = r(w_i) \: and \: v_i \in R_j\}$
+        \STATE Add $\pre = \min \{\pre_i: w_i \in K_j\}$ to $\actt$
+        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_i: v_i \in \strongcomp_j\}$
     \ENDFOR
-    \FOR{$\pre_i \in Q'$} 
-        \FOR{$\pre \in Q$}
-            \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre$ \AND $\pre_j \not \peq \pre$}
-                \STATE Add $\pre$ to $\coll(\pre_i)$
+    \STATE Set $\coll = \emptyset$
+    \FOR{$\pre_i \in \actt$} 
+        \FOR{$\pre_k \in Q$}
+            \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre_k$ \AND $\pre_j \not \peq \pre_k$}
+                \STATE Add $j$ to $\coll(i)$ %resolve roots later
             \ENDIF
         \ENDFOR
     \ENDFOR
-    \STATE Set $\acto \leftarrow \act$ 
+    \STATE Set $\acto \leftarrow \actt$ 
 \RETURN{$(\acto,\coll)$} 
 \end{algorithmic}
 \end{algorithm}
@@ -609,6 +608,19 @@ Otherwise, for $i = 1 \hdots m$, add $\toppre - e_i$ to $\act$ and $\acto$ and a
 \end{algorithmic}
 \end{algorithm}
 
+And now for some auxillary lemmas
+
+\begin{lemma}
+For any input $\acto$, InformationAcquire terminates
+\end{lemma}
+\prf
+\eprf 
+
+\begin{lemma}
+For any input $\acto$, InformationCombine terminates
+\end{lemma}
+\prf
+\eprf 
 \subsubsection{notes}
 
 need to actually add \emph{all} final values to reach
