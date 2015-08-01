@@ -81,7 +81,7 @@
 \newcommand{\toppre}{\ol{\pre}}
 \newcommand{\bopre}{\ul{\pre}}
 \newcommand{\strongc}{\mathcal{G}}
-\newcommand{\strongcomp}{U}
+\newcommand{\strongcomp}{S}
 \newcommand{\acto}{Q_{0}} 
 \newcommand{\acta}{Q_A} 
 \newcommand{\act}{Q} 
@@ -522,23 +522,21 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
         \STATE $\pre \leftarrow \pre_i$
             \WHILE{$\pre_i \in \acta$} 
                 \STATE Compute $\pre' = T_i^2 \pre$
-                \IF{$\pre' = \pre$}
+                \IF[Stopping conditions 2 and 3]{$\pre' = \pre$ \OR $\pre' \peq \bopre$}
                     \STATE Remove $\pre_i$ from $\acto$ and $\acta$ 
-                    \STATE Set $\pref \leftarrow \pre$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\pre_i)$
-                    \IF[Stopping Condition 1]{$T\pre = \pre$} 
+                    \STATE Set $\pref_i \leftarrow \pre$; Add $v(\pref_i)$ to $F$ with $c(v(\pref_i)) = v(\pre_i)$
+                    \IF[Stopping condition 1]{$T\pre = \pre$} 
                         \STATE Add $\pre$ to $\fixtemp$
-                    \ELSE[Stopping Condition 2]
+                    \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
-                            \STATE Add $\pre - e_i$ to $\acto$ and $\acta$
+                            \STATE Add $\pre - e_i$ to $\acto$ and $\acta$ \label{alg:addq}
                         \ENDFOR
                     \ENDIF
-                \ELSIF[Stopping Condition 3]{$\pre' \peq \bopre$}  
-                    \STATE Remove $\pre_i$ from $\acto$ and $\acta$ 
-                    \STATE Set $\pref \leftarrow \pre'$; Add $v(\pref)$ to $F$ with $c(v(\pref)) = v(\preo)$
                 \ELSE
                     \FOR{$\pre_j \in Q$}
-                        \IF[Stopping Condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
-                            \STATE Set $\pref \leftarrow \pre'$; Add $w(\pref)$ to $F$ with $c(w(\pref)) = w(\pre_i)$ 
+                        \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
+                            \STATE Remove $\pre_i$ from $\acta$
+                            \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ 
                             \STATE Add $j$ to $\coll(i)$
                         \ENDIF
                     \ENDFOR
@@ -566,11 +564,11 @@ Next, consider the information combination algorithm.
         \ENDFOR
     \ENDFOR
     \STATE Set  $G = (V,E)$
-    \STATE Compute\footnote{Using Tarjan's Algorithm, for instance.} the strong components $\strongc = \{\strongcomp_j\}_{j \in \mathcal{J}}$
+    \STATE Compute the strong components $\strongc = \{\strongcomp_j\}_{j \in \mathcal{J}}$ of $G$
     \FOR[Use $G$ to Combine Information]{$j \in \mathcal{J}$}
         \STATE Compute reachable component $\reach_j$ 
-        \STATE Compute $K_j = \{w_k \in F: \exists i\in \mathcal{I} \; s.t. \; w_k = r(w_i) \: and \: v_i \in R_j\}$
-        \STATE Add $\pre = \min \{\pre_i: w_i \in K_j\}$ to $\actt$
+        \STATE Compute tree indices $K_j = \{k \in F: \exists i\in \mathcal{I} \; s.t. \; w_k = r(w_i) \: and \: v_i \in R_j\}$
+        \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
         \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_i: v_i \in \strongcomp_j\}$
     \ENDFOR
     \STATE Set $\coll = \emptyset$
@@ -593,10 +591,13 @@ Similarly, if $T\ul{\pre} = \ul{\pre}$ and terminate.
 Otherwise, for $i = 1 \hdots m$, add $\toppre - e_i$ to $\act$ and $\acto$ and add $w(\pre - e_i)$ to $F$ as vertex with degree $0$. 
 
 \begin{algorithm}
-\caption{Find All Strict Core Allocations} 
+\caption{FindStrictCore} 
 \label{mainalg}
 \begin{algorithmic}[1]
 \REQUIRE $\acto$, $\forest$
+\ENSURE $\fix(T^2)$
+    \STATE Initialize as above
+    \STATE Set $\fixfind = \emptyset$
     \WHILE{$\acto \not = \emptyset$}
         \STATE $(\acto, \coll, \fixtemp) \leftarrow InformationAcquire(\acto)$ 
         \STATE $\fixfind = \fixfind \cup \fixtemp$
@@ -608,49 +609,29 @@ Otherwise, for $i = 1 \hdots m$, add $\toppre - e_i$ to $\act$ and $\acto$ and a
 \end{algorithmic}
 \end{algorithm}
 
-And now for some auxillary lemmas
-
+First, we handle termination analysis.
 \begin{lemma}
-For any input $\acto$, InformationAcquire terminates
+Algorithm \ref{mainalg} terminates in finite time
 \end{lemma}
 \prf
+It suffices to show that each while loop in the algorithm terminates in a finite number of iterations. 
+For any set $E \sub \prealloc$, we define $d(E) = \max_{\pre \in E} \|\pre\|_1$, where we identify $\prealloc$ with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1$ is the standard 1-norm.}.
+First we show that, for any input $\acto \sub \prealloc$, subroutine \ref{infac} terminates in finite iterations.
+By finiteness, $d(\cdot)$ takes finitely many values on subsets of $\prealloc$.
+Note that if $\acto \to \acto \setminus \{\pre\}$ at some point in the algorithm, then clearly $d(\acto)$ weakly decreases.
+All changes to $\acto$ except for the change on line~\ref{alg:addq} are of this form
+For line~\ref{alg:addq}, note that any $\pre \in \prealloc$ has $\|\pre\|_1 > \max_i \|\pre - e_i\|$.
+Thus, the sequence $d(\acto)$ formed by evaluating at every state $\acto$ is monotone down. 
+By finiteness as above, $\acto$ e
+
 \eprf 
 
-\begin{lemma}
-For any input $\acto$, InformationCombine terminates
-\end{lemma}
-\prf
-\eprf 
-\subsubsection{notes}
-
-need to actually add \emph{all} final values to reach
-look for uniqueness problems in the definition of preo 
-add something about using correct operator
 can you cross a new cone on collation iteration? 
-for clarity, w's and v's 
-need to make all this index linking less opaque 
-add something about liniking indices 
-define the intersection set appropriately
-let's take care of self intersection later i.e. combine isect with own information 
-maybe we should produce intersection indices // yes we actually have to 
-add notes about refs for final, initial problems
-add removal code above 
-a problem tree should correspond to a problem - notes 
-can e.g. have notes after each subroutine
+Define the intersection set appropriately
 prealloc notation is not exactly correct
-add something above about how the algorithm makes use of certain facts 
-form new problems 
-repeat 
-explain repetition
-
-real pseudo-code 
-proofs 
-
-
-
-
-%complexity 
-
+add something above about how the algorithm makes use of 4 geometric facts 
+add a note about complexity 
+add a note about novel things from above
 
 \subsubsection{Discussion}
 As can be seen, the construction above is very general, requiring only that the fixed points we want to find are bounded by a lattice, and that we have a way to initialize new problems on sublattices whose solution sets bound the solution set of our original problem. 
