@@ -82,7 +82,9 @@
 \newcommand{\bopre}{\ul{\pre}}
 \newcommand{\strongc}{\mathcal{G}}
 \newcommand{\strongcomp}{S}
-\newcommand{\acto}{Q_{0}} 
+\newcommand{\acto}{Q_0} 
+\newcommand{\actok}{Q_0^k} 
+\newcommand{\actak}{Q_A^k} 
 \newcommand{\acta}{Q_A} 
 \newcommand{\act}{Q} 
 \newcommand{\actt}{Q_{temp}} 
@@ -517,8 +519,8 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
             \STATE Add $j$ to $\coll(i)$
         \ENDIF
     \ENDFOR
-    \WHILE{$\acta \not = \emptyset$}
-        \FOR{$\pre_i \in \acta$} 
+    \WHILE{$\acta \not = \emptyset$} \label{alg1:while1}
+        \FOR{$\pre_i \in \acta$} \label{alg1:for1}
         \STATE $\pre \leftarrow \pre_i$
             \WHILE{$\pre_i \in \acta$} 
                 \STATE Compute $\pre' = T_i^2 \pre$
@@ -529,7 +531,7 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
                         \STATE Add $\pre$ to $\fixtemp$
                     \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
-                            \STATE Add $\pre - e_i$ to $\acto$ and $\acta$ \label{alg:addq}
+                            \STATE Add $\pre - e_i$ to $\acto$ and $\acta$ \label{alg1:addq}
                         \ENDFOR
                     \ENDIF
                 \ELSE
@@ -567,9 +569,9 @@ Next, consider the information combination algorithm.
     \STATE Compute the strong components $\strongc = \{\strongcomp_j\}_{j \in \mathcal{J}}$ of $G$
     \FOR[Use $G$ to Combine Information]{$j \in \mathcal{J}$}
         \STATE Compute reachable component $\reach_j$ 
-        \STATE Compute tree indices $K_j = \{k \in F: \exists i\in \mathcal{I} \; s.t. \; w_k = r(w_i) \: and \: v_i \in R_j\}$
+        \STATE Compute tree indices $K_j = \{k \in \mathcal{I}: \exists i\in \mathcal{I} \; s.t. \; w_k = r(w_i) \: and \: v_i \in R_j\}$
         \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
-        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_i: v_i \in \strongcomp_j\}$
+        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_i: v_i \in \strongcomp_j\}$ \label{alg2:forest}
     \ENDFOR
     \STATE Set $\coll = \emptyset$
     \FOR{$\pre_i \in \actt$} 
@@ -598,10 +600,10 @@ Otherwise, for $i = 1 \hdots m$, add $\toppre - e_i$ to $\act$ and $\acto$ and a
 \ENSURE $\fix(T^2)$
     \STATE Initialize as above
     \STATE Set $\fixfind = \emptyset$
-    \WHILE{$\acto \not = \emptyset$}
+    \WHILE{$\acto \not = \emptyset$} \label{alg3:while1}
         \STATE $(\acto, \coll, \fixtemp) \leftarrow InformationAcquire(\acto)$ 
         \STATE $\fixfind = \fixfind \cup \fixtemp$
-        \WHILE{$\coll \not = \emptyset$}
+        \WHILE{$\coll \not = \emptyset$} \label{alg3:while2}
             \STATE $(\acto,\coll) \leftarrow InformationCombine(\acto,\coll)$ 
         \ENDWHILE
     \ENDWHILE
@@ -616,16 +618,37 @@ Algorithm \ref{mainalg} terminates in finite time
 \prf
 It suffices to show that each while loop in the algorithm terminates in a finite number of iterations. 
 For any set $E \sub \prealloc$, we define $d(E) = \max_{\pre \in E} \|\pre\|_1$, where we identify $\prealloc$ with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1$ is the standard 1-norm.}.
+Similarly, we define $D(E) = \sum_{\pre \in E} \|\pre\|_1$.
+Note that by finiteness, both $d(\cdot)$ and $D(\cdot)$ take finitely many values on subsets of $\prealloc$.
 First we show that, for any input $\acto \sub \prealloc$, subroutine \ref{infac} terminates in finite iterations.
-By finiteness, $d(\cdot)$ takes finitely many values on subsets of $\prealloc$.
-Note that if $\acto \to \acto \setminus \{\pre\}$ at some point in the algorithm, then clearly $d(\acto)$ weakly decreases.
-All changes to $\acto$ except for the change on line~\ref{alg:addq} are of this form
-For line~\ref{alg:addq}, note that any $\pre \in \prealloc$ has $\|\pre\|_1 > \max_i \|\pre - e_i\|$.
-Thus, the sequence $d(\acto)$ formed by evaluating at every state $\acto$ is monotone down. 
-By finiteness as above, $\acto$ e
+
+Consider the sequence $\actak$ formed by \emph{all} states of $\acta$ during the algorithm.
+Note that if for any $k\geq 0$ and $\pre$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ , then $d(\acta^{k+1}) \leq d(\actak)$.
+By inspection, all changes to $\acta$ except for the change on line~\ref{alg1:addq} are of this form
+For line~\ref{alg1:addq}, any $\pre \in \prealloc$ has $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on ~\ref{alg1:addq} then $(\acta^{k+1}) \leq d(\actak)$. 
+This shows that $d(\actak)$ is a monotonically decreasing sequence. 
+Since $d(\actak)$ takes at most finitely values, this sequence of real numbers eventually fixes.
+
+Note that all of the inequalities above are \emph{strict} when $\pre = \argmax_{\pre' \in \acta} \|\pre'\|_1$. 
+Fix $\acta^{0}$ at the beginning of the for loop on line~\ref{alg1:for1}. 
+Then $\pre \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for1}, $d(\actak)$ decreases strictly.
+Since $d(\actak)$ eventually fixes, the for loop at line~\ref{alg1:for1} is executed at most finitely many times. 
+Then the while loop at line~\ref{alg1:while1} is executed at most finitely many times, so this subroutine terminates.
+
+Since all inputs are finite, clearly subroutine~\ref{infcomb} terminates in finite time.
+
+Next, we show that the iterative information combination in stage 2 terminates; that is, that the while loop at line~\ref{alg3:while2} terminates.
+By forest construction in line~\ref{alg2:forest}, there is a surjection 
+
+
 
 \eprf 
 
+\subsubsection{Notes}
+so eventually Q states fix, which means Q = Qt - does this imply that indices run out? - maybe I should show the exact relations in the tree.
+claim should be that anytime you generate an index, this shows that you go down strictly
+should show this => can actually get a proof of termination immediately
+Explain why this infcomb stage is iterative 
 can you cross a new cone on collation iteration? 
 Define the intersection set appropriately
 prealloc notation is not exactly correct
