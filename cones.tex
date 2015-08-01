@@ -88,6 +88,8 @@
 \newcommand{\acta}{Q_A} 
 \newcommand{\act}{Q} 
 \newcommand{\actt}{Q_{temp}} 
+\newcommand{\actacum}{\wh{Q_A}} 
+\newcommand{\actocum}{\wh{Q_0}} 
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
 \newcommand{\coll}{I}
@@ -511,33 +513,33 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
 \label{infac}
 \begin{algorithmic}[1]
 \REQUIRE $\acto$
-    \STATE $\acta \leftarrow \acto$ 
+    \STATE $\acta \leftarrow \acto$ \label{alg1:add1}
     \STATE Set $I = \emptyset = \fixtemp$
-    \FOR{$\pre_i \in \acto$}   
-        \IF[Stop redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \peq \pre_j$}
-            \STATE Remove $\pre$ from $\acta$
-            \STATE Add $j$ to $\coll(i)$
+    \FOR{$\pre_i \in \acto$} \label{alg1:for1} 
+        \IF[Remove redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$}
+            \STATE Remove $\pre_j$ from $\acta$, $\acto$, and $\act$ \label{alg1:stop0}
         \ENDIF
     \ENDFOR
     \WHILE{$\acta \not = \emptyset$} \label{alg1:while1}
-        \FOR{$\pre_i \in \acta$} \label{alg1:for1}
+        \FOR{$\pre_i \in \acta$} \label{alg1:for2}
         \STATE $\pre \leftarrow \pre_i$
             \WHILE{$\pre_i \in \acta$} 
                 \STATE Compute $\pre' = T_i^2 \pre$
                 \IF[Stopping conditions 2 and 3]{$\pre' = \pre$ \OR $\pre' \peq \bopre$}
-                    \STATE Remove $\pre_i$ from $\acto$ and $\acta$ 
+                    \STATE Remove $\pre_i$ from $\acto$ and $\acta$ \label{alg1:stop1}
                     \STATE Set $\pref_i \leftarrow \pre$; Add $v(\pref_i)$ to $F$ with $c(v(\pref_i)) = v(\pre_i)$
                     \IF[Stopping condition 1]{$T\pre = \pre$} 
                         \STATE Add $\pre$ to $\fixtemp$
                     \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
-                            \STATE Add $\pre - e_i$ to $\acto$ and $\acta$ \label{alg1:addq}
+                            \IF{\not \exists \pre \in \acto}
+                            \STATE Add $\pre - e_i$ to $\acto$, $\acta$, and $\act$ \label{alg1:addq}
                         \ENDFOR
                     \ENDIF
                 \ELSE
                     \FOR{$\pre_j \in Q$}
                         \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
-                            \STATE Remove $\pre_i$ from $\acta$
+                            \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop2}
                             \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ 
                             \STATE Add $j$ to $\coll(i)$
                         \ENDIF
@@ -582,6 +584,7 @@ Next, consider the information combination algorithm.
         \ENDFOR
     \ENDFOR
     \STATE Set $\acto \leftarrow \actt$ 
+    \STATE Set $\act \leftarrow \act \cup \actt$
 \RETURN{$(\acto,\coll)$} 
 \end{algorithmic}
 \end{algorithm}
@@ -596,7 +599,7 @@ Otherwise, for $i = 1 \hdots m$, add $\toppre - e_i$ to $\act$ and $\acto$ and a
 \caption{FindStrictCore} 
 \label{mainalg}
 \begin{algorithmic}[1]
-\REQUIRE $\acto$, $\forest$
+\REQUIRE $\acto$
 \ENSURE $\fix(T^2)$
     \STATE Initialize as above
     \STATE Set $\fixfind = \emptyset$
@@ -630,21 +633,67 @@ This shows that $d(\actak)$ is a monotonically decreasing sequence.
 Since $d(\actak)$ takes at most finitely values, this sequence of real numbers eventually fixes.
 
 Note that all of the inequalities above are \emph{strict} when $\pre = \argmax_{\pre' \in \acta} \|\pre'\|_1$. 
-Fix $\acta^{0}$ at the beginning of the for loop on line~\ref{alg1:for1}. 
-Then $\pre \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for1}, $d(\actak)$ decreases strictly.
-Since $d(\actak)$ eventually fixes, the for loop at line~\ref{alg1:for1} is executed at most finitely many times. 
+Fix $\acta^{0}$ at the beginning of the for loop on line~\ref{alg1:for2}. 
+Then $\pre \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for2}, $d(\actak)$ decreases strictly.
+Since $d(\actak)$ eventually fixes, the for loop at line~\ref{alg1:for2} is executed at most finitely many times. 
 Then the while loop at line~\ref{alg1:while1} is executed at most finitely many times, so this subroutine terminates.
 
 Since all inputs are finite, clearly subroutine~\ref{infcomb} terminates in finite time.
 
 Next, we show that the iterative information combination in stage 2 terminates; that is, that the while loop at line~\ref{alg3:while2} terminates.
-By forest construction in line~\ref{alg2:forest}, there is a surjection 
+Fix $\acto^{0} = \acto$ at the beginning of 
+
+Finally, we show that the outer while loop at line~\ref{alg3:while1} terminates.
+Set $\acto^r \leftarrow InformationAcquire(\acto)$. 
+We claim that if $\acto \not = \emptyset$, then $d(\acto^r) < d(\acto)$. 
+Consider subroutine~\ref{infac} with input $\acto$. 
+Let $\actacum$ be the collection of points ever added to $\acta$ and similarly for $\actocum$, which includes the initial value of $\acto$. 
+We claim that no preallocation is ever added to $\acta$ more than once. 
+Equivalently, since $\acta = \emptyset$ when the algorithm terminates, every point in $\actacum$ is removed from $\acta$ exactly once. 
+Suppose not, and $\pre$ is added more than once. 
+Consider the first time $\pre$ is added. 
+If this is at line~\ref{alg1:add1}, then $\pre \in \acto \sub \act$.
+Otherwise, this is at line~\ref{alg1:addq}, so we also add $\pre$ to $\act$.
+Now consider the second time $\pre$ is added 
+Then $\pre$ is added at line~\ref{alg1:addq}, $\pre = \pre' - e_i$ for some $1 \leq i \leq m$.
 
 
+
+
+
+Since we only add points to $\acto$ in line~\ref{alg1:addq}, we have $\actacum = \actocum$. 
+By the proof above, $\acta = \emptyset$ when the subroutine terminates, so every $\pre \in \actacum$ is removed from $\acta$ at some point before termination.
+
+
+
+
+By work above, subroutine~\ref{infac} terminates.
+Note that the operations in the for loop at line~\ref{alg1:for2} is deterministic and the removal code at lines~\ref{alg1:stop1} and~\ref{alg1:stop2} is mutually exclusive. 
 
 \eprf 
 
 \subsubsection{Notes}
+in case 1, there are points that crash
+in case 2, everything bottoms out, e.g., and nothing crashes BUT the maximal point must have been remove, so it still goes down 
+
+
+every qo added to qa 
+added to qa (and therefore to qo) at most once
+find time removed from qa --> unless this is 4, then it is not in q
+so it is 4, which implies a certain relation between preo and pref 
+pref in reach, therefore resolves down
+show that acto forms a monotonic down sequence 
+
+case1 empty done
+case2 non-empty, only contains sub-points - done
+case 3 contains some non sub points
+
+characterize type of removal from qa and say it wasn't removed??????
+for any point in q0, char type of removal from a
+then we can dichotomize and say what code executed
+
+
+Clear enough by exclusion of cases other than 4 for case 1 infcomb. For stage 2, should be able to do it directly by a similar method, => eventually I is empty
 so eventually Q states fix, which means Q = Qt - does this imply that indices run out? - maybe I should show the exact relations in the tree.
 claim should be that anytime you generate an index, this shows that you go down strictly
 should show this => can actually get a proof of termination immediately
@@ -655,6 +704,25 @@ prealloc notation is not exactly correct
 add something above about how the algorithm makes use of 4 geometric facts 
 add a note about complexity 
 add a note about novel things from above
+put in a max based removal step for Q
+add a note about how pref is well-defined
+deal with this global tree and Q nonsense
+
+A note on throwing things away - it might be the case that we can throw away subproblems and just... leave the link in 
+ugh these sub sub problems are actually really annoying - why do we keep them
+note that now, single strands will be removed for lowest problem - hard to see exactly what that is until graph is fully resolved
+need to add more vertices to the graph 
+maybe prove some efficiency result that nothing is ever added twice
+
+AGENDA
+let acto grow 
+let qc be defined 
+fix vertices on collision graph - add new roots 
+correctness is maintained - crucial 
+automatically, we get termination for full 
+just prove that while loop terminates 
+    look at internals of collision dynamics
+this strat brings out collisions much more
 
 \subsubsection{Discussion}
 As can be seen, the construction above is very general, requiring only that the fixed points we want to find are bounded by a lattice, and that we have a way to initialize new problems on sublattices whose solution sets bound the solution set of our original problem. 
