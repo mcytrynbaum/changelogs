@@ -104,6 +104,7 @@
 \newcommand{\fixtemp}{\mathcal{E}'}
 \newcommand{\stp}{\mathrm{STOP}}
 \newcommand{\pair}{(F,I)}
+\newcommand{\roott}{R}
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum and Scott Duke Kominers}
@@ -715,13 +716,55 @@ Therefore, the outer while loop of FindStrictCore executes only finitely many ti
 
 Our proof of correctness will also make use of the following lemma, which shows that we can track problem relations with the graph $F$.
 
-\begin{lemma}
+
+
+\begin{lemma} \label{lemma:key}
 At any point during the execution of FindStrictCore 
 \begin{enumerate}
 \item $\forest$ is a problem forest \label{convlemma:forest}
 \item If $w_j = r(w_i)$ and $k \in \coll(i)$, then $\fix(\pre_j) \sub \fix(\pre_k)$ \label{convlemma:coll}
 \end{enumerate}
 \end{lemma}
+
+First, a definition. 
+For a forest (a collection of rooted trees) define the \emph{root set} $\root(\forest) = \{r(w): w\in F\}$. 
+That is, $\roott(\forest)$ consists of all roots of trees in the forest.
+
+Next, we have the following auxillary lemma
+
+\begin{lemma}
+Let $\forest_0$ be a rooted forest. 
+Suppose that $\forest$ is obtained from $\forest_0$ in one of the following ways 
+\begin{enumerate}
+\item Adding an isolated vertex to $\forest_0$ 
+\item Adding a vertex $w$ and edges $(w,w')$, where $w' \in \roott(\forest_0)$.
+\end{enumerate}
+Then $\forest$ is also a rooted forest.
+\end{lemma}
+
+\prf
+We will make use of the following result: suppose that $G = (V,E)$ is a connected graph with $|V| = n$ and $|E| = n-1$, then $G$ is a tree\footnote{Gross and Yellen}. 
+Consider $\forest_0$ and let $\{t_i\}_{i \in I}$ be its constituent rooted trees. 
+We let $V(t)$ and $E(t)$ denote the vertices and edges, respectively, of a tree $t$. 
+That is, $\{t_i\}$ is the collection of maximal connected components of $\forest_0$.
+For case 1, no edges were added, so the new collection of maximal connected components is now $\{t_i\} \cup \{w\}$. 
+Each $t_i$ is a tree by assumption. 
+$\{w\}$ is also trivially a rooted tree (with root $w$) by the graph-theoretic result above. 
+
+For case 2, let $w$ be the added vertex and $J$ the subset of tree indices such that edge $(w,\roott(t_i))$ is added to $\forest_0$.
+Let $i \in J$. 
+Because each such $t_i$ is connected and connectedness is transitive, then $t^* = \cup_{i \in J} t_i$ is a connected component in $\forest$. 
+Then, clearly, the connected components of $\forest$ are $\{t_i\}_{i \not \in J} \cup \{t^*\}$ . 
+It suffices to show that $t^*$ is a tree. 
+By construction, $|V(t^*)| = 1 + \sum_{i \in J} |V(t_i)|$ and $|E(t^*)| = |J| + \sum_{i \in J} |E(t_i)| = |J| + \sum_{i \in J} (|V(t_i)| - 1) = \sum_{i \in J} |V(t_i)|$. 
+Then $|V(t^*)| = |E(t^*)| + 1$, and, by the criterion above, $t^*$ is a tree.
+
+handle the rooted part 
+
+\eprf
+
+
+
 \prf
 
 Explanation of conditions. 
@@ -730,15 +773,19 @@ A straightforward induction on distinct states $(\act,\forest)_k$ of the pair $(
 By inspection, any line in the algorithm (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) where we add to $\act$ is paired with a preceding line, where we add all new points $\pre \in Q$ to $\forest$ as $w(\pre)$, so this condition clearly holds. 
 
 For the other statements, we work by induction on the sequence $\pair_k$ of distinct states of the pair $\pair$. 
-We show by induction that 
-
+We argue by induction that items (1) and (2) above hold. 
+Our proof will also show that every modification of $\forest$ takes one of the following forms 
 \begin{enumerate}
-\item Items (1) and (2) above hold 
+\item Adding an isolated vertex to $\forest$ 
+\item Adding a vertex $w$ and edges $(w,w')$, where $w' \in \roott(\forest)$.
 \end{enumerate}
+
+By lemma xxxx this will show by induction that $\forest$ is a rooted forest at all times, as claimed. 
+
 
 For $k = 0$, note that we set $F$ to be a collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest, and the other defining conditions are trivial. 
 Initially, we set $\coll = \emptyset$, so item~\ref{convlemma:coll} above is trivially satisfied. 
-Then assume by induction that items~(\ref{def:forest2}) and (\ref{def:forest3})above hold for states $\pair_k$ up to $k = n \geq 0$. 
+Then assume that the inductive hypotheses above hold for states of $\pair_k$ up to $k = n \geq 0$. 
 We consider separately each case where the pair $\pair$ can change. 
 
 \emph{Case1}: During subroutine 1, a stopping condition is triggered and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree1}. 
