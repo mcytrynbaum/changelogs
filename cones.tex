@@ -584,10 +584,10 @@ Next, consider the information combination algorithm.
         \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
         \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_k: v_k \in \strongcomp_j\}$ \label{alg2:forest}
     \ENDFOR
-    \STATE Set $\coll = \emptyset$
+    \STATE Set $\coll(i) = \emptyset$ for $i \in \mathcal{I}$
     \FOR{$\pre_i \in \actt$} 
         \FOR{$\pre_k \in Q$}
-            \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre_k$ \AND $\pre_j \not \peq \pre_k$}
+            \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre_k$ \AND $\pre_j \not \peq \pre_k$} \label{alg2:collide}
                 \STATE Add $j$ to $\coll(i)$ %resolve roots later
             \ENDIF
         \ENDFOR
@@ -659,6 +659,8 @@ By construction, the out-degree of $v_i \in V$ is $0$ if $\pre_i \not \in \acto$
 By definition of a strong component, then, each vertex $v_i$ \emph{not} corresponding to a preallocation $\pre_i \in \acto$ generates a singleton strong component $\{v_i\}$ and is removed at line~\ref{alg2:cstrong}
 Then $\{v_i: v_i \in \strongcomp_j, j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \acto\}$. 
 Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, there exists a surjection $f: \acto \to \actt$ defined by $f(\pre_i) = \min_{k \in K_j} \pre_k \in \actt$. 
+This also shows, by construction, that for any $\pre_i \in \actt$, $f\inv(\{\pre_i\}) = \{\pre_j: w_j \in c(w_i)\}$. 
+
 Note that, from line~\ref{alg2:self_int}, for any $\pre_i \in \strongcomp_j$ with $w_{\ell} = r(w_i)$, we have $v_{\ell} \in \reach_j$. 
 By lemma xxxx (to be proven), $F$ is always a problem tree during algorithm execution, so that $\pre_{\ell} \peq \pre_i$. 
 Then apparently $f(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
@@ -671,9 +673,13 @@ Suppose that for some $k$, with $\actok$ the input to subroutine $\ref{infcomb}$
 By the previous discussion, $\dist2(f\inv(\pre_i)) \geq \dist2(\{\pre_i\}$ for $\pre_i \in \actt$, so each of these must actually be equality. 
 Since, in addition, $f(\pre_j) \peq \pre_j$ for $\pre_j \in \actok$, each of these relations must actually be equality, with $f\inv(\pre_i) = \{\pre_i\}$ for any $\pre_i \in \actt$.
 Then $\actok = \actt = \acto^{k+1}$. 
+This argument shows that the \emph{sequence of sets} $\actok$ actually converges in finite time.
 
-
-
+Suppose, then, that $\actok = \acto^{k+1}$ for some $k$ and consider a single execution of subroutine~\ref{infcomb}.
+Above, we showed that $f\inv(\pre_i) = \pre_i$ for any $\pre_i \in \actt$
+By construction $\{j: \pre_j \in f\inv(\pre_i)\} = \{j: w_j \in c(w_i)\}$.  
+Then clearly the boolean expression in line~\ref{alg2:collide} must be false for all $\pre_i \in \actt$, so the subroutine returns $I = \emptyset$. 
+Then we have shown that the information combination stage terminates.
 
 
 
@@ -713,6 +719,8 @@ Note that the operations in the for loop at line~\ref{alg1:for2} is deterministi
 
 \subsubsection{Notes}
 
+make sure to prove this actually comes out as a tree - disjointness is the key part 
+link this surjection with child functions
 so basically the argument is - everyone must be equal to child 
 change definition of problem tree to include cone containment
 maybe need to break graph constr off into its own bit 
