@@ -128,7 +128,7 @@ Throughout the matching portion of this paper, we will assume that $\emptyset_a 
 \section{Finding All Stable Matchings} 
 In this section, we illustrate the technique in the classical Hatfield and Milgrom model -- literature, etc... 
 \subsection{Model and Notation} 
-Let $A = D\times H$, where we think of $D$ as ``doctors'' and $H$ as ``Hospitals''. We may think of the set of contracts as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
+Let $X = D\times H$, where we think of $D$ as ``doctors'' and $H$ as ``Hospitals''. We may think of the set of contracts as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
 
 An allocation $Y$ is said to be \emph{stable} if it is 
 \begin{enumerate}
@@ -545,8 +545,8 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
                     \FOR{$\pre_j \in Q$}
                         \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
                             \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop2}
-                            \STATE Add $\pre_i$ to $\actc$; Add $j$ to $\coll(i)$ \COMMENT{Build collision set}
-                            \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ 
+                            \STATE Add $\pre_i$ to $\actc$; Add $j$ to $\coll(i)$ \COMMENT{Build collision set} \label{alg1:coll}
+                            \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$  \label{alg1:tree2}
                         \ENDIF
                     \ENDFOR
                 \ENDWHILE
@@ -568,9 +568,9 @@ Next, consider the information combination algorithm.
     \STATE Set $\actt = \emptyset$
     \FOR[Build collision digraph]{$\pre_i \in \acto$}
         \STATE Add $i$ to $\coll(i)$ \label{alg2:self_int}
-        \STATE Add $v_i$ to $V$
+        \STATE Add $v_i$ to $V$ \label{alg2:selfref}
         \FOR{$j \in \coll(i)$}
-            \STATE Compute $k = r(w_j)$
+            \STATE Compute $w_k = r(w_j)$ \label{alg2:rootbuild}
             \STATE Add $v_k$ to $V$
             \STATE Add $(v_i,v_k)$ to $E$ %no multi-edges - only add once
         \ENDFOR
@@ -682,20 +682,29 @@ By construction $\{j: \pre_j \in p\inv(\pre_i)\} = \{j: w_j \in c(w_i)\}$.
 Then clearly the boolean expression in line~\ref{alg2:collide} must be false for all $\pre_i \in \actt$, so the subroutine returns $I = \emptyset$. 
 Then we have shown that the information combination stage terminates.
 
-Combining the monotonicity of $\actok$ within the while loop at line~\ref{alg3:while2} with the monotonicity proof from our analysis of subroutine~\ref{infac}, we have shown that the sequence $\disto(\actok)$ formed by distinct states of $\acto$ within the outer while loop in FindStrictCore is monotone down.  
+Combining the monotonicity of $\actok$ within the while loop at line~\ref{alg3:while2} with the monotonicity proof from our analysis of subroutine~\ref{infac}, we have shown that the sequence $\disto(\actok)$ formed by distinct states of $\acto$ within the outer while loop in FindStrictCore is monotonically decreasing.  
 
-Now consider an evaluation of subroutine~\ref{infcomb} with input $\actok$. 
-Then, by inspection, we must have $\actok \not = \emptyset$
+Now consider an evaluation of subroutine~\ref{infcomb} with input $\acto$. 
+By inspection, $\acto \not = \emptyset$. 
+
 \emph{Case 1}: The collection $\actc$ returned by the subroutine is empty.
 Then clearly we have $\disto(\acto^{k+1}) = \disto(\actc) < \dist(\actok)$. 
-\emph{Case 2}: $\actc \not = \emptyset$. 
 
-discuss hwo each exits, then collate 
+\emph{Case 2}: $\actc \not = \emptyset$.
+Consider $\pre_i \in \actc$.
+Since $\pre_i$ was added to $\actc$, line~\ref{alg1:coll} was executed, so there exists $k \geq 0$ such that $(T_i^2)^k \pre_i \not = (T_i^2)^{k+1}$. 
+In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we must have $\pre_i^f \pe \pre_i$ strictly. 
+Note that, for all such $\pre_i \in \actc$, by line~\ref{alg1:tree2}, $r(w_i) = w(\pre_i^f) \equiv w_k$ for some $k \in \mathcal{I}$. 
+Denote $\acto' = \actc$, which is an input for subroutine~\ref{infcomb}.
+Suppose that $W_j$ is the strong component containing $v_i$. 
+By line~\ref{alg2:selfref} and line~\ref{alg2:rootbuild}, we have $(v_i,v_k) \in E$ for the collision digraph built during this subroutine execution, so $v_k \in R_j$. 
+Therefore, $\pre' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \pe \pre_i$. 
+Using the surjection $p:\acto' \to \actt$ above, we have $p(\pre_i) = \pre'$ for each such $\pre_i$. 
+Then we can calculate as before $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 < \max_\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$, where the inequality is strict. 
+Since $\acto \leftarrow \actt$ when this subroutine returns, we have shown that, in both cases above, the sequence $\disto(\actok)$ decreases strictly during a single execution of the outer while loop in FindStrictCore. 
 
-
-
-
-
+Above, we argued that $\disto(\actok)$ converges in finite time. 
+Therefore, the outer while loop of FindStrictCore executes only finitely many times, and the algorithm terminates. 
 \eprf 
 
 
