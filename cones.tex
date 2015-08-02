@@ -103,6 +103,7 @@
 \newcommand{\fixfind}{\mathcal{E}}
 \newcommand{\fixtemp}{\mathcal{E}'}
 \newcommand{\stp}{\mathrm{STOP}}
+\newcommand{\pair}{(F,I)}
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum and Scott Duke Kominers}
@@ -300,6 +301,7 @@ Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
 That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for each $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
 We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, in which each agent $a$'s preference list is truncated to allocations in $2^{X_a}$ ranked below $\pre(a)$ by agent $a$ (inclusive). 
+Often in what follows, we will identify a problem $\lag \pre \rag$ with its maximal point $\pre$.
 Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$ denote the fixed points of $T$ below $\pre$.  
 
 By Tarski's Theorem\footnote{add standard Tarski argument}, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
@@ -474,17 +476,20 @@ Any such state is of the form $\pre = S_j^k \pre_j$ for some $\pre_j \in \acto$.
 When the context is clear, we denote this $\pre_j$ by $\preo$. 
 Similarly, for any state $\pre_i \in \acto$, we let $\pref_i$ denote the final value of the problem $\lag \pre_i \rag$'s Tarski sequence before it stops, as above. 
 
-\emph{Stage 2 - Information Combination}: In this stage, we use efficient digraph algorithmis to combine information from related problems.
-First, we say that a forest $F$ is a \emph{problem forest} for a collection of active problems $\acto$ if 
+\emph{Stage 2 - Information Combination}: In this stage, we use efficient digraph algorithms to combine information from related problems.
+First, we define a graph structure relates subproblems solved during the algorithm
+\begin{defn}
+A set of rooted trees $\forest$ is said to be \emph{problem forest} for a problem collection $\act$ if
+\end{defn}
 
 \begin{enumerate}
-\item For all $\pre_i \in \acto$, $w_i$ is a root of some tree in the forest.
-\item There exists a $w_k \in F$ such that $w_i, w_j \in c(w_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. 
-\item If $v_i = p(v_j)$, then $\pre_i \pre \pre_j$; in particular, $\fix(\pre_i) \sub \fix(\pre_j)$. 
+\item If $\pre_k \in Q$, then $w_k \in \forest$. \label{def:forest1}
+\item There exists a $w_k \in F$ such that $w_i, w_j \in c(w_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. \label{def:forest2}
+\item If $w_i = p(w_j)$, then $\fix(\pre_j) \sub \fix(\pre_i)$. \label{def:forest3}
 \end{itemize} 
 
-Thus, siblings in a tree share fixed points of $T$, and the fixed points of a parent are contained in the fixed points of each of its children.
-We inductively assume the existence of such a forest. 
+Thus, siblings in a problem forest share fixed points of $T$, and the fixed points of a child are contained in the fixed points of its children.
+We inductively assume the existence of such a forest (proof in section~\ref{fullalgo}). 
 
 For each $\pre_i \in \acto$, form a digraph $G = (V,E)$ by letting $(v_i,v_k) \in E$ if and only if there exists $\pre_j \in Q$ such that (i) $\pref_i \peq \pre_j$, (ii) $\pre_i \not \peq \pre_j$, and (iii) $r(w_j) = w_k$.
 That is, by the correspondence between vertices and preallocations, during Stage 1 $\pre_i$ ``collided'' with some vertex $w_j$ in the problem forest which has $w_k$ as its root.  
@@ -507,10 +512,16 @@ After stage 2 terminates, we return to stage 1 with the new active set $\acto$.
 
 In general, we would like to spend more time in stage 2, since stage 2 improves the progress of the search by using fast digraph algorithms, as opposed to the often costly process (how costly xxxx) of computing the operator $T$, equivalent to checking whether an allocation is strict core.  
 
-\subsubsection{Full Algorithm and Correctness} 
+\subsubsection{Full Algorithm and Correctness} \label{fullalgo}
 In this section, we state the full algorithm and provide correctness proofs.
 First we define the main subroutines, which implement each of the stages discussed above. 
 Throughout, we maintain global variables $\forest$, a problem forest, and $\act$, a collection of preallocations corresponding to both active and inactive problem cones. 
+
+To initialize the algorithm, set $\fixfind = \emptyset$ and $F = \emptyset$. 
+Let $\pre^*$ and $\pre_*$ denote the maximal and minimal allocations in $\prealloc$. Apply $T^2$ iteratively to each to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
+If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
+Similarly, if $T\ul{\pre} = \ul{\pre}$, then set $\fixfind = \{\ul{\pre}\}$ and terminate. 
+Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and add $w(\pre - e_i)$ to $F$ as an isolated root. 
  
 \begin{algorithm}
 \caption{InformationAcquire - Subroutine for Stage 1}     
@@ -518,7 +529,7 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
 \begin{algorithmic}[1]
 \REQUIRE $\acto$
     \STATE Set $\acta \leftarrow \acto$ \label{alg1:add1}
-    \STATE Set $\fixtemp \leftarrow \emptyset$ and $\actc \leftarrow \emptyset$
+    \STATE Set $\fixtemp \leftarrow \emptyset$ and $\actc \leftarrow \emptyset$ and $\coll \leftarrow \emptyset$
     \FOR{$\pre_i \in \acto$} \label{alg1:for1} 
         \IF[Remove redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$}
             \STATE Remove $\pre_j$ from $\acta$, $\acto$, and $\act$ \label{alg1:stop0}
@@ -531,13 +542,14 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
                 \STATE Compute $\pre' = T_i^2 \pre$
                 \IF[Stopping conditions 2 and 3]{$\pre' = \pre$ \OR $\pre' \peq \bopre$}
                     \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop1}
-                    \STATE Set $\pref_i \leftarrow \pre$; Add $v(\pref_i)$ to $F$ with $c(v(\pref_i)) = v(\pre_i)$
+                    \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ \label{alg1:tree1}
                     \IF[Stopping condition 1]{$T\pre = \pre$} 
                         \STATE Add $\pre$ to $\fixtemp$
                     \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
-                            \IF{there is no $\pre'' \in \acto$ with $\pre - e_i \peq \pre''$ }
+                            \IF[Add new problems]{there is no $\pre'' \in \acto$ with $\pre - e_i \peq \pre''$ }
                                 \STATE Add $\pre - e_i$ to $\acto$, $\acta$, and $\act$ \label{alg1:addq}
+                                \STATE Add $w(\pre - e_i)$ to $\forest$ as an isolated root 
                             \ENDIF
                         \ENDFOR
                     \ENDIF
@@ -545,8 +557,8 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
                     \FOR{$\pre_j \in Q$}
                         \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
                             \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop2}
-                            \STATE Add $\pre_i$ to $\actc$; Add $j$ to $\coll(i)$ \COMMENT{Build collision set} \label{alg1:coll}
                             \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$  \label{alg1:tree2}
+                            \STATE Add $\pre_i$ to $\actc$; Add $j$ to $\coll(i)$ \COMMENT{Build collision indices} \label{alg1:coll}
                         \ENDIF
                     \ENDFOR
                 \ENDWHILE
@@ -576,8 +588,8 @@ Next, consider the information combination algorithm.
         \ENDFOR
     \ENDFOR
     \STATE Set  $G = (V,E)$
-    \STATE Compute the strong components $\strongc$  of $G$
-    \STATE Remove all $\{v_k\}\in \strongc$ with $\pre_k \not \in \acto$, leaving $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:cstrong}
+    \STATE Compute strong components $\strongc$  of $G$
+    \STATE Remove $\{v_k\}\in \strongc$ for $\pre_k \not \in \acto$, leaving components $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:cstrong}
     \FOR[Use $G$ to combine information]{$j \in \mathcal{J}$}
         \STATE Compute reachable component $\reach_j$ 
         \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$
@@ -588,21 +600,15 @@ Next, consider the information combination algorithm.
     \FOR{$\pre_i \in \actt$} 
         \FOR{$\pre_k \in Q$}
             \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre_k$ \AND $\pre_j \not \peq \pre_k$} \label{alg2:collide}
-                \STATE Add $j$ to $\coll(i)$ %resolve roots later
+                \STATE Add $j$ to $\coll(i)$ \label{alg2:coll2} 
             \ENDIF
         \ENDFOR
     \ENDFOR
     \STATE Set $\acto \leftarrow \actt$ 
-    \STATE Set $\act \leftarrow \act \cup \actt$
+    \STATE Set $\act \leftarrow \act \cup \actt$ \label{alg2:addq}
 \RETURN{$(\acto,\coll)$} 
 \end{algorithmic}
 \end{algorithm}
-
-To initialize, let $\fixfind = \emptyset$ and $F = \emptyset$. 
-Let $\pre^*$ and $\pre_*$ the maximal and minimal allocations in $\prealloc$, and apply $T^2$ to each to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
-If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
-Similarly, if $T\ul{\pre} = \ul{\pre}$ and terminate. 
-Otherwise, for $i = 1 \hdots m$, add $\toppre - e_i$ to $\act$ and $\acto$ and add $w(\pre - e_i)$ to $F$ as vertex with degree $0$. 
 
 \begin{algorithm}
 \caption{FindStrictCore} 
@@ -625,7 +631,7 @@ Otherwise, for $i = 1 \hdots m$, add $\toppre - e_i$ to $\act$ and $\acto$ and a
 
 First, we handle termination analysis.
 \begin{lemma}
-Algorithm \ref{mainalg} terminates in finite time
+FindStrictCore terminates in finite time
 \end{lemma}
 \prf
 It suffices to show that each while loop in the algorithm terminates in a finite number of iterations. 
@@ -704,17 +710,52 @@ Then we can calculate as before $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_
 Since $\acto \leftarrow \actt$ when this subroutine returns, we have shown that, in both cases above, the sequence $\disto(\actok)$ decreases strictly during a single execution of the outer while loop in FindStrictCore. 
 
 Above, we argued that $\disto(\actok)$ converges in finite time. 
-Therefore, the outer while loop of FindStrictCore executes only finitely many times, and the algorithm terminates. 
+Therefore, the outer while loop of FindStrictCore executes only finitely many times, so the algorithm terminates. 
 \eprf 
 
-
-
-
+Our proof of correctness will also make use of the following lemma, which shows that we can track problem relations with the graph $F$.
 
 \begin{lemma}
-
+At any point during the execution of FindStrictCore 
+\begin{enumerate}
+\item $\forest$ is a problem forest \label{convlemma:forest}
+\item If $w_j = r(w_i)$ and $k \in \coll(i)$, then $\fix(\pre_j) \sub \fix(\pre_k)$ \label{convlemma:coll}
+\end{enumerate}
 \end{lemma}
+\prf
 
+Explanation of conditions. 
+
+A straightforward induction on distinct states $(\act,\forest)_k$ of the pair $(\act, \forest)$ shows that condition~\ref{def:forest1} of the definition is always satisfied. 
+By inspection, any line in the algorithm (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) where we add to $\act$ is paired with a preceding line, where we add all new points $\pre \in Q$ to $\forest$ as $w(\pre)$, so this condition clearly holds. 
+
+For the other statements, we work by induction on the sequence $\pair_k$ of distinct states of the pair $\pair$. 
+We show by induction that 
+
+\begin{enumerate}
+\item Items (1) and (2) above hold 
+\end{enumerate}
+
+For $k = 0$, note that we set $F$ to be a collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest, and the other defining conditions are trivial. 
+Initially, we set $\coll = \emptyset$, so item~\ref{convlemma:coll} above is trivially satisfied. 
+Then assume by induction that items~(\ref{def:forest2}) and (\ref{def:forest3})above hold for states $\pair_k$ up to $k = n \geq 0$. 
+We consider separately each case where the pair $\pair$ can change. 
+
+\emph{Case1}: During subroutine 1, a stopping condition is triggered and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree1}. 
+At this line, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
+By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}$ for any $j$. 
+In particular, $\fix(T_i) \peq (T_i^2)^{\ell} = \pre'$.
+Combining this with Lemma xxxx above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} = \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
+Note that for any $\pre_i \in \acto$, $w_i$ is a root in $\forest$, 
+Suppose that $\pre_i^f = \pre_k$
+
+
+
+
+
+
+
+\eprf 
 
 
 
@@ -723,36 +764,28 @@ Therefore, the outer while loop of FindStrictCore executes only finitely many ti
 
 \subsubsection{Notes}
 
-adapt mon proof of subroutine 1 
-plan for rest of proof 
-    show that transitions between subroutines are strict
-        done
+how do we know that active points are roots? - this also needs to be shown
+proof of problem forest
 make sure to prove this actually comes out as a tree - disjointness is the key part
+what is the full ind hyp I will need to prove construction 
+what form does the induction take / indices
+need to include indices in induction
+is there something super-formally wrong with doing induction like this? 
+add indices statement to proof tagline
+use equivalent condition for a tree that it is connected with n-1 vertices
+adding children who have no parents - should be fine 
+
+if j = r(i), then prej <  prek for k in I(i) [holds for any index set, always, and any referenced points 
+then correct construction from algorithm 1 states implies correct chain 
+can we do induction on states separately? 
+by inspection, clear that all of Q is represented on F
+
+show lemma about tree construction 
+add a reference - graph theory and its applications gross, yellen
+maybe global vars help us with induction e.g. make qo global 
+see if we can build collision indices all in algo 1 
+note that some for loops can be reduced, still arbitrary
 show that pinv is an extension of child function 
-change definition of problem tree to include cone containment
-maybe need to break graph constr off into its own bit 
-need to weed out strong components not corresponding to things in input set, then we get a surjection
-something about forming strong components with an out-degree = 0
-every qo added to qa 
-added to qa (and therefore to qo) at most once
-find time removed from qa --> unless this is 4, then it is not in q
-so it is 4, which implies a certain relation between preo and pref 
-pref in reach, therefore resolves down
-show that acto forms a monotonic down sequence 
-
-case1 empty done
-case2 non-empty, only contains sub-points - done
-case 3 contains some non sub points
-
-characterize type of removal from qa and say it wasn't removed??????
-for any point in q0, char type of removal from a
-then we can dichotomize and say what code executed
-
-
-Clear enough by exclusion of cases other than 4 for case 1 infcomb. For stage 2, should be able to do it directly by a similar method, => eventually I is empty
-so eventually Q states fix, which means Q = Qt - does this imply that indices run out? - maybe I should show the exact relations in the tree.
-claim should be that anytime you generate an index, this shows that you go down strictly
-should show this => can actually get a proof of termination immediately
 Explain why this infcomb stage is iterative 
 can you cross a new cone on collation iteration? 
 define intersection set properly
@@ -764,6 +797,10 @@ put in a max based removal step for Q
 add a note about how pref is well-defined 
 deal with this global tree and Q nonsense
 eff result that nothing is ever added twice
+maybe we should formally define a collision digraph 
+should I add rep Q to defn of a problem forest? 
+
+what additional eff gains do people care about? 
 
 AGENDA
 correctness is maintained - crucial 
@@ -819,5 +856,11 @@ Then $\pre$ is added at line~\ref{alg1:addq}, $\pre = \pre' - e_i$ for some $1 \
 By work above, subroutine~\ref{infac} terminates.
 Note that the operations in the for loop at line~\ref{alg1:for2} is deterministic and the removal code at lines~\ref{alg1:stop1} and~\ref{alg1:stop2} is mutually exclusive. 
 
+\item For all $\pre_i \in \acto$, $w_i$ is a root of some tree in the forest.
+
+\item If $k \in \coll(i)$ for some $i \in \mathcal{I}$ and $w_j = r(w_i)$, then $\pre_j \peq \pre_k$ \label{lemma:coll}
+
+
 \end{document}
+
 
