@@ -86,6 +86,7 @@
 \newcommand{\actok}{Q_0^k} 
 \newcommand{\actak}{Q_A^k} 
 \newcommand{\acta}{Q_A} 
+\newcommand{\actc}{Q_C} 
 \newcommand{\act}{Q} 
 \newcommand{\actt}{Q_{temp}} 
 \newcommand{\actacum}{\wh{Q_A}} 
@@ -513,8 +514,8 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
 \label{infac}
 \begin{algorithmic}[1]
 \REQUIRE $\acto$
-    \STATE $\acta \leftarrow \acto$ \label{alg1:add1}
-    \STATE Set $I = \emptyset = \fixtemp$
+    \STATE Set $\acta \leftarrow \acto$ \label{alg1:add1}
+    \STATE Set $\fixtemp \leftarrow \emptyset$ and $\actc \leftarrow \emptyset$
     \FOR{$\pre_i \in \acto$} \label{alg1:for1} 
         \IF[Remove redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$}
             \STATE Remove $\pre_j$ from $\acta$, $\acto$, and $\act$ \label{alg1:stop0}
@@ -526,29 +527,30 @@ Throughout, we maintain global variables $\forest$, a problem forest, and $\act$
             \WHILE{$\pre_i \in \acta$} 
                 \STATE Compute $\pre' = T_i^2 \pre$
                 \IF[Stopping conditions 2 and 3]{$\pre' = \pre$ \OR $\pre' \peq \bopre$}
-                    \STATE Remove $\pre_i$ from $\acto$ and $\acta$ \label{alg1:stop1}
+                    \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop1}
                     \STATE Set $\pref_i \leftarrow \pre$; Add $v(\pref_i)$ to $F$ with $c(v(\pref_i)) = v(\pre_i)$
                     \IF[Stopping condition 1]{$T\pre = \pre$} 
                         \STATE Add $\pre$ to $\fixtemp$
                     \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
-                            \IF{\not \exists \pre \in \acto}
-                            \STATE Add $\pre - e_i$ to $\acto$, $\acta$, and $\act$ \label{alg1:addq}
+                            \IF{there is no $\pre'' \in \acto$ with $\pre - e_i \peq \pre''$ }
+                                \STATE Add $\pre - e_i$ to $\acto$, $\acta$, and $\act$ \label{alg1:addq}
+                            \ENDIF
                         \ENDFOR
                     \ENDIF
                 \ELSE
                     \FOR{$\pre_j \in Q$}
                         \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
                             \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop2}
+                            \STATE Add $\pre_i$ to $\actc$; Add $j$ to $\coll(i)$ \COMMENT{Build collision set}
                             \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ 
-                            \STATE Add $j$ to $\coll(i)$
                         \ENDIF
                     \ENDFOR
                 \ENDWHILE
             \ENDIF
         \ENDFOR
     \ENDWHILE
-    \RETURN{$(\acto, \coll, \fixtemp)$} 
+    \RETURN{$(\actc, \coll, \fixtemp)$} 
 \end{algorithmic}
 \end{algorithm}
 
@@ -562,18 +564,22 @@ Next, consider the information combination algorithm.
     \STATE Set $V = E = \emptyset$
     \STATE Set $\actt = \emptyset$
     \FOR[Build Collision Digraph]{$\pre_i \in \acto$}
+        \STATE Add $i$ to $\coll(i)$
         \STATE Add $v_i$ to $V$
         \FOR{$j \in \coll(i)$}
-            \STATE Add $(v_i,v_j)$ to $E$
+            \STATE Compute $k = r(w_j)$
+            \STATE Add $v_k$ to $V$
+            \STATE Add $(v_i,v_k)$ to $E$ %no multi-edges - only add once
         \ENDFOR
     \ENDFOR
     \STATE Set  $G = (V,E)$
-    \STATE Compute the strong components $\strongc = \{\strongcomp_j\}_{j \in \mathcal{J}}$ of $G$
+    \STATE Compute the strong components $\strongc$  of $G$
+    \STATE Remove all $\{v_k\}\in \strongc$ with $\pre_k \not \in \acto$, leaving $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:correct_strong}
     \FOR[Use $G$ to Combine Information]{$j \in \mathcal{J}$}
         \STATE Compute reachable component $\reach_j$ 
-        \STATE Compute tree indices $K_j = \{k \in \mathcal{I}: \exists i\in \mathcal{I} \; s.t. \; w_k = r(w_i) \: and \: v_i \in R_j\}$
+        \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$
         \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
-        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_i: v_i \in \strongcomp_j\}$ \label{alg2:forest}
+        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_k: v_k \in \strongcomp_j\}$ \label{alg2:forest}
     \ENDFOR
     \STATE Set $\coll = \emptyset$
     \FOR{$\pre_i \in \actt$} 
@@ -626,22 +632,41 @@ Note that by finiteness, both $d(\cdot)$ and $D(\cdot)$ take finitely many value
 First we show that, for any input $\acto \sub \prealloc$, subroutine \ref{infac} terminates in finite iterations.
 
 Consider the sequence $\actak$ formed by \emph{all} states of $\acta$ during the algorithm.
-Note that if for any $k\geq 0$ and $\pre$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ , then $d(\acta^{k+1}) \leq d(\actak)$.
-By inspection, all changes to $\acta$ except for the change on line~\ref{alg1:addq} are of this form
-For line~\ref{alg1:addq}, any $\pre \in \prealloc$ has $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on ~\ref{alg1:addq} then $(\acta^{k+1}) \leq d(\actak)$. 
+Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some $\pre \in \prealloc$, then $d(\acta^{k+1}) \leq d(\actak)$.
+By inspection, all changes to $\acta$ except for the change on line~\ref{alg1:addq} are of this form.
+For line~\ref{alg1:addq}, note that it is always the case that $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on line~\ref{alg1:addq} then $d(\acta^{k+1}) \leq d(\actak)$. 
 This shows that $d(\actak)$ is a monotonically decreasing sequence. 
-Since $d(\actak)$ takes at most finitely values, this sequence of real numbers eventually fixes.
+Since $d(\actak)$ takes at most finitely values, this sequence of real numbers converges in finite time.
 
-Note that all of the inequalities above are \emph{strict} when $\pre = \argmax_{\pre' \in \acta} \|\pre'\|_1$. 
+Note that all of the inequalities above are \emph{strict} when $\pre^* = \argmax_{\pre' \in \acta} \|\pre'\|_1$. 
 Fix $\acta^{0}$ at the beginning of the for loop on line~\ref{alg1:for2}. 
-Then $\pre \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for2}, $d(\actak)$ decreases strictly.
-Since $d(\actak)$ eventually fixes, the for loop at line~\ref{alg1:for2} is executed at most finitely many times. 
-Then the while loop at line~\ref{alg1:while1} is executed at most finitely many times, so this subroutine terminates.
+Then $\pre^* \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for2}, $d(\actak)$ decreases strictly.
+Since $d(\actak)$ converges in finite time, the for loop at line~\ref{alg1:for2} is executed at most finitely many times. 
+Then the while loop at line~\ref{alg1:while1} is also executed finitely many times, so this subroutine terminates.
 
-Since all inputs are finite, clearly subroutine~\ref{infcomb} terminates in finite time.
+Since all inputs are finite, subroutine~\ref{infcomb} clearly terminates in finite time.
 
-Next, we show that the iterative information combination in stage 2 terminates; that is, that the while loop at line~\ref{alg3:while2} terminates.
+Next, we show that the algorithms information combination step terminates. That is, the second while loop of algorithm~\ref{mainalg} terminates.
+Consider the distinct states of $\acto$, which form a sequence $\actok$, during a single execution of this loop.
+We will show the sequence of positive real numbers $D(\actok)$ is monotone decreasing.
+Consider a single execution of InformationCombine with input $\acto$.
+Let $\strongcomp \in \strongc$ be a strong component after removing irrelevant singletons in line~\ref{alg2:correct_strong}. 
+By construction, the out-degree of $v_i \in V$ is $0$ if $\pre_i \not \in \acto$
+By definition of a strong component, then, each vertex $v_i$ \emph{not} corresponding to a preallocation $\pre_i \in \acto$ generates a singleton strong component $\{v_i\}$ and is removed at line~\ref{algo2:correct_strong}. 
+Then $\{v_i: v_i \in \strongcomp_j, j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \acto\}$. 
+Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, there exists a surjection $f: \acto \to \actt$ of the form 
+
+
+
+
+
+------------------
+
 Fix $\acto^{0} = \acto$ at the beginning of 
+Since we only add points to $\acto$ in line~\ref{alg1:addq}, we have $\actacum = \actocum$. 
+By the proof above, $\acta = \emptyset$ when the subroutine terminates, so every $\pre \in \actacum$ is removed from $\acta$ at some point before termination.
+
+
 
 Finally, we show that the outer while loop at line~\ref{alg3:while1} terminates.
 Set $\acto^r \leftarrow InformationAcquire(\acto)$. 
@@ -658,25 +683,16 @@ Now consider the second time $\pre$ is added
 Then $\pre$ is added at line~\ref{alg1:addq}, $\pre = \pre' - e_i$ for some $1 \leq i \leq m$.
 
 
-
-
-
-Since we only add points to $\acto$ in line~\ref{alg1:addq}, we have $\actacum = \actocum$. 
-By the proof above, $\acta = \emptyset$ when the subroutine terminates, so every $\pre \in \actacum$ is removed from $\acta$ at some point before termination.
-
-
-
-
 By work above, subroutine~\ref{infac} terminates.
 Note that the operations in the for loop at line~\ref{alg1:for2} is deterministic and the removal code at lines~\ref{alg1:stop1} and~\ref{alg1:stop2} is mutually exclusive. 
 
 \eprf 
 
 \subsubsection{Notes}
-in case 1, there are points that crash
-in case 2, everything bottoms out, e.g., and nothing crashes BUT the maximal point must have been remove, so it still goes down 
 
 
+need to weed out strong components not corresponding to things in input set, then we get a surjection
+something about forming strong components with an out-degree = 0
 every qo added to qa 
 added to qa (and therefore to qo) at most once
 find time removed from qa --> unless this is 4, then it is not in q
@@ -699,30 +715,22 @@ claim should be that anytime you generate an index, this shows that you go down 
 should show this => can actually get a proof of termination immediately
 Explain why this infcomb stage is iterative 
 can you cross a new cone on collation iteration? 
-Define the intersection set appropriately
+define intersection set properly
 prealloc notation is not exactly correct
 add something above about how the algorithm makes use of 4 geometric facts 
 add a note about complexity 
 add a note about novel things from above
 put in a max based removal step for Q
-add a note about how pref is well-defined
+add a note about how pref is well-defined 
 deal with this global tree and Q nonsense
-
-A note on throwing things away - it might be the case that we can throw away subproblems and just... leave the link in 
-ugh these sub sub problems are actually really annoying - why do we keep them
-note that now, single strands will be removed for lowest problem - hard to see exactly what that is until graph is fully resolved
-need to add more vertices to the graph 
-maybe prove some efficiency result that nothing is ever added twice
+eff result that nothing is ever added twice
 
 AGENDA
-let acto grow 
-let qc be defined 
-fix vertices on collision graph - add new roots 
 correctness is maintained - crucial 
-automatically, we get termination for full 
 just prove that while loop terminates 
-    look at internals of collision dynamics
-this strat brings out collisions much more
+look at internals of collision dynamics
+
+the reason is, we want consistency for redundant problems i.e. those problems that cannot have moved 
 
 \subsubsection{Discussion}
 As can be seen, the construction above is very general, requiring only that the fixed points we want to find are bounded by a lattice, and that we have a way to initialize new problems on sublattices whose solution sets bound the solution set of our original problem. 
