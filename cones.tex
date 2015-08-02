@@ -91,9 +91,12 @@
 \newcommand{\actt}{Q_{temp}} 
 \newcommand{\actacum}{\wh{Q_A}} 
 \newcommand{\actocum}{\wh{Q_0}} 
+\newcommand{\dist1}{d}
+\newcommand{\dist2}{D}
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
 \newcommand{\coll}{I}
+\newcommand{\collk}{I^k}
 \newcommand{\res}{\act_{int}}
 \newcommand{\reach}{R}
 \newcommand{\forest}{F}
@@ -563,8 +566,8 @@ Next, consider the information combination algorithm.
 \REQUIRE $\acto$, $\coll$
     \STATE Set $V = E = \emptyset$
     \STATE Set $\actt = \emptyset$
-    \FOR[Build Collision Digraph]{$\pre_i \in \acto$}
-        \STATE Add $i$ to $\coll(i)$
+    \FOR[Build collision digraph]{$\pre_i \in \acto$}
+        \STATE Add $i$ to $\coll(i)$ \label{alg2:self_int}
         \STATE Add $v_i$ to $V$
         \FOR{$j \in \coll(i)$}
             \STATE Compute $k = r(w_j)$
@@ -574,8 +577,8 @@ Next, consider the information combination algorithm.
     \ENDFOR
     \STATE Set  $G = (V,E)$
     \STATE Compute the strong components $\strongc$  of $G$
-    \STATE Remove all $\{v_k\}\in \strongc$ with $\pre_k \not \in \acto$, leaving $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:correct_strong}
-    \FOR[Use $G$ to Combine Information]{$j \in \mathcal{J}$}
+    \STATE Remove all $\{v_k\}\in \strongc$ with $\pre_k \not \in \acto$, leaving $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:cstrong}
+    \FOR[Use $G$ to combine information]{$j \in \mathcal{J}$}
         \STATE Compute reachable component $\reach_j$ 
         \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$
         \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
@@ -626,35 +629,55 @@ Algorithm \ref{mainalg} terminates in finite time
 \end{lemma}
 \prf
 It suffices to show that each while loop in the algorithm terminates in a finite number of iterations. 
-For any set $E \sub \prealloc$, we define $d(E) = \max_{\pre \in E} \|\pre\|_1$, where we identify $\prealloc$ with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1$ is the standard 1-norm.}.
-Similarly, we define $D(E) = \sum_{\pre \in E} \|\pre\|_1$.
-Note that by finiteness, both $d(\cdot)$ and $D(\cdot)$ take finitely many values on subsets of $\prealloc$.
+For any set $E \sub \prealloc$, we define $\dist1(E) = \max_{\pre \in E} \|\pre\|_1$, where we identify $\prealloc$ with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1$ is the standard 1-norm.}.
+Similarly, we define $\dist2(E) = \sum_{\pre \in E} \|\pre\|_1$.
+Note that by finiteness, both $\dist1(\cdot)$ and $\dist2(\cdot)$ take finitely many values on subsets of $\prealloc$.
 First we show that, for any input $\acto \sub \prealloc$, subroutine \ref{infac} terminates in finite iterations.
 
 Consider the sequence $\actak$ formed by \emph{all} states of $\acta$ during the algorithm.
-Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some $\pre \in \prealloc$, then $d(\acta^{k+1}) \leq d(\actak)$.
+Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some $\pre \in \prealloc$, then $\dist1(\acta^{k+1}) \leq \dist1(\actak)$.
 By inspection, all changes to $\acta$ except for the change on line~\ref{alg1:addq} are of this form.
-For line~\ref{alg1:addq}, note that it is always the case that $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on line~\ref{alg1:addq} then $d(\acta^{k+1}) \leq d(\actak)$. 
-This shows that $d(\actak)$ is a monotonically decreasing sequence. 
-Since $d(\actak)$ takes at most finitely values, this sequence of real numbers converges in finite time.
+For line~\ref{alg1:addq}, note that it is always the case that $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on line~\ref{alg1:addq} then $\dist1(\acta^{k+1}) \leq \dist1(\actak)$. 
+This shows that $\dist1(\actak)$ is a monotonically decreasing sequence. 
+Since $\dist1(\actak)$ takes at most finitely values, this sequence of real numbers converges in finite time.
 
 Note that all of the inequalities above are \emph{strict} when $\pre^* = \argmax_{\pre' \in \acta} \|\pre'\|_1$. 
 Fix $\acta^{0}$ at the beginning of the for loop on line~\ref{alg1:for2}. 
-Then $\pre^* \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for2}, $d(\actak)$ decreases strictly.
-Since $d(\actak)$ converges in finite time, the for loop at line~\ref{alg1:for2} is executed at most finitely many times. 
+Then $\pre^* \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for2}, $\dist1(\actak)$ decreases strictly.
+Since $\dist1(\actak)$ converges in finite time, the for loop at line~\ref{alg1:for2} is executed at most finitely many times. 
 Then the while loop at line~\ref{alg1:while1} is also executed finitely many times, so this subroutine terminates.
 
 Since all inputs are finite, subroutine~\ref{infcomb} clearly terminates in finite time.
 
 Next, we show that the algorithms information combination step terminates. That is, the second while loop of algorithm~\ref{mainalg} terminates.
 Consider the distinct states of $\acto$, which form a sequence $\actok$, during a single execution of this loop.
-We will show the sequence of positive real numbers $D(\actok)$ is monotone decreasing.
+We will show the sequence of positive real numbers $\dist2(\actok)$ is monotone decreasing.
+
 Consider a single execution of InformationCombine with input $\acto$.
-Let $\strongcomp \in \strongc$ be a strong component after removing irrelevant singletons in line~\ref{alg2:correct_strong}. 
+Let $\strongcomp \in \strongc$ be a strong component after removing irrelevant singletons in line~\ref{alg2:cstrong}.
 By construction, the out-degree of $v_i \in V$ is $0$ if $\pre_i \not \in \acto$
-By definition of a strong component, then, each vertex $v_i$ \emph{not} corresponding to a preallocation $\pre_i \in \acto$ generates a singleton strong component $\{v_i\}$ and is removed at line~\ref{algo2:correct_strong}. 
+By definition of a strong component, then, each vertex $v_i$ \emph{not} corresponding to a preallocation $\pre_i \in \acto$ generates a singleton strong component $\{v_i\}$ and is removed at line~\ref{alg2:cstrong}
 Then $\{v_i: v_i \in \strongcomp_j, j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \acto\}$. 
-Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, there exists a surjection $f: \acto \to \actt$ of the form 
+Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, there exists a surjection $f: \acto \to \actt$ defined by $f(\pre_i) = \min_{k \in K_j} \pre_k \in \actt$. 
+Note that, from line~\ref{alg2:self_int}, for any $\pre_i \in \strongcomp_j$ with $w_{\ell} = r(w_i)$, we have $v_{\ell} \in \reach_j$. 
+By lemma xxxx (to be proven), $F$ is always a problem tree during algorithm execution, so that $\pre_{\ell} \peq \pre_i$. 
+Then apparently $f(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
+By the surjection $f$ above, we can write $\acto$ as a disjoint union $\acto = \cup_{\pre \in \actt} f\inv(\pre)$. 
+Therefore, we have $\dist2(\acto) = \sum_{\pre \in \actt} \dist2(f\inv(\pre)) \geq \sum_{\pre \in \actt} \dist2(\{\pre\}) = \dist2(\actt)$ by surjection and the discussion above.
+
+We have shown that $\dist2(\actt) \leq \dist2(\acto)$. 
+Therefore, the sequence $\dist2(\actok)$ constructed above is monotonically decreasing (and bounded above 0), so it converges in finite time, again using finiteness of $\prealloc$. 
+Suppose that for some $k$, with $\actok$ the input to subroutine $\ref{infcomb}$, we have $\dist2(\actok) = \dist2(\acto^{k+1})$.
+By the previous discussion, $\dist2(f\inv(\pre_i)) \geq \dist2(\{\pre_i\}$ for $\pre_i \in \actt$, so each of these must actually be equality. 
+Since, in addition, $f(\pre_j) \peq \pre_j$ for $\pre_j \in \actok$, each of these relations must actually be equality, with $f\inv(\pre_i) = \{\pre_i\}$ for any $\pre_i \in \actt$.
+Then $\actok = \actt = \acto^{k+1}$. 
+
+
+
+
+
+
+
 
 
 
@@ -690,7 +713,9 @@ Note that the operations in the for loop at line~\ref{alg1:for2} is deterministi
 
 \subsubsection{Notes}
 
-
+so basically the argument is - everyone must be equal to child 
+change definition of problem tree to include cone containment
+maybe need to break graph constr off into its own bit 
 need to weed out strong components not corresponding to things in input set, then we get a surjection
 something about forming strong components with an out-degree = 0
 every qo added to qa 
