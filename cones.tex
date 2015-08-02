@@ -91,8 +91,8 @@
 \newcommand{\actt}{Q_{temp}} 
 \newcommand{\actacum}{\wh{Q_A}} 
 \newcommand{\actocum}{\wh{Q_0}} 
-\newcommand{\dist1}{d}
-\newcommand{\dist2}{D}
+\newcommand{\disto}{d}
+\newcommand{\distt}{D}
 \newcommand{\preo}{\pre^{0}} 
 \newcommand{\pref}{\pre^{f}} 
 \newcommand{\coll}{I}
@@ -478,9 +478,9 @@ Similarly, for any state $\pre_i \in \acto$, we let $\pref_i$ denote the final v
 First, we say that a forest $F$ is a \emph{problem forest} for a collection of active problems $\acto$ if 
 
 \begin{enumerate}
-\item For all $\pre_i \in \acto$, $w_i$ is a root of some tree in the forest
+\item For all $\pre_i \in \acto$, $w_i$ is a root of some tree in the forest.
 \item There exists a $w_k \in F$ such that $w_i, w_j \in c(w_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. 
-\item If $v_i = p(v_j)$, then $\fix(\pre_j) \sub \fix(\pre_i)$. 
+\item If $v_i = p(v_j)$, then $\pre_i \pre \pre_j$; in particular, $\fix(\pre_i) \sub \fix(\pre_j)$. 
 \end{itemize} 
 
 Thus, siblings in a tree share fixed points of $T$, and the fixed points of a parent are contained in the fixed points of each of its children.
@@ -629,99 +629,97 @@ Algorithm \ref{mainalg} terminates in finite time
 \end{lemma}
 \prf
 It suffices to show that each while loop in the algorithm terminates in a finite number of iterations. 
-For any set $E \sub \prealloc$, we define $\dist1(E) = \max_{\pre \in E} \|\pre\|_1$, where we identify $\prealloc$ with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1$ is the standard 1-norm.}.
-Similarly, we define $\dist2(E) = \sum_{\pre \in E} \|\pre\|_1$.
-Note that by finiteness, both $\dist1(\cdot)$ and $\dist2(\cdot)$ take finitely many values on subsets of $\prealloc$.
+For any set $E \sub \prealloc$, we define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where we identify $\prealloc$ with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1$ is the standard 1-norm.}.
+Similarly, we define $\distt(E) = \sum_{\pre \in E} \|\pre\|_1$.
+Note that by finiteness, both $\disto(\cdot)$ and $\distt(\cdot)$ take finitely many values on subsets of $\prealloc$.
 First we show that, for any input $\acto \sub \prealloc$, subroutine \ref{infac} terminates in finite iterations.
 
 Consider the sequence $\actak$ formed by \emph{all} states of $\acta$ during the algorithm.
-Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some $\pre \in \prealloc$, then $\dist1(\acta^{k+1}) \leq \dist1(\actak)$.
+Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some $\pre \in \prealloc$, then $\disto(\acta^{k+1}) \leq \disto(\actak)$.
 By inspection, all changes to $\acta$ except for the change on line~\ref{alg1:addq} are of this form.
-For line~\ref{alg1:addq}, note that it is always the case that $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on line~\ref{alg1:addq} then $\dist1(\acta^{k+1}) \leq \dist1(\actak)$. 
-This shows that $\dist1(\actak)$ is a monotonically decreasing sequence. 
-Since $\dist1(\actak)$ takes at most finitely values, this sequence of real numbers converges in finite time.
+For line~\ref{alg1:addq}, note that it is always the case that $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on line~\ref{alg1:addq} then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
+This shows that $\disto(\actak)$ is a monotonically decreasing sequence. 
+Since $\disto(\actak)$ takes at most finitely values, this sequence of real numbers converges in finite time.
 
 Note that all of the inequalities above are \emph{strict} when $\pre^* = \argmax_{\pre' \in \acta} \|\pre'\|_1$. 
 Fix $\acta^{0}$ at the beginning of the for loop on line~\ref{alg1:for2}. 
-Then $\pre^* \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for2}, $\dist1(\actak)$ decreases strictly.
-Since $\dist1(\actak)$ converges in finite time, the for loop at line~\ref{alg1:for2} is executed at most finitely many times. 
+Then $\pre^* \in \acta^{0}$, so, for at least one iteration of the loop~\ref{alg1:for2}, $\disto(\actak)$ decreases strictly.
+Since $\disto(\actak)$ converges in finite time, the for loop at line~\ref{alg1:for2} is executed at most finitely many times. 
 Then the while loop at line~\ref{alg1:while1} is also executed finitely many times, so this subroutine terminates.
 
 Since all inputs are finite, subroutine~\ref{infcomb} clearly terminates in finite time.
 
 Next, we show that the algorithms information combination step terminates. That is, the second while loop of algorithm~\ref{mainalg} terminates.
 Consider the distinct states of $\acto$, which form a sequence $\actok$, during a single execution of this loop.
-We will show the sequence of positive real numbers $\dist2(\actok)$ is monotone decreasing.
+We will show the sequence of positive real numbers $\distt(\actok)$ is monotone decreasing.
 
 Consider a single execution of InformationCombine with input $\acto$.
 Let $\strongcomp \in \strongc$ be a strong component after removing irrelevant singletons in line~\ref{alg2:cstrong}.
 By construction, the out-degree of $v_i \in V$ is $0$ if $\pre_i \not \in \acto$
 By definition of a strong component, then, each vertex $v_i$ \emph{not} corresponding to a preallocation $\pre_i \in \acto$ generates a singleton strong component $\{v_i\}$ and is removed at line~\ref{alg2:cstrong}
 Then $\{v_i: v_i \in \strongcomp_j, j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \acto\}$. 
-Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, there exists a surjection $f: \acto \to \actt$ defined by $f(\pre_i) = \min_{k \in K_j} \pre_k \in \actt$. 
-This also shows, by construction, that for any $\pre_i \in \actt$, $f\inv(\{\pre_i\}) = \{\pre_j: w_j \in c(w_i)\}$. 
-
+Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, there exists a surjection $p: \acto \to \actt$ defined by $p(\pre_i) = \min_{k \in K_j} \pre_k \in \actt$. 
+This also shows, by construction, that for any $\pre_i \in \actt$, $p\inv(\{\pre_i\}) = \{\pre_j: w_j \in c(w_i)\}$. 
 Note that, from line~\ref{alg2:self_int}, for any $\pre_i \in \strongcomp_j$ with $w_{\ell} = r(w_i)$, we have $v_{\ell} \in \reach_j$. 
 By lemma xxxx (to be proven), $F$ is always a problem tree during algorithm execution, so that $\pre_{\ell} \peq \pre_i$. 
-Then apparently $f(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
-By the surjection $f$ above, we can write $\acto$ as a disjoint union $\acto = \cup_{\pre \in \actt} f\inv(\pre)$. 
-Therefore, we have $\dist2(\acto) = \sum_{\pre \in \actt} \dist2(f\inv(\pre)) \geq \sum_{\pre \in \actt} \dist2(\{\pre\}) = \dist2(\actt)$ by surjection and the discussion above.
+Then apparently $p(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
 
-We have shown that $\dist2(\actt) \leq \dist2(\acto)$. 
-Therefore, the sequence $\dist2(\actok)$ constructed above is monotonically decreasing (and bounded above 0), so it converges in finite time, again using finiteness of $\prealloc$. 
-Suppose that for some $k$, with $\actok$ the input to subroutine $\ref{infcomb}$, we have $\dist2(\actok) = \dist2(\acto^{k+1})$.
-By the previous discussion, $\dist2(f\inv(\pre_i)) \geq \dist2(\{\pre_i\}$ for $\pre_i \in \actt$, so each of these must actually be equality. 
-Since, in addition, $f(\pre_j) \peq \pre_j$ for $\pre_j \in \actok$, each of these relations must actually be equality, with $f\inv(\pre_i) = \{\pre_i\}$ for any $\pre_i \in \actt$.
+By the surjection $p$ above, we can write $\acto$ as a disjoint union $\acto = \cup_{\pre \in \actt} p\inv(\pre)$. 
+So we can calculate $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 \leq \max_\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$. 
+Similarly, we can compute $\distt(\acto) = \sum_{\pre \in \actt} \distt(p\inv(\pre)) \geq \sum_{\pre \in \actt} \distt(\{\pre\}) = \distt(\actt)$ by surjection and the discussion above.
+Then we have shown that $\disto(\acto^{k+1}) \leq \disto(\actok)$ and $\distt(\acto^{k+1}) \leq \distt(\actok)$ for any $k$. 
+
+In particular, the sequence $\distt(\actok)$ constructed above is monotonically decreasing (and bounded below by 0), so it converges in finite time, again using finiteness of $\prealloc$. 
+Suppose that for some $k$, with $\actok$ the input to subroutine $\ref{infcomb}$, we have $\distt(\actok) = \distt(\acto^{k+1})$.
+By the previous discussion, $\distt(p\inv(\pre_i)) \geq \distt(\{\pre_i\}$ for $\pre_i \in \actt$, so each of these must actually be equality. 
+Since, in addition, $p(\pre_j) \peq \pre_j$ for $\pre_j \in \actok$, each of these relations must actually be equality, with $p\inv(\pre_i) = \{\pre_i\}$ for any $\pre_i \in \actt$.
 Then $\actok = \actt = \acto^{k+1}$. 
-This argument shows that the \emph{sequence of sets} $\actok$ actually converges in finite time.
+This argument shows that the \emph{sequence of sets} $\actok$ actually converges in finite time also.
 
 Suppose, then, that $\actok = \acto^{k+1}$ for some $k$ and consider a single execution of subroutine~\ref{infcomb}.
-Above, we showed that $f\inv(\pre_i) = \pre_i$ for any $\pre_i \in \actt$
-By construction $\{j: \pre_j \in f\inv(\pre_i)\} = \{j: w_j \in c(w_i)\}$.  
+Above, we showed that $p\inv(\pre_i) = \pre_i$ for any $\pre_i \in \actt$
+By construction $\{j: \pre_j \in p\inv(\pre_i)\} = \{j: w_j \in c(w_i)\}$.  
 Then clearly the boolean expression in line~\ref{alg2:collide} must be false for all $\pre_i \in \actt$, so the subroutine returns $I = \emptyset$. 
 Then we have shown that the information combination stage terminates.
 
+Combining the monotonicity of $\actok$ within the while loop at line~\ref{alg3:while2} with the monotonicity proof from our analysis of subroutine~\ref{infac}, we have shown that the sequence $\disto(\actok)$ formed by distinct states of $\acto$ within the outer while loop in FindStrictCore is monotone down.  
+
+Now consider an evaluation of subroutine~\ref{infcomb} with input $\actok$. 
+Then, by inspection, we must have $\actok \not = \emptyset$
+\emph{Case 1}: The collection $\actc$ returned by the subroutine is empty.
+Then clearly we have $\disto(\acto^{k+1}) = \disto(\actc) < \dist(\actok)$. 
+\emph{Case 2}: $\actc \not = \emptyset$. 
+
+discuss hwo each exits, then collate 
 
 
 
 
-
-
-
-
-------------------
-
-Fix $\acto^{0} = \acto$ at the beginning of 
-Since we only add points to $\acto$ in line~\ref{alg1:addq}, we have $\actacum = \actocum$. 
-By the proof above, $\acta = \emptyset$ when the subroutine terminates, so every $\pre \in \actacum$ is removed from $\acta$ at some point before termination.
-
-
-
-Finally, we show that the outer while loop at line~\ref{alg3:while1} terminates.
-Set $\acto^r \leftarrow InformationAcquire(\acto)$. 
-We claim that if $\acto \not = \emptyset$, then $d(\acto^r) < d(\acto)$. 
-Consider subroutine~\ref{infac} with input $\acto$. 
-Let $\actacum$ be the collection of points ever added to $\acta$ and similarly for $\actocum$, which includes the initial value of $\acto$. 
-We claim that no preallocation is ever added to $\acta$ more than once. 
-Equivalently, since $\acta = \emptyset$ when the algorithm terminates, every point in $\actacum$ is removed from $\acta$ exactly once. 
-Suppose not, and $\pre$ is added more than once. 
-Consider the first time $\pre$ is added. 
-If this is at line~\ref{alg1:add1}, then $\pre \in \acto \sub \act$.
-Otherwise, this is at line~\ref{alg1:addq}, so we also add $\pre$ to $\act$.
-Now consider the second time $\pre$ is added 
-Then $\pre$ is added at line~\ref{alg1:addq}, $\pre = \pre' - e_i$ for some $1 \leq i \leq m$.
-
-
-By work above, subroutine~\ref{infac} terminates.
-Note that the operations in the for loop at line~\ref{alg1:for2} is deterministic and the removal code at lines~\ref{alg1:stop1} and~\ref{alg1:stop2} is mutually exclusive. 
 
 \eprf 
 
+
+
+
+
+\begin{lemma}
+
+\end{lemma}
+
+
+
+
+
+
+
 \subsubsection{Notes}
 
-make sure to prove this actually comes out as a tree - disjointness is the key part 
-link this surjection with child functions
-so basically the argument is - everyone must be equal to child 
+adapt mon proof of subroutine 1 
+plan for rest of proof 
+    show that transitions between subroutines are strict
+        done
+make sure to prove this actually comes out as a tree - disjointness is the key part
+show that pinv is an extension of child function 
 change definition of problem tree to include cone containment
 maybe need to break graph constr off into its own bit 
 need to weed out strong components not corresponding to things in input set, then we get a surjection
@@ -788,6 +786,29 @@ Our approach is very general, relying only on the lattice structure of the probl
 Therefore, by isotonicity of $T^2$, we have $T^4 \pre^* \pe \T^2 \pre^*$ and so on, so, by iterating $T^2$, we obtain a monotonically decreasing sequence, which, by finiteness of $\prealloc$ converges to a fixed point, which we call $\toppre$.
 By a standard argument \footnote{insert standard argument}, $\toppre$ is the largest fixed point 
 
+Fix $\acto^{0} = \acto$ at the beginning of 
+Since we only add points to $\acto$ in line~\ref{alg1:addq}, we have $\actacum = \actocum$. 
+By the proof above, $\acta = \emptyset$ when the subroutine terminates, so every $\pre \in \actacum$ is removed from $\acta$ at some point before termination.
+
+
+
+Finally, we show that the outer while loop at line~\ref{alg3:while1} terminates.
+Set $\acto^r \leftarrow InformationAcquire(\acto)$. 
+We claim that if $\acto \not = \emptyset$, then $d(\acto^r) < d(\acto)$. 
+Consider subroutine~\ref{infac} with input $\acto$. 
+Let $\actacum$ be the collection of points ever added to $\acta$ and similarly for $\actocum$, which includes the initial value of $\acto$. 
+We claim that no preallocation is ever added to $\acta$ more than once. 
+Equivalently, since $\acta = \emptyset$ when the algorithm terminates, every point in $\actacum$ is removed from $\acta$ exactly once. 
+Suppose not, and $\pre$ is added more than once. 
+Consider the first time $\pre$ is added. 
+If this is at line~\ref{alg1:add1}, then $\pre \in \acto \sub \act$.
+Otherwise, this is at line~\ref{alg1:addq}, so we also add $\pre$ to $\act$.
+Now consider the second time $\pre$ is added 
+Then $\pre$ is added at line~\ref{alg1:addq}, $\pre = \pre' - e_i$ for some $1 \leq i \leq m$.
+
+
+By work above, subroutine~\ref{infac} terminates.
+Note that the operations in the for loop at line~\ref{alg1:for2} is deterministic and the removal code at lines~\ref{alg1:stop1} and~\ref{alg1:stop2} is mutually exclusive. 
 
 \end{document}
 
