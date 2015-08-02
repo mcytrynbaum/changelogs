@@ -714,9 +714,7 @@ Above, we argued that $\disto(\actok)$ converges in finite time.
 Therefore, the outer while loop of FindStrictCore executes only finitely many times, so the algorithm terminates. 
 \eprf 
 
-Our proof of correctness will also make use of the following lemma, which shows that we can track problem relations with the graph $F$.
-
-
+Our proof of correctness will make use of the following key lemma, which shows that we can track the relations between subsets of $\fix(T)$ with the graph $F$ constructed during the algorithm.
 
 \begin{lemma} \label{lemma:key}
 At any point during the execution of FindStrictCore 
@@ -726,46 +724,50 @@ At any point during the execution of FindStrictCore
 \end{enumerate}
 \end{lemma}
 
-First, a definition. 
-For a forest (a collection of rooted trees) define the \emph{root set} $\root(\forest) = \{r(w): w\in F\}$. 
+First, we give a definition and an auxillary lemma. 
+For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
-
-Next, we have the following auxillary lemma
 
 \begin{lemma}
 Let $\forest_0$ be a rooted forest. 
 Suppose that $\forest$ is obtained from $\forest_0$ in one of the following ways 
 \begin{enumerate}
 \item Adding an isolated vertex to $\forest_0$ 
-\item Adding a vertex $w$ and edges $(w,w')$, where $w' \in \roott(\forest_0)$.
+\item Adding a vertex $w$ and directed edges $(w,w')$, where $w' \in \roott(\forest_0)$.
 \end{enumerate}
 Then $\forest$ is also a rooted forest.
 \end{lemma}
 
 \prf
-We will make use of the following result: suppose that $G = (V,E)$ is a connected graph with $|V| = n$ and $|E| = n-1$, then $G$ is a tree\footnote{Gross and Yellen}. 
+Note that a graph $G = (V,E)$ is a tree if and only if $G$ is a connected graph such that $|E| = |V| - 1$\footnote{Gross and Yellen xxxx}. 
 Consider $\forest_0$ and let $\{t_i\}_{i \in I}$ be its constituent rooted trees. 
 We let $V(t)$ and $E(t)$ denote the vertices and edges, respectively, of a tree $t$. 
 That is, $\{t_i\}$ is the collection of maximal connected components of $\forest_0$.
 For case 1, no edges were added, so the new collection of maximal connected components is now $\{t_i\} \cup \{w\}$. 
-Each $t_i$ is a tree by assumption. 
-$\{w\}$ is also trivially a rooted tree (with root $w$) by the graph-theoretic result above. 
+Each $t_i$ is still a rooted tree by assumption. 
+$\{w\}$ is also trivially a rooted tree with root $w$. 
 
 For case 2, let $w$ be the added vertex and $J$ the subset of tree indices such that edge $(w,\roott(t_i))$ is added to $\forest_0$.
 Let $i \in J$. 
-Because each such $t_i$ is connected and connectedness is transitive, then $t^* = \cup_{i \in J} t_i$ is a connected component in $\forest$. 
-Then, clearly, the connected components of $\forest$ are $\{t_i\}_{i \not \in J} \cup \{t^*\}$ . 
-It suffices to show that $t^*$ is a tree. 
-By construction, $|V(t^*)| = 1 + \sum_{i \in J} |V(t_i)|$ and $|E(t^*)| = |J| + \sum_{i \in J} |E(t_i)| = |J| + \sum_{i \in J} (|V(t_i)| - 1) = \sum_{i \in J} |V(t_i)|$. 
-Then $|V(t^*)| = |E(t^*)| + 1$, and, by the criterion above, $t^*$ is a tree.
+Because each such $t_i$ is connected and connectedness is transitive, then $t' = \cup_{i \in J} t_i$ is a connected component in $\forest$. 
+Then, clearly, the connected components of $\forest$ are $\{t_i\}_{i \not \in J} \cup \{t'\}$ . 
+It suffices to show that $t'$ is a rooted tree. 
+By construction, $|V(t')| = 1 + \sum_{i \in J} |V(t_i)|$ and $|E(t')| = |J| + \sum_{i \in J} |E(t_i)| = |J| + \sum_{i \in J} (|V(t_i)| - 1) = \sum_{i \in J} |V(t_i)|$. 
+Then $|V(t')| = |E(t')| + 1$, so, by the criterion above, $t'$ is a tree.
 
-handle the rooted part 
+We show that $t'$ is rooted with root $w$.
+Consider $w' \in V(t') \setminus \{w\}$. 
+Then $w' \in V(t_i)$ for some $i \in J$. 
+There exists a directed path $w \to \roott(t_i)$, and a directed path $\roott(t_i) \to w'$ because $t_i$ is a rooted tree. 
+Then there is a directed path $w \to w'$, which is unique because $t'$ is cycle-free. 
+Then $t'$ is a tree rooted at $w$.
+This finishes the proof. 
 
 \eprf
 
+Now we come to the proof of the key lemma for correctness. 
 
-
-\prf
+\prf[Proof of Lemma~\ref{lemma:key}]
 
 Explanation of conditions. 
 
@@ -812,7 +814,6 @@ Suppose that $\pre_i^f = \pre_k$
 \subsubsection{Notes}
 
 ugh, we're not actually adding to root set in subroutine 2 
-why don't we define a root set 
 Let's show that all modifications are of form
     adding an element and joining root set elements to this as children 
     clear by edge and connectedness criterion that this gives a forest of the required form 
@@ -832,7 +833,8 @@ then correct construction from algorithm 1 states implies correct chain
 can we do induction on states separately? 
 by inspection, clear that all of Q is represented on F
 
-show lemma about tree construction 
+add a formal rooted tree definition to forest 
+check rooted tree lemma 
 add a reference - graph theory and its applications gross, yellen
 maybe global vars help us with induction e.g. make qo global 
 see if we can build collision indices all in algo 1 
