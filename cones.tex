@@ -556,7 +556,7 @@ Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and ad
                     \ENDIF
                 \ELSE
                     \FOR{$\pre_j \in Q$}
-                        \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} 
+                        \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} \label{alg1:impact}
                             \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop2}
                             \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$  \label{alg1:tree2}
                             \STATE Add $\pre_i$ to $\actc$; Add $j$ to $\coll(i)$ \COMMENT{Build collision indices} \label{alg1:coll}
@@ -595,7 +595,7 @@ Next, consider the information combination algorithm.
         \STATE Compute reachable component $\reach_j$ 
         \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$
         \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
-        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{w_k: v_k \in \strongcomp_j\}$ \label{alg2:forest}
+        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{r(w_k): v_k \in \strongcomp_j\}$ \label{alg2:forest}
     \ENDFOR
     \STATE Set $\coll(i) = \emptyset$ for $i \in \mathcal{I}$
     \FOR{$\pre_i \in \actt$} 
@@ -672,7 +672,7 @@ By lemma xxxx (to be proven), $F$ is always a problem tree during algorithm exec
 Then apparently $p(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
 
 By the surjection $p$ above, we can write $\acto$ as a disjoint union $\acto = \cup_{\pre \in \actt} p\inv(\pre)$. 
-So we can calculate $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 \leq \max_\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$. 
+So we can calculate $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 \leq \max_{\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$. 
 Similarly, we can compute $\distt(\acto) = \sum_{\pre \in \actt} \distt(p\inv(\pre)) \geq \sum_{\pre \in \actt} \distt(\{\pre\}) = \distt(\actt)$ by surjection and the discussion above.
 Then we have shown that $\disto(\acto^{k+1}) \leq \disto(\actok)$ and $\distt(\acto^{k+1}) \leq \distt(\actok)$ for any $k$. 
 
@@ -707,7 +707,7 @@ Suppose that $W_j$ is the strong component containing $v_i$.
 By line~\ref{alg2:selfref} and line~\ref{alg2:rootbuild}, we have $(v_i,v_k) \in E$ for the collision digraph built during this subroutine execution, so $v_k \in R_j$. 
 Therefore, $\pre' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \pe \pre_i$. 
 Using the surjection $p:\acto' \to \actt$ above, we have $p(\pre_i) = \pre'$ for each such $\pre_i$. 
-Then we can calculate as before $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 < \max_\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$, where the inequality is strict. 
+Then we can calculate as before $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 < \max_{\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$, where the inequality is strict. 
 Since $\acto \leftarrow \actt$ when this subroutine returns, we have shown that, in both cases above, the sequence $\disto(\actok)$ decreases strictly during a single execution of the outer while loop in FindStrictCore. 
 
 Above, we argued that $\disto(\actok)$ converges in finite time. 
@@ -720,7 +720,7 @@ Our proof of correctness will make use of the following key lemma, which shows t
 At any point during the execution of FindStrictCore 
 \begin{enumerate}
 \item $\forest$ is a problem forest \label{convlemma:forest}
-\item If $w_j = r(w_i)$ and $k \in \coll(i)$, then $\fix(\pre_j) \sub \fix(\pre_k)$ \label{convlemma:coll}
+\item If $k \in \coll(i)$, where $r(w_i) = w_j$, then $\fix(\pre_j) \sub \fix(\pre_k)$ \label{convlemma:coll}
 \end{enumerate}
 \end{lemma}
 
@@ -728,18 +728,18 @@ First, we give a definition and an auxillary lemma.
 For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
 
-\begin{lemma}
+\begin{lemma} \label{lemma:forest}
 Let $\forest_0$ be a rooted forest. 
 Suppose that $\forest$ is obtained from $\forest_0$ in one of the following ways 
 \begin{enumerate}
-\item Adding an isolated vertex to $\forest_0$ 
-\item Adding a vertex $w$ and directed edges $(w,w')$, where $w' \in \roott(\forest_0)$.
+\item Adding an isolated vertex to $\forest_0$ \label{forest:solo}
+\item Adding a vertex $w$ and directed edges $(w,w')$, where $w' \in \roott(\forest_0)$. \label{forest:child}
 \end{enumerate}
 Then $\forest$ is also a rooted forest.
 \end{lemma}
 
 \prf
-Note that a graph $G = (V,E)$ is a tree if and only if $G$ is a connected graph such that $|E| = |V| - 1$\footnote{Gross and Yellen xxxx}. 
+Note that a graph $G = (V,E)$ is a tree\footnote{Gross and Yellen xxxx} if and only if $G$ is a connected graph such that $|E| = |V| - 1$. 
 Consider $\forest_0$ and let $\{t_i\}_{i \in I}$ be its constituent rooted trees. 
 We let $V(t)$ and $E(t)$ denote the vertices and edges, respectively, of a tree $t$. 
 That is, $\{t_i\}$ is the collection of maximal connected components of $\forest_0$.
@@ -747,7 +747,7 @@ For case 1, no edges were added, so the new collection of maximal connected comp
 Each $t_i$ is still a rooted tree by assumption. 
 $\{w\}$ is also trivially a rooted tree with root $w$. 
 
-For case 2, let $w$ be the added vertex and $J$ the subset of tree indices such that edge $(w,\roott(t_i))$ is added to $\forest_0$.
+For (2) above, let $w$ be the added vertex and $J$ the subset of tree indices such that edge $(w,\roott(t_i))$ is added to $\forest_0$.
 Let $i \in J$. 
 Because each such $t_i$ is connected and connectedness is transitive, then $t' = \cup_{i \in J} t_i$ is a connected component in $\forest$. 
 Then, clearly, the connected components of $\forest$ are $\{t_i\}_{i \not \in J} \cup \{t'\}$ . 
@@ -762,41 +762,59 @@ There exists a directed path $w \to \roott(t_i)$, and a directed path $\roott(t_
 Then there is a directed path $w \to w'$, which is unique because $t'$ is cycle-free. 
 Then $t'$ is a tree rooted at $w$.
 This finishes the proof. 
-
 \eprf
 
-Now we come to the proof of the key lemma for correctness. 
+We are now ready for the proof of our key lemma. 
 
 \prf[Proof of Lemma~\ref{lemma:key}]
 
-Explanation of conditions. 
-
-A straightforward induction on distinct states $(\act,\forest)_k$ of the pair $(\act, \forest)$ shows that condition~\ref{def:forest1} of the definition is always satisfied. 
-By inspection, any line in the algorithm (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) where we add to $\act$ is paired with a preceding line, where we add all new points $\pre \in Q$ to $\forest$ as $w(\pre)$, so this condition clearly holds. 
+A straightforward induction on distinct states $(\forest,\act)_k$ of the pair $(\forest, \act)$ shows that condition~(\ref{def:forest1}) of the definition of a problem forest is always satisfied. 
+By inspection, any line in the algorithm where we add to $\act$ (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) is paired with a line in which we add all new points $\pre \in Q$ to the graph $\forest$ as $w(\pre)$, so this condition clearly holds. 
 
 For the other statements, we work by induction on the sequence $\pair_k$ of distinct states of the pair $\pair$. 
-We argue by induction that items (1) and (2) above hold. 
-Our proof will also show that every modification of $\forest$ takes one of the following forms 
-\begin{enumerate}
-\item Adding an isolated vertex to $\forest$ 
-\item Adding a vertex $w$ and edges $(w,w')$, where $w' \in \roott(\forest)$.
-\end{enumerate}
-
-By lemma xxxx this will show by induction that $\forest$ is a rooted forest at all times, as claimed. 
-
-
-For $k = 0$, note that we set $F$ to be a collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest, and the other defining conditions are trivial. 
+We argue by induction that items (1) and (2) above hold. For $k = 0$, note that we set $F$ to be a collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest, and the other defining conditions are trivial. 
 Initially, we set $\coll = \emptyset$, so item~\ref{convlemma:coll} above is trivially satisfied. 
 Then assume that the inductive hypotheses above hold for states of $\pair_k$ up to $k = n \geq 0$. 
-We consider separately each case where the pair $\pair$ can change. 
+By an abuse of notation, we will denote the components of $\pair_k$ as $\forest_k$ and $\coll_k$. 
+Consider separately each case where the pair $\pair$ can change. 
 
 \emph{Case1}: During subroutine 1, a stopping condition is triggered and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree1}. 
-At this line, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
+
+First, note that any $\pre \in \acto$ is added either during initialization or during an execution of subroutine~\ref{infcomb} immediately preceding subroutine~\ref{infac} or during the subroutine at line~\ref{alg1:addq}.  
+In each case, by inspection, $w(\pre)$ is added to $\roott(\forest)$ at initialization of $\pre \in \acto$. 
+It can be shown that any preallocation $\pre$ is processed (in the for loop at line~\ref{alg1:for2}) at most once. %show this for completeness... actually this is important 
+Then, if $\forest$ is being modified at lines~\ref{alg1:tree1} or \ref{alg1:tree2} after a stopping condition is triggered for $\pre \in \acto$, we must have $w(\pre) \in \acto$ 
+We add $w(\pre_i^f)$ to $\forest$ with $c(\pre_i^f) = \pre_i \in \roott(F)$.
+This modification satisfies condition~\ref{forest:child} of lemma~\ref{lemma:forest} above, so $F_{n+1}$ is still a rooted forest by the lemma above. 
+Note that, because the added vertex is a root, no \emph{new} siblings are added to $\forest$. 
+Then defining condition~(\ref{def:forest2}) is automatically satisfied for $F_{n+1}$ by induction. 
+
+At this modification of $\pair$, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
 By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}$ for any $j$. 
 In particular, $\fix(T_i) \peq (T_i^2)^{\ell} = \pre'$.
 Combining this with Lemma xxxx above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} = \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
-Note that for any $\pre_i \in \acto$, $w_i$ is a root in $\forest$, 
-Suppose that $\pre_i^f = \pre_k$
+Since $w(\pre_i^f) = p(w_i)$, we have shown that $\fix(\pre_i) \sub \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest$. 
+Then by induction, $\forest_{n+1}$ satisfies condition~(\ref{def:forest3}) defining a a problem forest.
+Finally, by mutual exclusion of stopping conditions, we must have $\coll(i) = \emptyset$, so item~(\ref{convlemma:coll}) above holds trivially.
+
+\emph{Case 2}: During subroutine 1, a stopping condition is triggered during the processing of $\pre_i$, and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree2}. 
+By the exact same arguments used in case 1, $F_{n + 1}$ remains a problem forest for $\act$ after this modification. 
+We need only check item~(\ref{convlemma:coll}) of our inductive hypothesis above.
+$\coll_n(i) = \emptyset$, since $I = \emptyset$ at subroutine initialization, and each preallocation is processed at most once, as above. %again, break this off as a lemma%
+For this modification $\coll_n \to \coll_{n + 1}$, we have that $\pre_i^f \peq \pre_j \in \act$, and $j$ is added to $I_n(i)$, so $I_{n + 1}(i) = \{j\}$. 
+By the note at the beginning of case 1, $w(\pre_i) \in \roott(\forest)$. 
+Since we add $w(\pre_i^f) = p(w_i))$, in fact, $w(\pre_i^f) = r(w_i)$. 
+Note that $\pre_i^f \peq \pre_j$ by the stopping condition for this case.  
+
+Note that, $\coll_n(\ell) = \coll_{n + 1}(\ell)$ for all $\ell \not = \coll$.
+Fix such an $\ell$, and let $k \in \coll(\ell)$. 
+By our inductive hypothesis, for $\forest = \forest_n$, we have $r(w_{\ell}) = w_j$, $\fix(\pre_j) \sub \fix(\pre_k$. 
+If, with $\forest = \forest_{n + 1}$, we still have $r(w_{\ell}) = w_j$, we are done by induction. 
+If not, then we must now have $r(w_{\ell}) = w(\pre_i^f)$. 
+But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$.
+By construction, all elements $\pre \in \acto$ have $w(\pre) \in \roott(\forest_0)$ or $w(\pre)$ is initialized as an isolated root, so this descendant relation is impossible.
+Then condition~(\ref{convlemma:coll}) holds and we are done. 
+
 
 
 
@@ -813,6 +831,7 @@ Suppose that $\pre_i^f = \pre_k$
 
 \subsubsection{Notes}
 
+solve the tree issue
 ugh, we're not actually adding to root set in subroutine 2 
 Let's show that all modifications are of form
     adding an element and joining root set elements to this as children 
@@ -833,6 +852,7 @@ then correct construction from algorithm 1 states implies correct chain
 can we do induction on states separately? 
 by inspection, clear that all of Q is represented on F
 
+add technical lemma about how each problem is only executed once - easy enough from removal arguments****
 add a formal rooted tree definition to forest 
 check rooted tree lemma 
 add a reference - graph theory and its applications gross, yellen
