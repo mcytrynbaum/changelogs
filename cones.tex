@@ -98,13 +98,14 @@
 \newcommand{\coll}{I}
 \newcommand{\collk}{I^k}
 \newcommand{\res}{\act_{int}}
-\newcommand{\reach}{R}
+\newcommand{\reach}{H}
 \newcommand{\forest}{F}
 \newcommand{\fixfind}{\mathcal{E}}
 \newcommand{\fixtemp}{\mathcal{E}'}
 \newcommand{\stp}{\mathrm{STOP}}
 \newcommand{\pair}{(F,I)}
 \newcommand{\roott}{R}
+\newcommand{\depth}{D}
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum and Scott Duke Kominers}
@@ -532,7 +533,7 @@ Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and ad
     \STATE Set $\acta \leftarrow \acto$ \label{alg1:add1}
     \STATE Set $\fixtemp \leftarrow \emptyset$ and $\actc \leftarrow \emptyset$ and $\coll \leftarrow \emptyset$
     \FOR{$\pre_i \in \acto$} \label{alg1:for1} 
-        \IF[Remove redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$}
+        \IF[Remove redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$ \OR $\pre_i \peq \min \fix(T^2)$}
             \STATE Remove $\pre_j$ from $\acta$, $\acto$, and $\act$ \label{alg1:stop0} \label{alg1:redundant}
         \ENDIF
     \ENDFOR
@@ -724,9 +725,12 @@ At any point during the execution of FindStrictCore
 \end{enumerate}
 \end{lemma}
 
-First, we give a definition and some useful auxillary lemmas. 
+First, we give definitions and some useful auxillary lemmas. 
 For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
+The depth of a vertex $w$ in a forest $\forest$ is defined as its depth in the unique rooted tree containing it, denoted by $\depth(w, \forest)$
+
+Next, we develop some basic graph theory results for problem forests. 
 
 \begin{lemma} \label{lemma:forest}
 Let $\forest$ be a rooted forest. 
@@ -735,7 +739,9 @@ Suppose that $\forest'$ is obtained from $\forest$ in one of the following ways
 \item Adding an isolated vertex to $\forest$ \label{forest:solo}
 \item Adding a vertex $w$ and directed edges $(w,w')$, where $w' \in \roott(\forest)$. \label{forest:child}
 \end{enumerate}
-Then $\forest'$ is also a rooted forest.
+Then $\forest'$ is also a rooted forest. 
+The reachable set $\reach(\forest,w)$ is unchanged by the modification $\forest \to \forest'$. 
+Finally, the depth $\depth(w,\forest)$ of a vertex $w \in \forest$ weakly increases during a modification of the above form. 
 \end{lemma}
 
 \prf
@@ -760,7 +766,18 @@ Consider $w' \in V(t') \setminus \{w\}$.
 Then $w' \in V(t_i)$ for some $i \in J$. 
 There exists a directed path $w \to \roott(t_i)$, and a directed path $\roott(t_i) \to w'$ because $t_i$ is a rooted tree. 
 Then there is a directed path $w \to w'$, which is unique because $t'$ has no cycles. 
-Then $t'$ is a tree rooted at $w$.
+Then $t'$ is a tree rooted at $w$, so $\forest'$ is a rooted forest.
+
+Next, we prove the statement concerning reachable sets. 
+Case~(\ref{forest:solo}) above is clear, since no edges are added.  
+For case~(\ref{forest:child}), let $w \in t$ for some tree in $\forest$. 
+If there is a new path from $w \to w'$, $w' \not \in \reach(\forest,w)$, it uses one of the added edges $(w_1,w_2)$. 
+Then, apparently, there exists a path $w \to w_1$ in $\forest'$. 
+But, as shown above, $w_1$ is a root in the new forest $\forest'$, so there exists no edge of the form $(x,w_1)$. 
+This is a contradiction, so it must be that $\reach(w,\forest) = \reach(w,\forest')$.
+
+The final statement concerning vertex depth is clear. 
+
 \eprf
 
 Next, we give a simple observation, showing how problem forests can be used to track fixed point relations. 
@@ -778,19 +795,24 @@ Then, since $\forest$ is a problem forest by assumption, we get a chain of inclu
 \eprf 
 
 First, we show an auxillary lemma about the relationship between $\forest$ and the problem sets returned from each subroutine 
+
 \begin{lemma} \label{lemma:roots}
 For any distinct $\pre \in \prealloc$, $\pre$ is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once.
 Moreover, the following statements are true. 
 \begin{enumerate}
 \item If $\forest$ is a problem forest when subroutine~\ref{infac} is initialized, then the set$\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
 \item If $\acto$ is returned from subroutine~\ref{infcomb}, then $w(\pre) \in \roott(\forest)$ for each $\pre \in \acto$. \label{lemma:roots:comb}
-\end{enumberate}
+\end{enumerate}
 \end{lemma}
 \prf 
--------ins proof 
--------
 
-For the statements below, we work by induction on $\ell$, the total number of evaluations of subroutine~\ref{infac} and \ref{\infcomb}. 
+We start with the first statement of the lemma.  
+If $\pre_i$ is processed twice, then clearly $\pre_i$ is added to $\acta$ twice. 
+Since $\acta \sub \acto$, and elements are \emph{only added} (never removed) to $\acto$ after line~\ref{alg1:redundant}, $\pre_i \in \acto$ when it is added to $\acta$ the second time. 
+But we check for redundancy before we add a program in line~\ref{alg1:addq}, so this is a contradiction. 
+Then any distinct preallocation is processed at most once. 
+
+For the other lemma statements, we work by induction on $\ell$, the total number of evaluations of subroutine~\ref{infac} and \ref{\infcomb}. 
 For $\ell = 0$ the statements are trivially true. 
 Then assume that this holds up to $\ell = n$. 
 There are several cases. 
@@ -802,6 +824,7 @@ Otherwise, this holds by the inductive hypothesis and (\ref{lemma:roots:comb}) a
 Note that each $\pre$ added to $\acto$ during this subroutine is initialized as an isolated root. 
 Then we have shown that, at any time before $\pre$ is processed (the code starting at line~\ref{alg1:for2} is evaluated for $\pre \in \acta$), $w(\pre) \in \roott(\forest)$. 
 Note that, by inspection, only edges of out-degree $1$ are ever added to $\forest$ during the subroutine. 
+
 Suppose that for $\pre_i \not = \pre_j \in \acto$, $r(w_i) = r(w_j) = w$. 
 Then there are directed paths $w \to w_i$ and $w \to w_j$. 
 The path $w \to w_i$ can be represented as a sequence of vertices $w = w^1,w^2,\hdots, w^k = w_i$ and similarly for $w_j$. 
@@ -810,6 +833,18 @@ Let $k'$ denote the minimal index of such a vertex in either of the paths.
 By minimality, the paths are identical up to this point. 
 Then $w' = w_{k' - 1}$ has out-degree $\geq 2$, so $w'$ cannot have been added during the algorithm, so $w'$ is a vertex in the initial problem forest $\forest'$. 
 Then $w' \in t$, one of the maximal connected components of $\forest'$. 
+Let $\forest''$ denote the state of the graph $\forest$ when subroutine~\ref{infac} returns. 
+Note that $\forest''$ is obtained from $\forest'$ by adding vertices and edges as in lemma~\ref{lemma:forest}. 
+Then $\forest''$ is also a rooted forest and, by the lemma, $\reach(w',\forest) = \reach(w',\forest'')$, since there is a finite chain of edge and vertex additions taking $\forest' \to \forest''$, and the reachable set of $w'$ is fixed during each of these modifications.  
+Since $w_i \not = w_j$, they cannot both be vertex $w'$. 
+Then at least one of them, say $i$, has $\depth(w_i, \forest') \geq 1$
+By lemma~\ref{lemma:forest} again, $\depth(w_i, \forest) \geq \depth(w_i, \forest') \geq 1$  for any state of the forest $\forest$. 
+Then $\pre_i$ is never in $\acto$ during the algorithm, since we showed that, for any $\pre_i \in \acto$, $w_i \in \roott(\forest)$ at some point during the algorithm. 
+This completes the proof for this case.
+
+\emph{Case 2}: 
+
+
 
 
 
@@ -818,7 +853,18 @@ Then $w' \in t$, one of the maximal connected components of $\forest'$.
 \eprf 
 
 
-about the structure of graphs returned from our 
+------- proof about well definition 
+We show that line~\ref{alg1:addq} above is well defined. 
+That is, if we add a problem $\pre_j = \pre - e_i$, it must \emph{not} be part of the forest already. 
+Suppose that this is not the case and $w_j \in \forest$ when we try to add it.
+Then we condition on when $w_j$ was added. 
+If $w_j$ was added during subroutine~\ref{infcomb}
+
+
+------ need to figure out how to do this
+
+
+
 
 
 
@@ -839,13 +885,6 @@ Consider separately each case where the pair $\pair$ can change.
 
 \emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{infac} when a stopping condition is triggered and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree1}. 
 
-First, we characterize the structure of $\roott(\forest)$. 
-We claim that, for a distinct $i$, $\pre_i$ is processed at most once during subroutine~\ref{infac}. 
-That is, $\pre_i$ is added to the active set $\acta$ at line~\ref{alg1:while2} at most once during a single execution of the subroutine. 
-If $\pre_i$ is processed twice, then clearly $\pre_i$ is added to $\acta$ twice. 
-Since $\acta \sub \acto$, and elements are \emph{only added} (never removed) to $\acto$ after line~\ref{alg1:redundant}, $\pre_i \in \acto$ when it is added to $\acta$ the second time. 
-But we check for redundancy before we add a program in line~\ref{alg1:addq}, so this is a contradiction. 
-Then any distinct preallocation is processed at most once. 
 
 Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of subroutine~\ref{infac}.
 We show that if $\pre_i \in \acto'$ then $w_i \in \roott(\forest')$. 
