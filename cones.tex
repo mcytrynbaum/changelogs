@@ -591,7 +591,7 @@ Next, consider the information combination algorithm.
     \STATE Set  $G = (V,E)$
     \STATE Compute strong components $\strongc$  of $G$
     \STATE Remove $\{v_k\}\in \strongc$ for $\pre_k \not \in \acto$, leaving components $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:cstrong}
-    \FOR[Use $G$ to combine information]{$j \in \mathcal{J}$}
+    \FOR[Use $G$ to combine information]{$j \in \mathcal{J}$} \label{alg2:for2}
         \STATE Compute reachable component $\reach_j$ 
         \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$
         \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
@@ -724,7 +724,7 @@ At any point during the execution of FindStrictCore
 \end{enumerate}
 \end{lemma}
 
-First, we give a definition and an auxillary lemma. 
+First, we give a definition and some useful auxillary lemmas. 
 For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
 
@@ -761,8 +761,21 @@ Then $w' \in V(t_i)$ for some $i \in J$.
 There exists a directed path $w \to \roott(t_i)$, and a directed path $\roott(t_i) \to w'$ because $t_i$ is a rooted tree. 
 Then there is a directed path $w \to w'$, which is unique because $t'$ is cycle-free. 
 Then $t'$ is a tree rooted at $w$.
-This finishes the proof. 
 \eprf
+
+Next, we give a simple lemma, showing how we can use problem forests to track fixed point relations. 
+
+\begin{lemma}
+Let $\forest$ be a problem forest for $\act$, with $\pre_i, \pre_j \in \act$.
+Let $t$ be a rooted tree in $\forest$, and suppose that $r(w_i) = w_j$. 
+Then $\fix(\pre_i) \sub \fix(\pre_j)$. 
+\end{lemma}
+
+\prf 
+By assumption, $t$ is a rooted tree, so there is a unique directed path of the form $w_j = w^0 \to w^1 \to \hdots w^n = w_i$ from the root to $w_i$. 
+Then, for each vertex in the path is related by $p(w^k) = w^{k - 1}$ for $1 \leq k \leq n$. 
+Then, since $\forest$ is a problem forest by assumption, we get a chain of inclusions $\fix(\pre_{k-1}) \sub \fix(\pre_k)$ for $1 \leq k \leq n$, showing that, as claimed, $\fix(\pre_i) \sub \fix(\pre_j$. 
+\eprf 
 
 We are now ready for the proof of our key lemma. 
 
@@ -778,26 +791,26 @@ Then assume that the inductive hypotheses above hold for states of $\pair_k$ up 
 By an abuse of notation, we will denote the components of $\pair_k$ as $\forest_k$ and $\coll_k$. 
 Consider separately each case where the pair $\pair$ can change. 
 
-\emph{Case1}: During subroutine 1, a stopping condition is triggered and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree1}. 
+\emph{Case1}: There is a transition $\pair_n \to \pair_{n +1}$ in algorithm~\ref{infac} when a stopping condition is triggered and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree1}. 
 
 First, note that any $\pre \in \acto$ is added either during initialization or during an execution of subroutine~\ref{infcomb} immediately preceding subroutine~\ref{infac} or during the subroutine at line~\ref{alg1:addq}.  
 In each case, by inspection, $w(\pre)$ is added to $\roott(\forest)$ at initialization of $\pre \in \acto$. 
 It can be shown that any preallocation $\pre$ is processed (in the for loop at line~\ref{alg1:for2}) at most once. %show this for completeness... actually this is important 
-Then, if $\forest$ is being modified at lines~\ref{alg1:tree1} or \ref{alg1:tree2} after a stopping condition is triggered for $\pre \in \acto$, we must have $w(\pre) \in \acto$ 
+Then, if $\forest$ is being modified at lines~\ref{alg1:tree1} or \ref{alg1:tree2} after a stopping condition is triggered for $\pre \in \acto$, we must have $w(\pre) \in \roott(\forest_n)$ 
 We add $w(\pre_i^f)$ to $\forest$ with $c(\pre_i^f) = \pre_i \in \roott(F)$.
-This modification satisfies condition~\ref{forest:child} of lemma~\ref{lemma:forest} above, so $F_{n+1}$ is still a rooted forest by the lemma above. 
+This modification satisfies condition~\ref{forest:child} of lemma~\ref{lemma:forest} above, so $\forest_{n+1}$ is still a rooted forest by the lemma above. 
 Note that, because the added vertex is a root, no \emph{new} siblings are added to $\forest$. 
 Then defining condition~(\ref{def:forest2}) is automatically satisfied for $F_{n+1}$ by induction. 
 
 At this modification of $\pair$, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
 By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}$ for any $j$. 
 In particular, $\fix(T_i) \peq (T_i^2)^{\ell} = \pre'$.
-Combining this with Lemma xxxx above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} = \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
+Combining this with lemma xxxx above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} = \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
 Since $w(\pre_i^f) = p(w_i)$, we have shown that $\fix(\pre_i) \sub \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest$. 
 Then by induction, $\forest_{n+1}$ satisfies condition~(\ref{def:forest3}) defining a a problem forest.
 Finally, by mutual exclusion of stopping conditions, we must have $\coll(i) = \emptyset$, so item~(\ref{convlemma:coll}) above holds trivially.
 
-\emph{Case 2}: During subroutine 1, a stopping condition is triggered during the processing of $\pre_i$, and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree2}. 
+\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in algorithm~\ref{infac} during the processing of $\pre_i$, where $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree2}. 
 By the exact same arguments used in case 1, $F_{n + 1}$ remains a problem forest for $\act$ after this modification. 
 We need only check item~(\ref{convlemma:coll}) of our inductive hypothesis above.
 $\coll_n(i) = \emptyset$, since $I = \emptyset$ at subroutine initialization, and each preallocation is processed at most once, as above. %again, break this off as a lemma%
@@ -815,6 +828,31 @@ But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$.
 By construction, all elements $\pre \in \acto$ have $w(\pre) \in \roott(\forest_0)$ or $w(\pre)$ is initialized as an isolated root, so this descendant relation is impossible.
 Then condition~(\ref{convlemma:coll}) holds and we are done. 
 
+\emph{Case 3}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a collision index $j$ to $\coll(i)$ for some $\pre_i \in \actt$ in line~\ref{alg2:coll2} of algorithm~\ref{infcomb}.
+Then $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
+We show that $r(w_i) = w_i$. 
+Note first that, for any $\pre_{\ell} \in \actt$, we have $c(w_{\ell}) = \{r(w_k): v_k \in \strongcomp_j\}$ for some strong component $\strongcomp_j$. 
+By disjointness of $\{\strongcomp_j\}_{j \in \mathcal{J}}$, the sets of children $c(w_{\ell})$ above are disjoint for all indices $\ell$. 
+Let $\forest'$ be the problem forest at the beginning of the for loop at line~\ref{alg2:for2}
+Then, during this loop, each $w_{\ell}$ is added as a root joining a collection of disjoint trees in $\forest'$. 
+Thus, $w_{\ell} \in \roott(F_n)$ for all $\pre_{\ell} \in \actt$, so this holdsfor $\ell = i$ in particular, and $r(w_i) = w_i$. 
+We have, by the case assumption, $\pre_i \peq \pre_j \in \act$ for some $j$, so  condition~(\ref{convlemma:coll}) holds for $j \in \coll(i)$. 
+Since the problem forest is unchanged, the conclusion for all other indices holds by the inductive hypothesis. 
+
+\emph{Case 4}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex while processing the collision graph on line~\ref{alg2:forest} of subroutine~\ref{infcomb}.
+Note that $\coll_n = \coll_{n + 1}$. 
+Clearly the transition from $\forest_n$ to $\forest_{n + 1}$ is of the form required in lemma~\ref{lemma:forest}, so $\forest_{n + 1}$ is still a rooted forest.  
+Consider the construction of the collision digraph $G$ above, and let $(\forest',\coll')$ be the value of $\pair$ at line~\ref{alg2:forest}. 
+Then, by (strong) induction, this pair satisfies conditions (1) and (2) of the lemma. 
+
+
+
+
+
+
+prove a lemma about working with problem trees 
+show that connection corr to containment 
+
 
 
 
@@ -831,6 +869,7 @@ Then condition~(\ref{convlemma:coll}) holds and we are done.
 
 \subsubsection{Notes}
 
+add tree lemma references
 solve the tree issue
 ugh, we're not actually adding to root set in subroutine 2 
 Let's show that all modifications are of form
@@ -846,6 +885,7 @@ is there something super-formally wrong with doing induction like this?
 add indices statement to proof tagline
 use equivalent condition for a tree that it is connected with n-1 vertices
 adding children who have no parents - should be fine 
+cut out some ugly things by resolving graph on the parents? 
 
 if j = r(i), then prej <  prek for k in I(i) [holds for any index set, always, and any referenced points 
 then correct construction from algorithm 1 states implies correct chain 
