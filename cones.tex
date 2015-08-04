@@ -543,10 +543,10 @@ Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and ad
         \STATE $\pre \leftarrow \pre_i$
             \WHILE{$\pre_i \in \acta$} 
                 \STATE Compute $\pre' = T_i^2 \pre$
-                \IF[Stopping conditions 2 and 3]{$\pre' = \pre$ \OR $\pre' \peq \bopre$}
+                \IF[Stopping conditions 1 and 3]{$\pre' = \pre$ \OR $\pre' \peq \bopre$}
                     \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop1}
                     \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ \label{alg1:tree1}
-                    \IF[Stopping condition 1]{$T\pre = \pre$} 
+                    \IF[Stopping condition 2]{$T\pre = \pre$} 
                         \STATE Add $\pre$ to $\fixtemp$
                     \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
@@ -804,7 +804,7 @@ First, we show an auxillary lemma about the relationship between $\forest$ and t
 
 \begin{lemma} \label{lemma:roots}
 Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once.
-Moreover, the following statements are true 
+Moreover, the following statements are true: 
 \begin{enumerate}
 \item If $\forest$ is a problem forest when subroutine~\ref{infac} is initialized, then the set $\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
 \item If $\acto$ is returned from subroutine~\ref{infcomb}, then $w(\pre) \in \roott(\forest)$ for each $\pre \in \acto$. \label{lemma:roots:comb}
@@ -886,46 +886,40 @@ Then $R(\forest',j) = \{r(w_k): v_k \in S_j\} = \{w_k: v_k \in S_j\}$.
 Then the root sets are disjoint in this case as well, by disjointness of strong components.
 The inductive argument from case 2 then establishes~(\ref{lemma:roots:comb}) above for this case as well. 
 \eprf 
-We are now ready for the proof of our key lemma. 
+We are now ready for the proof of our key lemma.  %proof of key lemma 
 \prf[Proof of Lemma~\ref{lemma:key}]
 A straightforward induction on distinct states $(\forest,\act)_k$ of the pair $(\forest, \act)$ shows that condition~(\ref{def:forest1}) of the definition of a problem forest is always satisfied. 
-By inspection, any line in the algorithm where we add to $\act$ (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) is paired with a line in which we add all new points $\pre \in Q$ to the graph $\forest$ as $w(\pre)$, so this condition clearly holds. 
+Specifically, By inspection, any line in which we add $\pre$ to $\act$ (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) is paired with a line where $w(\pre)$ is added to $\forest$. 
 
-For the other statements, we work by induction on the sequence $\pair_k$ of distinct states of the pair $\pair$. 
-We argue by induction that items (1) and (2) above hold. For $k = 0$, note that we set $F$ to be a collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest, and the other defining conditions are trivial. 
+For the remaining statements, we work by induction on the sequence $\pair_k$ of distinct states of the pair $\pair$. 
+For $k = 0$, note that we set $F$ to be a collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest, and the other defining conditions are trivial. 
 Initially, we set $\coll = \emptyset$, so item~\ref{convlemma:coll} above is trivially satisfied. 
-Then assume that the inductive hypotheses above hold for states of $\pair_k$ up to $k = n \geq 0$. 
-By an abuse of notation, we will denote the components of $\pair_k$ as $\forest_k$ and $\coll_k$. 
-Consider separately each case where the pair $\pair$ can change. 
+Then assume by induction that the statements above hold for $\pair_k$ up to $k = n \geq 0$. 
+By an abuse of notation, we will denote the components of $\pair_k$ as $\forest_k$ and $\coll_k$ when the meaning is clear.
+Consider separately each case where the pair $\pair$ can change.
 
-\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{infac} when a stopping condition is triggered and $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree1}. 
-
-
+\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{infac} when stopping condition (1) or (2) is triggered, and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree1}). 
 Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of subroutine~\ref{infac}.
-We show that if $\pre_i \in \acto'$ then $w_i \in \roott(\forest')$. 
-If the subroutine runs after initialization, this is clear since $\acto'$ consists of isolated roots. 
-Then, suppose $\acto'$ is returned from subroutine~\ref{\infcomb}, so $\acto' \leftarrow \actt$ when the algorithm returns. 
+From lemma~\ref{lemma:roots}, we know that (i) any distinct problem $\pre \in \acto$ is processed (the Tarski sequence for $\lag \pre \rag$ evaluated).
+Moreover, the lemma also shows that (ii) any $\pre \in \acto'$ has $w(\pre) \in \roott(\forest')$ and, from the proof, (iii) any $\pre$ added to $\acto$ during the subroutine has $w(\pre) \in \roott(\forest)$ before $\pre$ is processed. 
+We will use these facts below. 
 
-First, note $\pre \in \acto$ was added to $\acto$ either during initialization, during an execution of subroutine~\ref{infcomb} immediately preceding subroutine~\ref{infac}, or during the subroutine at line~\ref{alg1:addq}.  
-In each case, by inspection, $w(\pre)$ is added to $\roott(\forest)$ at initialization of $\pre \in \acto$. 
-It can be shown that any preallocation $\pre$ is processed (in the for loop at line~\ref{alg1:for2}) at most once. %show this for completeness... actually this is important 
-Then, if $\forest$ is being modified at lines~\ref{alg1:tree1} or \ref{alg1:tree2} after a stopping condition is triggered for $\pre \in \acto$, we must have $w(\pre) \in \roott(\forest_n)$ 
-We add $w(\pre_i^f)$ to $\forest$ with $c(\pre_i^f) = \pre_i \in \roott(F)$.
-This modification satisfies condition~\ref{forest:child} of lemma~\ref{lemma:forest} above, so $\forest_{n+1}$ is still a rooted forest.
-Note that, because the added vertex is a root, no \emph{new} siblings are added to $\forest$. 
-Then defining condition~(\ref{def:forest2}) is automatically satisfied for $F_{n+1}$ by induction. 
-
-At this modification of $\pair$, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
+At state change of $\pair_n \to \pair_{n + 1}$, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
 By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}$ for any $j$. 
 In particular, $\fix(T_i) \peq (T_i^2)^{\ell} = \pre'$.
-Combining this with lemma~\ref{lemma:contain} above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} = \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
-By monotonicity of the Tarski sequence $\pre_i^f \peq \pre_i$, so $\fix(\pre_i^f) \sub \fix(\pre_i)$.
-Since $w(\pre_i^f) = p(w_i)$, we have shown that $\fix(\pre_i) = \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest_n$. 
-Then by induction, $\forest_{n+1}$ satisfies condition~(\ref{def:forest3}) defining a a problem forest.
-Finally, by mutual exclusion of stopping conditions, we must have $\coll(i) = \emptyset$, so item~(\ref{convlemma:coll}) above holds trivially.
+Combining this with lemma~\ref{lemma:contain} above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
+By monotonicity of the Tarski sequence, we have $\pre_i^f \peq \pre_i$, so $\fix(\pre_i^f) \sub \fix(\pre_i)$, so $\fix(\pre_i) = \fix(\pre_i^f)$.
+Since $w(\pre_i^f) = p(w_i)$ by definition, we have shown that $\fix(\pre_i) = \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest_n$. 
+We add $c(w(\pre_i^f)) = \{\pre_i\}$ by definition, so there are no new sibling relations. 
+Then by the inductive hypothesis, $\forest_{n+1}$ also satisfies condition~(\ref{def:forest2}) and (\ref{def:forest3}) defining a a problem forest.
+By (iii) above, $\forest_n$ satisfies $w(\pre_i) = r(w(\pre_i))$, so the modification $\forest_n \to \forest_{n + 1}$ satisfies the conditions of lemma~\ref{lemma:forest}.
+The, by the lemma, $\forest_{n + 1}$ is also a rooted forest. 
+This completes the proof that $\forest_{n + 1}$ is a problem forest.
 
-\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in algorithm~\ref{infac} during the processing of $\pre_i$, where $w(\pre_i^f)$ is added to $\forest$ at line~\ref{alg1:tree2}. 
-By the exact same arguments used in the previous case, $F_{n + 1}$ remains a problem forest for $\act$ after this modification. 
+Finally, by mutual exclusion of stopping conditions and single-processing condition (i) above, we must have $\coll(i) = \emptyset$, so item~(\ref{convlemma:coll}) above holds trivially.
+
+\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{infac} during processing of $\pre_i$, where stopping condition (4) is triggered and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree2}). 
+By the exact same arguments as in case 1, $F_{n + 1}$ remains a problem forest after this modification. 
 We need only check item~(\ref{convlemma:coll}) of the inductive hypothesis above.
 $\coll_n(i) = \emptyset$, since $I = \emptyset$ at subroutine initialization, and each preallocation is processed at most once. %again, break this off as a lemma%
 $\coll_n$ is modified to $\coll_{n + 1}$ when we find that $\pre_i^f \peq \pre_j \in \act$, at which point $j$ is added to $I_n(i)$, so $I_{n + 1}(i) = \{j\}$. 
@@ -1000,12 +994,13 @@ This exhausts all cases, so the proof is complete.
 \subsubsection{Notes}
 
 AGENDA
+work through key lemma with new lemma 
+prove main result
+
+
+change root proof to root before processed? 
 can we stick with the single index thing? 
 rather than doing that, we just add problems $\pre_i$, where we may have $\pre_j = \pre_i$ for $j \not = i$, seems bad...
-
-
-
-
 add new statement to key tree lemma
 break decreasing cone statement off into definition of problem tree? 
 this gives a levels type of argument 
