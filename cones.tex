@@ -744,8 +744,8 @@ Suppose that $\forest'$ is obtained from $\forest$ in one of the following ways
 Then the following are true  
 \begin{enumerate}
 \item[(i)] $\forest'$ is also a rooted forest. 
-\item[(ii)] The reachable set $\reach(w,\forest)$ is unchanged by the modification $\forest \to \forest'$. 
-\item[(iii)] The depth $\depth(w,\forest)$ of a vertex $w \in \forest$ weakly increases. 
+\item[(ii)] $\reach(w,\forest) = \reach(w,\forest')$, the reachable set of a vertex $w \in \forest$ is unchanged
+\item[(iii)] $\depth(w,\forest') \geq \depth(w,\forest)$, the depth of a vertex $w \in \forest$ weakly increases.
 \end{enumerate}
 
 
@@ -921,31 +921,35 @@ Finally, by mutual exclusion of stopping conditions and single-processing condit
 \emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{infac} during processing of $\pre_i$, where stopping condition (4) is triggered and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree2}). 
 By the exact same arguments as in case 1, $F_{n + 1}$ remains a problem forest after this modification. 
 We need only check item~(\ref{convlemma:coll}) of the inductive hypothesis above.
-$\coll_n(i) = \emptyset$, since $I = \emptyset$ at subroutine initialization, and each preallocation is processed at most once. %again, break this off as a lemma%
-$\coll_n$ is modified to $\coll_{n + 1}$ when we find that $\pre_i^f \peq \pre_j \in \act$, at which point $j$ is added to $I_n(i)$, so $I_{n + 1}(i) = \{j\}$. 
-By the note at the beginning of case 1, $w(\pre_i) \in \roott(\forest_n)$ since each preallocation is processed at most once, $w(\pre_i) \in \roott(\forest_n)$. 
-Since we add $w(\pre_i^f) = p(w_i)$, we have $w(\pre_i^f) = r(w_i)$. 
-Since $\pre_i^f \peq \pre_j$ we are done for index $i$. 
+$\coll_n(i) = \emptyset$ because $I = \emptyset$ at initialization, and each preallocation is processed at most once by lemma~\ref{lemma:roots}.
+For stopping condition (4), we evaluate the Tarski sequence for $\lag \pre_i \rag$ and find that $\pre_i^f \peq \pre_j \in \act$, and $j$ is added to $I_n(i)$ so that $I_{n + 1}(i) = \{j\}$. 
+By (iii) above from lemma~\ref{lemma:roots}, $w(\pre_i) \in \roott(\forest_n)$. 
+We add $w(\pre_i^f) = p(w_i)$, so $r(w_i) = w(\pre_i^f)$ in $\forest_{n+1}$. 
+Since $\pre_i^f \peq \pre_j$, $\fix(pre_i^f) \sub \fix(\pre_j)$ for the only new collision index added during the change $\pair_n \to \pair_{n+1}$.
 
 Now consider an index $\ell \not = i$, so that $\coll_n(\ell) = \coll_{n + 1}(\ell)$. 
 Suppose that $k \in \coll(\ell)$. 
-By the inductive hypothesis, for $\forest = \forest_n$, if $r(w_{\ell}) = w_j$, then $\fix(\pre_j) \sub \fix(\pre_k)$. 
-If we still have $r(w_{\ell}) = w_j$, for $\forest = \forest_{n+1}$, we are done by induction. 
+By the inductive hypothesis, if $r(w_{\ell}) = w_j$ in problem forest $\forest_n$, then $\fix(\pre_j) \sub \fix(\pre_k)$. 
+If we still have $r(w_{\ell}) = w_j$ in the forest $\forest_{n+1}$, we are done by induction. 
 If not, then it must be that $r(w_{\ell}) = w(\pre_i^f)$. 
 But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$ in $\forest_n$.
-By construction, all elements $\pre \in \acto$ have $w(\pre) \in \roott(\forest')$, where $\forest'$ is a previous state of the problem forest, or $w(\pre)$ is initialized as an isolated root, so this descendant relation is impossible.
-Then condition~(\ref{convlemma:coll}) holds and we are done. 
+Subcase (1) of lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
+Then we have shown that condition~(\ref{convlemma:coll}) holds for the pair $\pair_{n + 1}$, and we are done. 
 
-The case where we add $i$ to $\coll(i)$ in subroutine~\ref{infcomb} holds as an extension of work above, since by single processing we have $r(w_i) = w(\pre_i^f)$, and $\pre_i^f \peq \pre_i$ by the Tarski argument discussed previously. 
-
-\emph{Case 3}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ in line~\ref{alg2:coll2} of algorithm~\ref{infcomb}.
+\emph{Case 3} Before constructing the collision digraph in subroutine~\ref{infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
 Then $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Let $r(w_i) = w_k$, so, by induction, $\fix(\pre_i) = \fix(\pre_k)$. 
-Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
-Then $\fix(\pre_k) \sub \fix(\pre_j)$ is immediate.  
-Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:coll}) follows for other indices by the inductive hypothesis. 
+In particular, $\fix(\pre_k) \sub \fix(\pre_i)$ for the index $i \in \coll(i)$, so condition~(\ref{convlemma:coll}) holds automatically.
+Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:coll}) follows for other indices by the inductive hypothesis.
 
-\emph{Case 4}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex to $\forest_n$ after processing the collision digraph $G$ on line~\ref{alg2:forest} of subroutine~\ref{infcomb}.
+\emph{Case 4}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
+Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
+Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
+Let $r(w_i) = w_k$.
+By the inductive hypothesis on $\forest_n = \forest_{n + 1}$, $\fix(\pre_i) = \fix(\pre_k)$, so condition~(\ref{convlemma:coll}) holds immediately.
+As above, this was the only modification to $\coll_n$, so condition~(\ref{convlemma:coll}) follows for other indices of $\coll_{n + 1}$ by the inductive hypothesis.
+
+\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex to $\forest_n$ after processing the collision digraph $G$ on line~\ref{alg2:forest} of subroutine~\ref{infcomb}.
 Note that $\coll_n = \coll_{n + 1}$. 
 Clearly the transition from $\forest_n$ to $\forest_{n + 1}$ is of the form required in lemma~\ref{lemma:forest}, so $\forest_{n + 1}$ is still a rooted forest.  
 We will show that the construction of $G$ ensures that both conditions of the lemma hold for $\forest_{n + 1}$.
