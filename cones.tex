@@ -881,79 +881,13 @@ Then no edge of the form $(w', w(\pre))$ is ever added during this procedure.
 This shows that each added vertex $w(\pre)$ is \emph{still a root} in $\forest''$, when the subroutine returns, so we have shown (\ref{lemma:roots:comb}) above for this case. 
 
 \emph{Case 3}: Subroutine~\ref{infcomb} returns at $\ell = n +1$ after subroutine~\ref{infcomb} returns at $\ell = n$.
-
-deal with case where w(pre) is already in 
-adding new? 
-how do we know we are actually adding a vertex not yet in the forest....
-same problem as above
-
-
-
-
-
-
-
-
-
-
-Moreover, by disjointness, adding $w(\pre_j)$ to $\forest$ does not change any of the other root sets $\{r(w_k): v_k \in \strongcomp_{j'}\}$ associated with components $\strongcomp_{j'} \not = \strongcomp_j$. 
-If an edge of the form $(w',w(\pre))$ is added during this process, then it must be that $w(\pre) \in \{r(w_k): v_k \in \strongcomp_{j'}\}$. 
-
-
-
-
-
-This is impossible, since the root set $\{r(w_k): v_k \in \strongcomp_{j'}\}$ is unchanged until 
-
-Fix $j' \not = j_1$, then, by disjointness of root sets $\{r(w_k): v_k \in \strongcomp_j\}$, adding $w(\pre_1)$ to $\forest'$ does not change any of the other root sets. 
-Assume inductively 
-
-
-
-
-
-$\{r(w_k): v_k \in \strongcomp_j\}$
-
-
-
-
-
-
-
-By construction, $w(\pre)$ is added as a root, since its children are all roots (as in lemma~\ref{lemma:forest}). 
-If $w(\pre) \not \in \roott(\forest'')$, then an edge of the form $(w',w(\pre))$ must have been added later during this for loop.  
-
-
-
-
-
-
-
-
-
+By the inductive hypothesis for problems returned from subroutine~\ref{infcomb}, all inputs $\pre \in \acto'$ to subroutine~\ref{infcomb} at $\ell = n + 1$ have $w(\pre) \in \roott(\forest')$.
+Then $R(\forest',j) = \{r(w_k): v_k \in S_j\} = \{w_k: v_k \in S_j\}$. 
+Then the root sets are disjoint in this case as well, by disjointness of strong components.
+The inductive argument from case 2 then establishes~(\ref{lemma:roots:comb}) above for this case as well. 
 \eprf 
-
-
-------- proof about well definition 
-We show that line~\ref{alg1:addq} above is well defined. 
-That is, if we add a problem $\pre_j = \pre - e_i$, it must \emph{not} be part of the forest already. 
-Suppose that this is not the case and $w_j \in \forest$ when we try to add it.
-Then we condition on when $w_j$ was added. 
-If $w_j$ was added during subroutine~\ref{infcomb}
-
-
------- need to figure out how to do this
-
-
-
-
-
-
-
 We are now ready for the proof of our key lemma. 
-
 \prf[Proof of Lemma~\ref{lemma:key}]
-
 A straightforward induction on distinct states $(\forest,\act)_k$ of the pair $(\forest, \act)$ shows that condition~(\ref{def:forest1}) of the definition of a problem forest is always satisfied. 
 By inspection, any line in the algorithm where we add to $\act$ (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) is paired with a line in which we add all new points $\pre \in Q$ to the graph $\forest$ as $w(\pre)$, so this condition clearly holds. 
 
@@ -1204,6 +1138,43 @@ Then, during this loop, each $w_{\ell}$ is added as a root joining a collection 
 Thus, $w_{\ell} \in \roott(F_n)$ for all $\pre_{\ell} \in \actt$, so this holdsfor $\ell = i$ in particular, and $r(w_i) = w_i$. 
 We have, by the case assumption, $\pre_i \peq \pre_j \in \act$ for some $j$, so  condition~(\ref{convlemma:coll}) holds for $j \in \coll(i)$. 
 Since the problem forest is unchanged, the conclusion for all other indices holds by the inductive hypothesis. 
+
+deal with case where w(pre) is already in 
+adding new? 
+how do we know we are actually adding a vertex not yet in the forest....
+same problem as above
+
+Moreover, by disjointness, adding $w(\pre_j)$ to $\forest$ does not change any of the other root sets $\{r(w_k): v_k \in \strongcomp_{j'}\}$ associated with components $\strongcomp_{j'} \not = \strongcomp_j$. 
+If an edge of the form $(w',w(\pre))$ is added during this process, then it must be that $w(\pre) \in \{r(w_k): v_k \in \strongcomp_{j'}\}$. 
+
+This is impossible, since the root set $\{r(w_k): v_k \in \strongcomp_{j'}\}$ is unchanged until 
+
+Fix $j' \not = j_1$, then, by disjointness of root sets $\{r(w_k): v_k \in \strongcomp_j\}$, adding $w(\pre_1)$ to $\forest'$ does not change any of the other root sets. 
+Assume inductively 
+
+$\{r(w_k): v_k \in \strongcomp_j\}$
+
+By construction, $w(\pre)$ is added as a root, since its children are all roots (as in lemma~\ref{lemma:forest}). 
+If $w(\pre) \not \in \roott(\forest'')$, then an edge of the form $(w',w(\pre))$ must have been added later during this for loop.  
+
+
+------- proof about well definition 
+We show that line~\ref{alg1:addq} above is well defined. 
+That is, if we add a problem $\pre_j = \pre - e_i$, it must \emph{not} be part of the forest already. 
+Suppose that this is not the case and $w_j \in \forest$ when we try to add it.
+Then we condition on when $w_j$ was added. 
+If $w_j$ was added during subroutine~\ref{infcomb}
+
+
+------ need to figure out how to do this
+
+
+
+
+
+
+
+
 \end{document}
 
 
