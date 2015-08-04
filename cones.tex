@@ -848,8 +848,33 @@ We show that $w(\pre) \in \roott(\forest'')$ for all $\pre$ in the returned set 
 By definition, the strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$ are disjoint. 
 Then if $j \not = j'$ with $v_k \in \strongcomp_j$, $v_{k'} \in \strongcomp_{j'}$, so $r(w_k) \not = r(w_{k'})$. 
 Then we must have $\{r(w_k): v_k \in \strongcomp_j\} \cap \{r(w_k): v_k \in \strongcomp_{\j'}} = \emptyset$. 
-Fix an order on $\mathcal{J}$, which can be extended to problems $\pre$ added to $\actt$ by letting $\pre_{j_1}$ be the problem added while processing strong component $j_1$. 
-Call index $j_i$ processed if $j_i$ has been already been added to 
+Fix an order on $\mathcal{J}$, which can be extended to problems $\pre$ added to $\actt$ by letting $\pre_{j_1}$ be the problem added while processing strong component $j_1$. %begin cut - too mathsy? this should be obvious...
+Define $R(j) = \{r(w_k): v_k \in \strongcomp_j\}$ to be the component roots of index $j$. 
+Call an index $j_i$ \emph{processed} if $\pre_{j_i}$ has already been added to $\actt$. 
+The problem forest $\forest$ is modified as we add new vertices, so roots change. 
+However, we can show by induction on the number of processed problems $n'$ that if $j$ is unprocessed, $R(j)$ does not change during this procedure. 
+The base case $n' = 0$ is trivial. 
+Then assume this holds up to $n' = k$. 
+Suppose we process index $j$ at $n' = k+1$ and let $J$ the set of unprocessed indices. 
+All component roots $R(j)$ for $j \in J$ are unchanged up to this point by induction, so they are all disjoint. 
+Then adding a new root $w(\pre_j)$ with $c(w(\pre_j)) = R(j)$ cannot change any of the other component root sets $R(\ell)$ for $\ell \in J \setminus \{j\}$.
+This completes the induction. 
+In particular, since $w(\pre) \not \in \forest$ at the beginning of the subroutine, then $w(\pre)$ is in no root set when $\forest = \forest'$, so no edge of the form $(w', w(\pre))$ is ever added during this procedure. 
+Then each added tree vertex $w(\pre)$ is still a root in $\forest''$, when the subroutine returns, so we have shown (\ref{lemma:roots:comb}) above for this case. 
+
+\emph{Case 3}: Subroutine~\ref{infcomb} runs after an execution of subroutine~\ref{infcomb}.  
+
+deal with case where w(\pre) is already in 
+adding new? 
+how do we know we are actually adding a vertex not yet in the forest....
+same problem as above
+
+
+
+
+
+
+
 
 
 
