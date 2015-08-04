@@ -823,7 +823,7 @@ If the subroutine executes following initialization, clearly $w(\pre) \in \roott
 Otherwise, this holds by the inductive hypothesis and (\ref{lemma:roots:comb}) above. 
 Note that each $\pre$ added to $\acto$ during this subroutine is initialized as an isolated root. 
 Then we have shown that, at any time before $\pre$ is processed (the code starting at line~\ref{alg1:for2} is evaluated for $\pre \in \acta$), $w(\pre) \in \roott(\forest)$. 
-Note that, by inspection, only edges of out-degree $1$ are ever added to $\forest$ during the subroutine. 
+Note that only edges of out-degree $1$ are ever added to $\forest$ during the subroutine. 
 
 Suppose that for $\pre_i \not = \pre_j \in \acto$, $r(w_i) = r(w_j) = w$. 
 Then there are directed paths $w \to w_i$ and $w \to w_j$. 
@@ -842,7 +842,45 @@ By lemma~\ref{lemma:forest} again, $\depth(w_i, \forest) \geq \depth(w_i, \fores
 Then $\pre_i$ is never in $\acto$ during the algorithm, since we showed that, for any $\pre_i \in \acto$, $w_i \in \roott(\forest)$ at some point during the algorithm. 
 This completes the proof for this case.
 
-\emph{Case 2}: 
+\emph{Case 2}: Subroutine~\ref{infcomb} executes directly after subroutine~\ref{infac}. 
+As before, let $\forest'$ denote the state of $\forest$ at initialization and $\forest''$ the state of the forest when the subroutine returns. 
+We show that $w(\pre) \in \roott(\forest'')$ for all $\pre$ in the returned set $\actt$. 
+By definition, the strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$ are disjoint. 
+Then if $j \not = j'$ with $v_k \in \strongcomp_j$, $v_{k'} \in \strongcomp_{j'}$, so $r(w_k) \not = r(w_{k'})$. 
+Then we must have $\{r(w_k): v_k \in \strongcomp_j\} \cap \{r(w_k): v_k \in \strongcomp_{\j'}} = \emptyset$. 
+Fix an order on $\mathcal{J}$, which can be extended to problems $\pre$ added to $\actt$ by letting $\pre_{j_1}$ be the problem added while processing strong component $j_1$. 
+Call index $j_i$ processed if $j_i$ has been already been added to 
+
+
+
+Moreover, by disjointness, adding $w(\pre_j)$ to $\forest$ does not change any of the other root sets $\{r(w_k): v_k \in \strongcomp_{j'}\}$ associated with components $\strongcomp_{j'} \not = \strongcomp_j$. 
+If an edge of the form $(w',w(\pre))$ is added during this process, then it must be that $w(\pre) \in \{r(w_k): v_k \in \strongcomp_{j'}\}$. 
+
+
+
+
+
+This is impossible, since the root set $\{r(w_k): v_k \in \strongcomp_{j'}\}$ is unchanged until 
+
+Fix $j' \not = j_1$, then, by disjointness of root sets $\{r(w_k): v_k \in \strongcomp_j\}$, adding $w(\pre_1)$ to $\forest'$ does not change any of the other root sets. 
+Assume inductively 
+
+
+
+
+
+$\{r(w_k): v_k \in \strongcomp_j\}$
+
+
+
+
+
+
+
+By construction, $w(\pre)$ is added as a root, since its children are all roots (as in lemma~\ref{lemma:forest}). 
+If $w(\pre) \not \in \roott(\forest'')$, then an edge of the form $(w',w(\pre))$ must have been added later during this for loop.  
+
+
 
 
 
