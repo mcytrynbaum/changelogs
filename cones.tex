@@ -486,12 +486,12 @@ A set of rooted trees $\forest$ is said to be \emph{problem forest} for a proble
 
 \begin{enumerate}
 \item If $\pre_k \in Q$, then $w_k \in \forest$. \label{def:forest1}
-\item There exists a $w_k \in F$ such that $w_i, w_j \in c(w_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. \label{def:forest2}
+\item If there exists a $w_k \in F$ such that $w_i, w_j \in c(w_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. \label{def:forest2}
 \item If $w_i = p(w_j)$, then $\fix(\pre_j) = \fix(\pre_i)$. \label{def:forest3}
 \end{itemize} 
 
 Thus, siblings in a problem forest share fixed points of $T$, and the fixed points of a child are the same as the fixed points of its parent. 
-We inductively assume the existence of such a forest (proof in section~\ref{fullalgo}). 
+For now, we assume the existence of such a forest for the problems considered below (proof in section~\ref{fullalgo}). 
 
 For each $\pre_i \in \acto$, form a digraph $G = (V,E)$ by letting $(v_i,v_k) \in E$ if and only if there exists $\pre_j \in Q$ such that (i) $\pref_i \peq \pre_j$, (ii) $\pre_i \not \peq \pre_j$, and (iii) $r(w_j) = w_k$.
 That is, by the correspondence between vertices and preallocations, during Stage 1 $\pre_i$ ``collided'' with some vertex $w_j$ in the problem forest which has $w_k$ as its root.  
@@ -637,16 +637,16 @@ FindStrictCore terminates in finite time
 \end{lemma}
 \prf
 It suffices to show that each while loop in the algorithm terminates in a finite number of iterations. 
-For any set $E \sub \prealloc$, we define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where we identify $\prealloc$ with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1$ is the standard 1-norm.}.
+For any set $E \sub \prealloc$, we define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|$ is the standard 1-norm .}.
 Similarly, we define $\distt(E) = \sum_{\pre \in E} \|\pre\|_1$.
 Note that by finiteness, both $\disto(\cdot)$ and $\distt(\cdot)$ take finitely many values on subsets of $\prealloc$.
-First we show that, for any input $\acto \sub \prealloc$, subroutine \ref{infac} terminates in finite iterations.
+First we show that, for any input $\acto \sub \prealloc$, subroutine \ref{infac} terminates in finitely many iterations.
 
-Consider the sequence $\actak$ formed by \emph{all} states of $\acta$ during the algorithm.
+Consider the sequence $\actak$ formed by distinct states of $\acta$ during the execution of subroutine~\ref{infac}.
 Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some $\pre \in \prealloc$, then $\disto(\acta^{k+1}) \leq \disto(\actak)$.
-By inspection, all changes to $\acta$ except for the change on line~\ref{alg1:addq} are of this form.
-For line~\ref{alg1:addq}, note that it is always the case that $\|\pre\|_1 > \max_i \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on line~\ref{alg1:addq} then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
-This shows that $\disto(\actak)$ is a monotonically decreasing sequence. 
+By inspection, all changes to $\acta$ except for the change on line~\ref{alg1:addq}, where we add new problems, are of this form.
+For line~\ref{alg1:addq}, note, for any preallocation $\pre$, we have $\|\pre\|_1 > \max\limits_{i = 1,\hdots,m} \|\pre - e_i\|$, so, in fact, if $\actak \to \acta^{k+1}$ on line~\ref{alg1:addq} then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
+This shows that $\disto(\actak)$ is a monotonically decreasing sequence bounded below by $0$. 
 Since $\disto(\actak)$ takes at most finitely values, this sequence of real numbers converges in finite time.
 
 Note that all of the inequalities above are \emph{strict} when $\pre^* = \argmax_{\pre' \in \acta} \|\pre'\|_1$. 
@@ -657,59 +657,59 @@ Then the while loop at line~\ref{alg1:while1} is also executed finitely many tim
 
 Since all inputs are finite, subroutine~\ref{infcomb} clearly terminates in finite time.
 
-Next, we show that the algorithms information combination step terminates. That is, the second while loop of algorithm~\ref{mainalg} terminates.
-Consider the distinct states of $\acto$, which form a sequence $\actok$, during a single execution of this loop.
-We will show the sequence of positive real numbers $\distt(\actok)$ is monotone decreasing.
+Next, we show that the information combination step in FindStrictCore terminates (the 2nd while loop of algorithm~\ref{mainalg} terminates).
+Consider the distinct states of $\acto$, which form a sequence $\actok$, during the execution of this loop.
+We will show that the sequence of positive real numbers $\distt(\actok)$ is monotonically decreasing.
 
-Consider a single execution of InformationCombine with input $\acto$.
-Let $\strongcomp \in \strongc$ be a strong component after removing irrelevant singletons in line~\ref{alg2:cstrong}.
-By construction, the out-degree of $v_i \in V$ is $0$ if $\pre_i \not \in \acto$
-By definition of a strong component, then, each vertex $v_i$ \emph{not} corresponding to a preallocation $\pre_i \in \acto$ generates a singleton strong component $\{v_i\}$ and is removed at line~\ref{alg2:cstrong}
-Then $\{v_i: v_i \in \strongcomp_j, j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \acto\}$. 
-Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, there exists a surjection $p: \acto \to \actt$ defined by $p(\pre_i) = \min_{k \in K_j} \pre_k \in \actt$. 
-This also shows, by construction, that for any $\pre_i \in \actt$, $p\inv(\{\pre_i\}) = \{\pre_j: w_j \in c(w_i)\}$. 
-Note that, from line~\ref{alg2:self_int}, for any $\pre_i \in \strongcomp_j$ with $w_{\ell} = r(w_i)$, we have $v_{\ell} \in \reach_j$. 
-By lemma xxxx (to be proven), $F$ is always a problem tree during algorithm execution, so that $\pre_{\ell} \peq \pre_i$. 
+Consider a single execution of the subroutine InformationCombine with input $\acto$.
+Let $\strongcomp \in \strongc$ be a strong component of the collision digraph $G = (V,E)$ left in the collection $\{\strongcomp_j\}_{j \in \mathcal{J}}$ after removing irrelevant singletons in line~\ref{alg2:cstrong}.
+By construction, the out-degree of a vertex $v_i \in V$ is $0$ if $\pre_i \not \in \acto$
+By definition of a strong component, then, each vertex $v_i$ \emph{not} associated with a preallocation $\pre_i \in \acto$ generates a singleton strong component $\{v_i\}$, which is removed at line~\ref{alg2:cstrong}
+Then $\{v_i: v_i \in \strongcomp_j; j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \acto\}$. 
+Therefore, by disjointness of strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$, we can define a surjection $p: \acto \to \actt$ by setting $p(\pre_i) = \min_{k \in K_j} \pre_k \in \actt$. 
+This also shows, by construction, that for any $\pre_j \in \actt$, we have $p\inv(\{\pre_j\}) \supseteq \{\pre_k: w_k \in c(w_j)\}$. 
+Note that, since we add $i$ to $\coll(i)$ at line~\ref{alg2:self_int}, if $\pre_i \in \strongcomp_j$ and $r(w_i) = w_{\ell}$, then $v_i \to v_{\ell}$; in particular, $v_{\ell} \in \reach_j$, the reachable set of strong component $j$.
+Lemma~\ref{lemma:key} shows that if $\pre_k = p(\pre_j)$, then $\pre_k \peq \pre_j$. By iterating, it follows $\pre_{\ell} \peq \pre_i$. %break into lemma statement? 
 Then apparently $p(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
 
-By the surjection $p$ above, we can write $\acto$ as a disjoint union $\acto = \cup_{\pre \in \actt} p\inv(\pre)$. 
-So we can calculate $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 \leq \max_{\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$. 
-Similarly, we can compute $\distt(\acto) = \sum_{\pre \in \actt} \distt(p\inv(\pre)) \geq \sum_{\pre \in \actt} \distt(\{\pre\}) = \distt(\actt)$ by surjection and the discussion above.
-Then we have shown that $\disto(\acto^{k+1}) \leq \disto(\actok)$ and $\distt(\acto^{k+1}) \leq \distt(\actok)$ for any $k$. 
+Using the map $p$ above, we can express $\acto$ as a disjoint union of the form $\acto = \cup_{\pre \in \actt} p\inv(\pre)$.
+Since $p$ is a surjection, we can calculate $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 \leq \max_{\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$. 
+Similarly, since $\distt(\cdot)$ is an additive set function, we compute $\distt(\actt) = \sum_{\pre \in \actt} \distt(\{\pre\}) \leq \sum_{\pre \in \actt} \distt(p\inv(\pre)) = \distt(\acto)$ by surjection and the discussion above.
+Since $\actt$ is returned from the subroutine as $\acto^{k + 1}$ given input $\actok$, we have shown $\disto(\acto^{k+1}) \leq \disto(\actok)$ and $\distt(\acto^{k+1}) \leq \distt(\actok)$ for any $k$. 
 
-In particular, the sequence $\distt(\actok)$ constructed above is monotonically decreasing (and bounded below by 0), so it converges in finite time, again using finiteness of $\prealloc$. 
-Suppose that for some $k$, with $\actok$ the input to subroutine $\ref{infcomb}$, we have $\distt(\actok) = \distt(\acto^{k+1})$.
-By the previous discussion, $\distt(p\inv(\pre_i)) \geq \distt(\{\pre_i\}$ for $\pre_i \in \actt$, so each of these must actually be equality. 
-Since, in addition, $p(\pre_j) \peq \pre_j$ for $\pre_j \in \actok$, each of these relations must actually be equality, with $p\inv(\pre_i) = \{\pre_i\}$ for any $\pre_i \in \actt$.
+In particular, the sequence $\distt(\actok)$ constructed above is monotonically decreasing (and bounded below by 0), so it converges at a finite value of $k$, again using finiteness of $\prealloc$. 
+Suppose that for $k \geq 0$ with $\actok$ the input to the subroutine InformationCombine, we have $\distt(\actok) = \distt(\acto^{k+1})$.
+By the previous discussion, $\distt(p\inv(\pre_j)) \geq \distt(\{\pre_j\})$ for any $\pre_j \in \actt$, so each of these weak inequalities must actually be equality. 
+Since, in addition, $p(\pre_i) \peq \pre_i$ for $\pre_i \in \actok$, each of these inequalities under the partial order $\peq$ must also be an equality, with $p\inv(\pre_i) = \{\pre_i\}$ for any $\pre_i \in \actt$.
 Then $\actok = \actt = \acto^{k+1}$. 
-This argument shows that the \emph{sequence of sets} $\actok$ actually converges in finite time also.
+This argument shows that the \emph{sequence of sets} $\actok$ actually converges in finite time as well. 
 
-Suppose, then, that $\actok = \acto^{k+1}$ for some $k$ and consider a single execution of subroutine~\ref{infcomb}.
-Above, we showed that $p\inv(\pre_i) = \pre_i$ for any $\pre_i \in \actt$
-By construction $\{j: \pre_j \in p\inv(\pre_i)\} = \{j: w_j \in c(w_i)\}$.  
-Then clearly the boolean expression in line~\ref{alg2:collide} must be false for all $\pre_i \in \actt$, so the subroutine returns $I = \emptyset$. 
-Then we have shown that the information combination stage terminates.
+Suppose, then, that $\actok = \acto^{k+1}$ for some $k$ and consider a single execution of InformationCombine. 
+Above, we showed that $p\inv(\pre_i) = \pre_i$ for any $\pre_i \in \actt$.
+Then, as noted above, we have $\{i\} = \{j: \pre_j \in p\inv(\pre_i)\} \supseteq \{j: w_j \in c(w_i)\}$, so the expression defining a collision in line~\ref{alg2:collide} must be false for all $\pre_i \in \actt$. Then the subroutine must return $I = \emptyset$. 
+This shows that the information combination stage of the algorithm terminates.
+That is, every sequence of executions of subroutine~\ref{infcomb} is finite.
 
-Combining the monotonicity of $\actok$ within the while loop at line~\ref{alg3:while2} with the monotonicity proof from our analysis of subroutine~\ref{infac}, we have shown that the sequence $\disto(\actok)$ formed by distinct states of $\acto$ within the outer while loop in FindStrictCore is monotonically decreasing.  
+We have shown that the sequence $\disto(\actok)$ is monotonically decreasing during the information combination stage (the second while loop in FindStrictCore) as well as during information acquisition in subroutine~\ref{infac}
+Then the sequence $\disto(\actok)$ formed by distinct states of $\acto$ at any time (within the outer while loop) during FindStrictCore is also monotonically decreasing.  
+We complete the termination proof by showing that $\disto(\acto)$ decreases strictly at \emph{least once} during an iteration of the outer while loop of FindStrictCore. Consider evaluating subroutine~\ref{infac} with input $\acto$. 
 
-Now consider an evaluation of subroutine~\ref{infcomb} with input $\acto$. 
-By inspection, $\acto \not = \emptyset$. 
+\emph{Case 1}: The collection $\actc$ returned by the subroutine is empty. Note that, by inspection, $\acto \not = \emptyset$. 
+Then apparently $0 = \disto(\acto^{k+1}) = \disto(\actc) < \dist(\actok)$. 
 
-\emph{Case 1}: The collection $\actc$ returned by the subroutine is empty.
-Then clearly we have $\disto(\acto^{k+1}) = \disto(\actc) < \dist(\actok)$. 
-
-\emph{Case 2}: $\actc \not = \emptyset$.
-Consider $\pre_i \in \actc$.
-Since $\pre_i$ was added to $\actc$, line~\ref{alg1:coll} was executed, so there exists $k \geq 0$ such that $(T_i^2)^k \pre_i \not = (T_i^2)^{k+1}$. 
-In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we must have $\pre_i^f \pe \pre_i$ strictly. 
-Note that, for all such $\pre_i \in \actc$, by line~\ref{alg1:tree2}, $r(w_i) = w(\pre_i^f) \equiv w_k$ for some $k \in \mathcal{I}$. 
-Denote $\acto' = \actc$, which is an input for subroutine~\ref{infcomb}.
-Suppose that $W_j$ is the strong component containing $v_i$. 
-By line~\ref{alg2:selfref} and line~\ref{alg2:rootbuild}, we have $(v_i,v_k) \in E$ for the collision digraph built during this subroutine execution, so $v_k \in R_j$. 
-Therefore, $\pre' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \pe \pre_i$. 
-Using the surjection $p:\acto' \to \actt$ above, we have $p(\pre_i) = \pre'$ for each such $\pre_i$. 
-Then we can calculate as before $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 < \max_{\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\acto)$, where the inequality is strict. 
-Since $\acto \leftarrow \actt$ when this subroutine returns, we have shown that, in both cases above, the sequence $\disto(\actok)$ decreases strictly during a single execution of the outer while loop in FindStrictCore. 
+\emph{Case 2}: Suppose $\actc \not = \emptyset$ and consider $\pre_i \in \actc$.
+Since $\pre_i$ was added to $\actc$, there must exist $k \geq 0$ such that $(T_i^2)^k \pre_i \not = (T_i^2)^{k+1} \pre_i$ (line~\ref{alg1:coll} of subroutine~\ref{infac}).  
+In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we must have $\pre_i^f \pe \pre_i$ \emph{strictly}.
+Note that, for all such $\pre_i \in \actc$, we add $w(\pre_i^f) = p(w_i)$ (at line~\ref{alg1:tree2}). Then $r(w_i) = r(w(\pre_i^f))$. Denote this root by $r(w(\pre_i))= w_k$. 
+The algorithm returns $\actc = \acto'$, which is an input for subroutine~\ref{infcomb}.
+In subroutine~\ref{infcomb}, we form strong components of the collision digraph $G = (V,E)$. 
+Suppose that $W_j$ is the strong component containing $v_i$.
+We add $i$ to $\coll(i)$ before forming the edges of $G$ (lines~\ref{alg2:selfref} and~\ref{alg2:rootbuild}), so we must have $(v_i,v_k) \in E$.
+Then $v_k \in \reach_j$, the reachable set of strong component $\strongcomp_j$. 
+Therefore, $\pre' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \peq \pre_i^f \pe \pre_i$, where the second inequality follows because $w(\pre_i^f)$ is a descendant of $w_k$. 
+Using the map $p:\acto' \to \actt$ above, we have $p(\pre_i) = \pre'$.
+We calculate as before $\disto(\actt) = \max_{\pre_j \in \actt} \|\pre_j\|_1 < \max_{\pre_j \in \actt} \disto(p\inv(\pre_j)) = \disto(\acto)$, where the inequality is strict by the work above, noting that $\pre_i \in p\inv(\{\pre'\})$. 
+Since $\acto \leftarrow \actt$ when this subroutine returns, we have shown that, in both cases above, the sequence $\disto(\actok)$ decreases \emph{strictly} during a single execution of the outer while loop in FindStrictCore. 
 
 Above, we argued that $\disto(\actok)$ converges in finite time. 
 Therefore, the outer while loop of FindStrictCore executes only finitely many times, so the algorithm terminates. 
@@ -730,7 +730,7 @@ For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
 The depth of a vertex $w$ in a forest $\forest$ is defined as its depth in the unique rooted tree containing it, denoted by $\depth(w, \forest)$
 
-Next, we develop some basic graph theory results for problem forests. 
+Next, we develop some needed graph-theoretic results for problem forests. 
 
 \begin{lemma} \label{lemma:forest}
 Let $\forest$ be a rooted forest. 
@@ -1048,6 +1048,14 @@ This exhausts all cases, so the proof is complete.
 \subsubsection{Notes}
 
 AGENDA
+can we stick with the single index thing? 
+rather than doing that, we just add problems $\pre_i$, where we may have $\pre_j = \pre_i$ for $j \not = i$, seems bad...
+
+
+
+
+break decreasing cone statement off into definition of problem tree? 
+this gives a levels type of argument 
 formalize acto root statement
 prove a single-processing lemma 
 break digraph construction off into a visual lemma? 
