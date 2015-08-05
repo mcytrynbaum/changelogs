@@ -84,11 +84,16 @@
 \newcommand{\strongcomp}{S}
 \newcommand{\acto}{Q_0} 
 \newcommand{\actok}{Q_0^k} 
+\newcommand{\actokk}{Q_0^{k+1}} 
+\newcommand{\actol}{Q_0^{\ell}} 
+\newcommand{\actol}{Q_0^{\ell + 1}} 
 \newcommand{\actak}{Q_A^k} 
 \newcommand{\acta}{Q_A} 
-\newcommand{\actan}{Q_A^{n'}} 
-\newcommand{\actann}{Q_A^{n' + 1}} 
+\newcommand{\actak}{Q_A^{k}} 
+\newcommand{\actakk}{Q_A^{k + 1}} 
 \newcommand{\actc}{Q_C} 
+\newcommand{\actck}{Q_C^k} 
+\newcommand{\actckk}{Q_C^{k + 1}} 
 \newcommand{\act}{Q} 
 \newcommand{\actt}{Q_{temp}} 
 \newcommand{\actacum}{\wh{Q_A}} 
@@ -1069,12 +1074,22 @@ After this line, we only add, never remove, points from $\acto$, so we have $\fi
 
 We now begin the induction.
 The base case is clear, since we set $\acta' \leftarrow \acto'$ at initialization.
-Then suppose by induction that our hypothesis holds up to $\ell = n'$.
-We will show that the conclusion still holds for $n' + 1$.
+Then suppose by induction that our hypothesis holds up to $\ell = k$.
+We will show that the conclusion still holds for $k + 1$.
 Note that the argument above shows that it suffices to consider changes to $\acta$ after redundant problem removal (line~\ref{alg1:redundant}), since no fixed points are lost during this step.
 There are several cases.
 
-\emph{Case 1}: $\actan \to \actann$ when stopping condition (1) or (3)
+\emph{Subcase 1}: There is a state change $\actak \to \actakk$ when stopping condition (1) or (2) is triggered for a problem $\pre_i \in \actak$, which is then removed $\actakk = \actak \setminus \{\pre_i\}$.
+We have $\pre' = (T_i^2)^k \pre_i$ for some $k \geq 0$, and $\pre' \peq \bopre$ or $T \pre' = \pre'$.
+By the Tarski argument discussed earlier in the text, $\fix(\pre_i) \sub \fix(\pre')$.
+Let $\preo \in \acto$ and $\pre \in \fix(\preo)$ and suppose that $\pre \not \in \fixtemp_{k + 1}$.
+Then, in particular, $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $\pre_i$.
+So if $\pre \peq \pre'$, then $\pre \pe \pre'$ strictly.
+But by lemma xxxx and because $\fix(T) \sub \fix(T^2)$, we actually have $\fix(\pre') = \emptyset$, so this is impossible.
+By the inductive hypothesis, there must be $\pre'' \in \actak \cup \actck$ such that $\pre \peq \pre'' \peq \preo$ and $\pre'' \not = \pre'$.
+Then $\pre'' \in \actakk \cup \actckk$ still, so we are done.
+
+
 
 
 
