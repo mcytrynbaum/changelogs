@@ -550,7 +550,7 @@ Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and ad
                         \STATE Add $\pre$ to $\fixtemp$
                     \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
-                            \IF[Add new problems]{there is no $\pre'' \in \acto$ with $\pre - e_i \peq \pre''$ } \label{alg1:redundant}
+                            \IF[Add non-redundant problems]{$\nexists \pre'' \in \acto \setminus \{\pre\}$ with $\pre - e_i \peq \pre''$ } \label{alg1:redundant}
                                 \STATE Add $\pre - e_i$ to $\acto$, $\acta$, and $\act$ \label{alg1:addq}
                                 \STATE Add $w(\pre - e_i)$ to $\forest$ as an isolated root 
                             \ENDIF
@@ -1035,16 +1035,20 @@ Following the general approach of Echenique and Yenmez, we show by induction tha
 
 
 
-
-
-
 \subsubsection{Notes}
 
 AGENDA
 work through key lemma with new lemma 
 prove main result
 
+ok so 2 potential strats
+    only if you actually are an old cone 
+    if you cross an old cone 
+        note: dont want to track all union relations - try to still get single processing condition
+        that is - if your father is not in the cone but you are - this should also work, but does single processing? 
+        the issue is that removing if it touches a top point is less efficient / arb given our strategy above, but let's see if it works first 
 
+change setminus on $\acto$ - important 
 change root proof to root before processed? 
 can we stick with the single index thing? 
 rather than doing that, we just add problems $\pre_i$, where we may have $\pre_j = \pre_i$ for $j \not = i$, seems bad...
