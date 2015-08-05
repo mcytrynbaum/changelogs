@@ -936,30 +936,63 @@ But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$ in $\forest_n$.
 Subcase (1) of lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
 Then we have shown that condition~(\ref{convlemma:coll}) holds for the pair $\pair_{n + 1}$, and we are done. 
 
-\emph{Case 3} Before constructing the collision digraph in subroutine~\ref{infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
+\emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{infac} during processing of $\pre_i$, when stopping condition (3) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root (line~\ref{alg1:addq}). 
+We denote $\pre_i - e_j = \pre_k$.
+That $\forest_{n + 1}$ is still a rooted forest is immediate from lemma~\ref{lemma:forest}, since the new vertex is isolated.
+No edges are added, so no new parent or child relations are added. 
+Then, by the inductive hypothesis, $\forest_{n + 1}$ remains a problem forest.
+For condition~(\ref{convlemma:coll}) above, fix $\ell$ and let $j \in \coll(\ell)$.
+If $\ell \not = k$, then, because no edge is added to the graph, $r(w_{\ell})$ is unchanged, so the condition holds by the inductive hypothesis. 
+If $\ell = i$, then $\coll(i) = \emptyset$, so the condition is trivially true. 
+We have shown (1) and (2) hold for $\pair_{n + 1}$, so we are done.
+
+\emph{Case 4} Before constructing the collision digraph in subroutine~\ref{infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
 Then $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Let $r(w_i) = w_k$, so, by induction, $\fix(\pre_i) = \fix(\pre_k)$. 
 In particular, $\fix(\pre_k) \sub \fix(\pre_i)$ for the index $i \in \coll(i)$, so condition~(\ref{convlemma:coll}) holds automatically.
 Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:coll}) follows for other indices by the inductive hypothesis.
 
-\emph{Case 4}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
+\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
 Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
 Let $r(w_i) = w_k$.
 By the inductive hypothesis on $\forest_n = \forest_{n + 1}$, $\fix(\pre_i) = \fix(\pre_k)$, so condition~(\ref{convlemma:coll}) holds immediately.
 As above, this was the only modification to $\coll_n$, so condition~(\ref{convlemma:coll}) follows for other indices of $\coll_{n + 1}$ by the inductive hypothesis.
 
-\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex to $\forest_n$ after processing the collision digraph $G$ on line~\ref{alg2:forest} of subroutine~\ref{infcomb}.
+\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{infcomb} (line~\ref{alg2:forest}).
 Note that $\coll_n = \coll_{n + 1}$. 
-Clearly the transition from $\forest_n$ to $\forest_{n + 1}$ is of the form required in lemma~\ref{lemma:forest}, so $\forest_{n + 1}$ is still a rooted forest.  
+By construction, we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
+
+The following lemma shows that, conditional on the problem forest structure of $\forest$, we can use the collision digraph to capture and combine the information contained in distinct problem cones.
+\begin{lemma} \label{lemma:graph}
+Suppose that $\forest$ is a problem forest when InformationCombine is initialized. 
+Let $\pre_i$ be an arbitrary problem with $r(w_i) = w_j$, and suppose that if $k \in \coll(i)$ then $\fix(\pre_j) \sub \fix(\pre_k)$. 
+Let $G = (V,E)$ be the collision digraph and $S$ one of its strong components. Then we have
+\begin{enumerate}
+\item If $(v_i, v_k) \in E$ then $\fix(\pre_i) \sub \fix(\pre_k)$. \label{lemma:graph:edge}
+\item If $\pre_i, \pre_j \in \acto$ and $v_i, v_j \in \strongcomp$ then $\fix(\pre_i) = \fix(\pre_j)$, $\strongcomp$ a strong component of $G$. \label{lemma:graph:strong}
+\item If $v_j \in \strongcomp$ and $v_k \in \reach$, the reachable set of $\strongcomp$, then $\fix(\pre_i) \peq \pre_k$. \label{lemma:graph:reach}
+\end{enumerate}
+\end{lemma}
+Thus, by item~(\ref{lemma:graph:edge}), directed edges in $G$ reflect the relations between strict core allocations contained in different problem cones. 
+As a consequence, item~(\ref{lemma:graph:strong}) shows that $G$'s maximal strongly connected components identify equivalent problems. 
+The last statement shows that we can use breadth-first search, a fast digraph algorithm for computing reachable sets, to combine the information learned from different problems.
+
+\prf
+First, we characterize the edges of $G = (V,E)$. 
+Consider $\pre_i \in \acto$ at initialization of the subroutine and $j \in \coll(i)$ with $w_k = r(w_j)$ and $w_{\ell} = r(w_i)$.
+Since $\forest$ is a problem tree, by lemma~\ref{lemma:forest2} above $\fix(\pre_i) = \fix(\pre_{\ell})$ and $\fix(\pre_j) = \fix(\pre_k)$.
+By the assumption that hypothesis, $\fix(\pre_{\ell}) \sub \fix(\pre_j)$. 
+
+
+
+\eprf 
+
+
 We will show that the construction of $G$ ensures that both conditions of the lemma hold for $\forest_{n + 1}$.
 Let $(\forest',\coll')$ be the value of the pair $\pair$ at line~\ref{alg2:forest} when we begin this construction.
 Then, by (strong) induction, $\forest'$ is a problem forest for $\act$ and the intersection indices $\coll$ satisfy condition~\ref{convlemma:coll}. 
 
-First, we characterize the edges of $G = (V,E)$. 
-Consider $\pre_i \in \acto$ at initialization of the subroutine and $j \in \coll(i)$ with $w_k = r(w_j)$ and $w_{\ell} = r(w_i)$.
-Since $\forest'$ is a problem tree, by lemma~\ref{lemma:forest2} above $\fix(\pre_i) \sub \fix(\pre_{\ell})$ and $\fix(\pre_j) \sub \fix(\pre_k)$.
-By the inductive hypothesis, $\fix(\pre_{\ell}) \sub \fix(\pre_j)$. 
 Putting this together, we have $\fix(\pre_i) \sub \fix(\pre_k)$ for every $(v_i, v_k) \in E$.
 
 Now consider a strong component $\strongcomp_j$ (after removing singletons $\{v_i\}$ for $\pre_i \not \in \acto$). 
