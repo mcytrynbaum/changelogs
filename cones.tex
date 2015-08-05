@@ -986,14 +986,7 @@ Let $r(w_i) = w_k$, so, by induction, $\fix(\pre_i) = \fix(\pre_k)$.
 In particular, $\fix(\pre_k) \sub \fix(\pre_i)$ for the index $i \in \coll(i)$, so condition~(\ref{convlemma:coll}) holds automatically.
 Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:coll}) follows for other indices by the inductive hypothesis.
 
-\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
-Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
-Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
-Let $r(w_i) = w_k$.
-By the inductive hypothesis on $\forest_n = \forest_{n + 1}$, we have $\fix(\pre_i) = \fix(\pre_k)$, so condition~(\ref{convlemma:coll}) holds immediately.
-As above, this was the only modification to $\coll_n$, so condition~(\ref{convlemma:coll}) follows for other indices of $\coll_{n + 1}$ by the inductive hypothesis.
-
-\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{infcomb} (line~\ref{alg2:forest}).
+\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{infcomb} (line~\ref{alg2:forest}).
 Note that $\coll_n = \coll_{n + 1}$. 
 By construction (on line~\ref{alg2:forest}), we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
 
@@ -1018,10 +1011,27 @@ Let $k' \in \coll(\ell)$ and suppose $r(w_{\ell}) = w(\pre)$.
 Let $w_j$ the root of $w_{\ell}$ in $\forest_n$
 Then it must be that $p(w_j) = w(\pre)$; for instance, by lemma~\ref{lemma:forest}, since otherwise the reachable set of some $w' \in \forest_n$ would have changed as $\forest_n \to \forest_{n+1}$. 
 Then by lemma~\ref{lemma:forest2}, we have $\fix(\pre) = \fix(\pre_j) \sub \fix(\pre_{k'})$, where we use the inductive hypothesis in the subset relation, so condition~(\ref{convlemma:coll}) still holds for $\pair_{n+1}$. 
-This finishes the proof.
-We have exhausted all cases, so the proof is complete. 
+This finishes the proof for this case.
 
+\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
+Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
+Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
+Let $r(w_i) = w_k$.
+By the inductive hypothesis on $\forest_n = \forest_{n + 1}$, we have $\fix(\pre_i) = \fix(\pre_k)$, so condition~(\ref{convlemma:coll}) holds immediately.
+As above, this was the only modification to $\coll_n$, so condition~(\ref{convlemma:coll}) follows for other indices of $\coll_{n + 1}$ by the inductive hypothesis.
+
+We have exhausted all cases, so the proof is complete. 
 \eprf 
+
+We are now ready to prove correctness using the lemmas above.
+\begin{thm}
+FindStrictCore finds all fixed points $\fix(T)$. 
+\end{thm}
+\prf
+Consider
+Following the general approach of Echenique and Yenmez, we show by induction that at any point during FindStrictCore, $\pre \in \fix(T)$ has either (i) $\pre \in \fixfind$ or (ii) there is a $\pre' \in \acto$ such that $\pre' \peq \pre$. 
+
+
 
 
 
