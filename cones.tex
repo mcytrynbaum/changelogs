@@ -1058,7 +1058,7 @@ Formally, we work by induction (\emph{within} this subroutine), on distinct stat
 Note that, by inspection of the algorithm, the last three sets in the tuple change \emph{only if} $\acta$ changes. 
 Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states between iterations of the processing for loop at line~\ref{alg1:for1}.
 Thus, we are allowed to remove fixed points and add them back within the processing code in this for loop.} of the working set of active problems $\acta$.
-We will show by induction that for all $\pre \in \acto_{\ell}$, if $\pre'' \in \fix(\pre)$, then either $\pre'' \in \fixtemp_{\ell}$ or there exists $\pre' \in \acta_{\ell} \cup \actc_{\ell}$ with $\pre'' \peq \pre' \pre \pre$.
+We will show by induction that for all $\pre \in \acto_{\ell}$, if $\pre'' \in \fix(\pre)$, then either $\pre'' \in \fixtemp_{\ell}$ or there exists a guarantee $\pre' \in \acta_{\ell} \cup \actc_{\ell}$ with $\pre'' \peq \pre' \pre \pre$ (g) afforded by some $\pre' \in \acta_{\ell} \cup \actc_{\ell}$.
 In particular, this will show that $\fix(\acto_{\ell}) \sub \fix(\acta_{\ell}) \cup \fix(\actc_{\ell}) \cup \fixtemp_{\ell}$ for al $\ell$.
 By lemma~\ref{lemma:termination}, the subroutine terminates, with $\acta'' = \emptyset$. 
 Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''$ is the state of $\acto$ when the algorithm returns. 
@@ -1089,9 +1089,20 @@ But by lemma xxxx and because $\fix(T) \sub \fix(T^2)$, we actually have $\fix(\
 By the inductive hypothesis, there must be $\pre'' \in \actak \cup \actck$ such that $\pre \peq \pre'' \peq \preo$ and $\pre'' \not = \pre'$.
 Then $\pre'' \in \actakk \cup \actckk$ still, so we are done.
 
-
-
-
+\emph{Subcase 2}: There is a state change $\actak \to \actakk$ when stopping condition (3) is triggered for a problem $\pre_i \in \actak$.
+Again, we have $\pre'$ the lowest element of the Tarski sequence for $\lag \pre_i \rag$ with $T_i^2 \pre' = \pre'$ by assumption, where, as above, $\fix(\pre_i) \sub \fix(\pre')$.
+We then remove $\pre_i$ and add $\pre' - e_i$ for $1 \leq i \leq m$, so $\actakk = \actak \setminus \{\pre_i \} \cup \left \bigcup_{i \in I} \{\pre' - e_i \}$, where $I \sub \{1,\hdots,m\}$ are the indices such that $\pre' - e_i$ is non-redundant (as in line~\ref{alg1:addq}).
+Let $\preo \in \acto$ and $\pre \in \fix(\preo)$ and suppose that $\pre \not \in \fixtemp_{k +1}$.
+If $\pre \peq \pre_i \peq \preo$ as in (g) above, then, in particular, $\pre \peq \pre'$ by the Tarski argument.
+In fact, $\pre \pe \pre'$, because we check for points of $\fix(T)$, as in the previous case.
+Then we must have, $\pre \peq \pre' - e_i$ for some $i$.
+If $i \in I$ then $\pre \peq \pre' - e_i \pe \pre' \peq \preo$, so $\pre' - e_i$ gives a new guarantee (g) on this fixed point.
+No other points of $\actak$ are removed, so we are done.
+Suppose, conversely, that $i \not \in I$; that is, the problem $\pre' - e_i$ is redundant.
+Then $\pre - e_i = \pre'' \in \actok$.
+By working with the guarantee (g) on $\pre'' \in \acto$ (rather than the guarantee on $\preo$), there is $\pre_g \in \actak \cup \actck$ such that $\pre \peq \pre_g \peq \pre'' = \pre' - e_i \pe \pre' \pre \pre_i$.
+In particular, $\pre_g \not = \pre_i$, so it is not removed and $\pre_g \in \actkk \cup \actckk$.
+Then in either case, we still have a guarantee on all fixed points
 
 
 
