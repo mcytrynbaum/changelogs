@@ -86,6 +86,8 @@
 \newcommand{\actok}{Q_0^k} 
 \newcommand{\actak}{Q_A^k} 
 \newcommand{\acta}{Q_A} 
+\newcommand{\actan}{Q_A^{n'}} 
+\newcommand{\actann}{Q_A^{n' + 1}} 
 \newcommand{\actc}{Q_C} 
 \newcommand{\act}{Q} 
 \newcommand{\actt}{Q_{temp}} 
@@ -107,6 +109,7 @@
 \newcommand{\roott}{R}
 \newcommand{\depth}{D}
 \newcommand{\unproc}{\mathcal{J}_u}
+
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum and Scott Duke Kominers}
@@ -543,14 +546,14 @@ Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and ad
         \STATE $\pre \leftarrow \pre_i$
             \WHILE{$\pre_i \in \acta$} 
                 \STATE Compute $\pre' = T_i^2 \pre$
-                \IF[Stopping conditions 1 and 3]{$\pre' = \pre$ \OR $\pre' \peq \bopre$}
+                \IF[Stopping conditions 1 and 3]{$\pre' \peq \bopre$ \OR $\pre' = \pre$}
                     \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop1}
                     \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ \label{alg1:tree1}
                     \IF[Stopping condition 2]{$T\pre = \pre$} 
                         \STATE Add $\pre$ to $\fixtemp$
                     \ELSIF{$\pre' = \pre$}
                         \FOR{$i = 1$ to $m$}
-                            \IF[Add non-redundant problems]{$\nexists \pre'' \in \acto \setminus \{\pre\}$ with $\pre - e_i \peq \pre''$ } \label{alg1:redundant}
+                            \IF[Add non-redundant problems]{$\nexists \pre'' \in \acto \{\pre\}$ with $\pre - e_i = \pre''$ } \label{alg1:redundant}
                                 \STATE Add $\pre - e_i$ to $\acto$, $\acta$, and $\act$ \label{alg1:addq}
                                 \STATE Add $w(\pre - e_i)$ to $\forest$ as an isolated root 
                             \ENDIF
@@ -1050,12 +1053,30 @@ Formally, we work by induction (\emph{within} this subroutine), on distinct stat
 Note that, by inspection of the algorithm, the last three sets in the tuple change \emph{only if} $\acta$ changes. 
 Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states between iterations of the processing for loop at line~\ref{alg1:for1}.
 Thus, we are allowed to remove fixed points and add them back within the processing code in this for loop.} of the working set of active problems $\acta$.
-We will show by induction that $\fix(\acto_{\ell}) \sub \fix(\acta_{\ell}) \cup \fix(\actc_{\ell}) \cup \fixtemp_{\ell}$
-By lemma~\ref{lemma:termination}, this subroutine terminates, with $\acta'' = \emptyset$. 
-Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, the state of $\acto$ at the end of the algorithm.
-Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \sub \fix(\actc'') \cup \fixtemp'' \sub \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
+We will show by induction that for all $\pre \in \acto_{\ell}$, if $\pre'' \in \fix(\pre)$, then either $\pre'' \in \fixtemp_{\ell}$ or there exists $\pre' \in \acta_{\ell} \cup \actc_{\ell}$ with $\pre'' \peq \pre' \pre \pre$.
+In particular, this will show that $\fix(\acto_{\ell}) \sub \fix(\acta_{\ell}) \cup \fix(\actc_{\ell}) \cup \fixtemp_{\ell}$ for al $\ell$.
+By lemma~\ref{lemma:termination}, the subroutine terminates, with $\acta'' = \emptyset$. 
+Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''$ is the state of $\acto$ when the algorithm returns. 
+Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \cup \fix(\actc'') \cup \fixtemp'' \sub \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
 
-First, we show that $\fix(\acto') \sub \fix(\acto'')$.
+First, we show that $\fix(\acto') \sub \fix(\acto'')$. 
+Let $\acto^r$ denote the state of $\acto$ after removing redundant problems at the beginning of the subroutine (line~\ref{\alg1:redundant})
+If $\pre \in \acto'$ and $\pre \peq \min \fix(T^2)$, then $\fix(\pre) = \emptyset$. 
+Otherwise, if we remove $\pre$ from $\acto$ during this loop, then there is a $\pre \peq \pre' \in \acto$, so that $\fix(\pre) \sub \fix(\pre')$, and no fixed points are lost.
+Let $\acto^r$ be the state of $\acto$ after the removal loop.
+Then $\fix(\acto^r) = \fix(\acto')$.
+After this line, we only add, never remove, points from $\acto$, so we have $\fix(\acto') \sub \fix(\acto^r) \sub \fix(\acto'')$, as required.
+
+We now begin the induction.
+The base case is clear, since we set $\acta' \leftarrow \acto'$ at initialization.
+Then suppose by induction that our hypothesis holds up to $\ell = n'$.
+We will show that the conclusion still holds for $n' + 1$.
+Note that the argument above shows that it suffices to consider changes to $\acta$ after redundant problem removal (line~\ref{alg1:redundant}), since no fixed points are lost during this step.
+There are several cases.
+
+\emph{Case 1}: $\actan \to \actann$ when stopping condition (1) or (3)
+
+
 
 
 
