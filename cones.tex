@@ -800,7 +800,41 @@ Then, for each vertex in the path is related by $p(w^k) = w^{k - 1}$ for $1 \leq
 Then, since $\forest$ is a problem forest by assumption, we get a chain of inclusions $\fix(\pre_{k-1}) = \fix(\pre_k)$ for $1 \leq k \leq n$, showing that, as claimed, $\fix(\pre_i) = \fix(\pre_j)$. 
 \eprf 
 
-First, we show an auxillary lemma about the relationship between $\forest$ and the problem sets returned from each subroutine 
+The following lemma shows that, conditional on the problem forest structure of $\forest$, the collision digraph can be used to combine the information contained in distinct problem cones.
+\begin{lemma} \label{lemma:graph}
+Suppose that the following conditions hold when InformationCombine is called: 
+\begin{enumerate}
+\item[(i)] $\forest$ is a problem forest
+\item[(ii)] For any $\pre_i \in \acto$ with $r(w_i) = w_j$, if $k \in \coll(i)$ then $\fix(\pre_j) \sub \fix(\pre_k)$
+\end{enumerate}
+Let $G = (V,E)$ be the collision digraph and $S$ one of its strong components, then 
+\begin{enumerate}
+\item If $(v_i, v_k) \in E$ then $\fix(\pre_i) \sub \fix(\pre_k)$. \label{lemma:graph:edge}
+\item If $v_i, v_j \in \strongcomp$ then $\fix(\pre_i) = \fix(\pre_j)$. \label{lemma:graph:strong}
+\item If $v_j \in \strongcomp$ and $v_k \in \reach$, the reachable set of $\strongcomp$, then $\fix(\pre_i) \peq \pre_k$. \label{lemma:graph:reach}
+\end{enumerate}
+\end{lemma}
+In particular, item~(\ref{lemma:graph:strong}) shows that the strong components of $G$ identify groups of equivalent problems, which can then be consolidated.
+Statement (3) shows that fast digraph algorithms for computing reachable sets can be used to combine the information learned in different subproblems.
+
+\prf
+First, we characterize the edges of $G = (V,E)$. 
+Consider $\pre_i \in \acto$ at initialization of the subroutine and $j \in \coll(i)$ with $w_k = r(w_j)$ and $w_{\ell} = r(w_i)$.
+Since $\forest$ is a problem tree, by lemma~\ref{lemma:forest2} above $\fix(\pre_i) = \fix(\pre_{\ell})$ and $\fix(\pre_j) = \fix(\pre_k)$.
+By our assumption about collision indices, we have $\fix(\pre_{\ell}) \sub \fix(\pre_j)$. 
+Putting this together, we have $\fix(\pre_i) \sub \fix(\pre_k)$ for every $(v_i, v_k) \in E$.
+This shows that~(\ref{lemma:graph:edge}) above holds.
+
+Now consider a strong component $\strongcomp$ (after removing singletons $\{v_i\}$ for $\pre_i \not \in \acto$). 
+For $v_i,v_k \in \strongcomp$, there are directed paths $v_i \to v_k$ and $v_k \to v_i$. 
+Then, by the correspondence between directed edges and fixed point inclusion shown above, we have $\fix(\pre_i) \sub \fix(\pre_k)$ and $\fix(\pre_k) \sub \fix(\pre_i)$, so $\fix(\pre_i) = \fix(\pre_k)$ for all $v_i, v_k \in \strongcomp$, completing the proof of~(\ref{lemma:graph:strong}) above. 
+
+Finally, if $\pre_i \in \strongcomp$ and $\pre_k \in \reach$, then there exists a path $v_i \to v_k$ by definition, so by~(\ref{lemma:graph:reach}) above there is a chain of inclusions $\fix(\pre_i) \sub \hdots \sub \fix(\pre_k)$. 
+In particular, $\fix(\pre_i) \peq \pre_k$.
+This completes the proof of the lemma.
+\eprf 
+
+Before proving our key result, we show an auxillary lemma about the relationship between $\forest$ and the problem sets returned from each subroutine 
 
 \begin{lemma} \label{lemma:roots}
 Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once.
@@ -956,66 +990,36 @@ Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:col
 Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
 Let $r(w_i) = w_k$.
-By the inductive hypothesis on $\forest_n = \forest_{n + 1}$, $\fix(\pre_i) = \fix(\pre_k)$, so condition~(\ref{convlemma:coll}) holds immediately.
+By the inductive hypothesis on $\forest_n = \forest_{n + 1}$, we have $\fix(\pre_i) = \fix(\pre_k)$, so condition~(\ref{convlemma:coll}) holds immediately.
 As above, this was the only modification to $\coll_n$, so condition~(\ref{convlemma:coll}) follows for other indices of $\coll_{n + 1}$ by the inductive hypothesis.
 
 \emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{infcomb} (line~\ref{alg2:forest}).
 Note that $\coll_n = \coll_{n + 1}$. 
-By construction, we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
+By construction (on line~\ref{alg2:forest}), we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
 
-The following lemma shows that, conditional on the problem forest structure of $\forest$, we can use the collision digraph to capture and combine the information contained in distinct problem cones.
-\begin{lemma} \label{lemma:graph}
-Suppose that $\forest$ is a problem forest when InformationCombine is initialized. 
-Let $\pre_i$ be an arbitrary problem with $r(w_i) = w_j$, and suppose that if $k \in \coll(i)$ then $\fix(\pre_j) \sub \fix(\pre_k)$. If $G = (V,E)$ is the collision digraph and $S$ one of its strong components, then 
-\begin{enumerate}
-\item If $(v_i, v_k) \in E$ then $\fix(\pre_i) \sub \fix(\pre_k)$. \label{lemma:graph:edge}
-\item If $\pre_i, \pre_j \in \acto$ and $v_i, v_j \in \strongcomp$ then $\fix(\pre_i) = \fix(\pre_j)$, $\strongcomp$ a strong component of $G$. \label{lemma:graph:strong}
-\item If $v_j \in \strongcomp$ and $v_k \in \reach$, the reachable set of $\strongcomp$, then $\fix(\pre_i) \peq \pre_k$. \label{lemma:graph:reach}
-\end{enumerate}
-\end{lemma}
-In particular, item~(\ref{lemma:graph:strong}) shows that the strong components of $G$ identify groups of equivalent problems, which can then be collapsed. 
-The last statement shows that fast digraph algorithms for computing reachable sets, such as breadth-first search (BFS), can be used to combine the information learned in different subproblems.
-
-\prf
-First, we characterize the edges of $G = (V,E)$. 
-Consider $\pre_i \in \acto$ at initialization of the subroutine and $j \in \coll(i)$ with $w_k = r(w_j)$ and $w_{\ell} = r(w_i)$.
-Since $\forest$ is a problem tree, by lemma~\ref{lemma:forest2} above $\fix(\pre_i) = \fix(\pre_{\ell})$ and $\fix(\pre_j) = \fix(\pre_k)$.
-By our assumption about collision indices, we have $\fix(\pre_{\ell}) \sub \fix(\pre_j)$. 
-Putting this together, we have $\fix(\pre_i) \sub \fix(\pre_k)$ for every $(v_i, v_k) \in E$.
-Now consider a strong component $\strongcomp_j$ (after removing singletons $\{v_i\}$ for $\pre_i \not \in \acto$). 
-For $v_i,v_k \in \strongcomp_j$, there are directed paths $v_i \to v_k$ and $v_k \to v_i$. 
-Then, by the correspondence between directed edges and fixed point inclusion shown above, we have $\fix(\pre_i) \sub \fix(\pre_k)$ and $\fix(\pre_k) \sub \fix(\pre_i)$, so $\fix(\pre_i) = \fix(\pre_k)$ for all $v_i, v_k \in \strongcomp_j$. 
-Let $v_k, v_{\ell} \in \strongcomp_j$, with $r(w_k) = w_{k'}$ and $r(w_{\ell}) = w_{\ell'}$.
-By assumption,  $\forest$ is a problem forest, so we can compute, using lemma~\ref{lemma:forest2} above, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell}) = \fix(\pre_k) = \fix(\pre_{k'})$. 
-
-\eprf 
-
-
-We will show that the construction of $G$ ensures that both conditions of the lemma hold for $\forest_{n + 1}$.
-Let $(\forest',\coll')$ be the value of the pair $\pair$ at line~\ref{alg2:forest} when we begin this construction.
-Then, by (strong) induction, $\forest'$ is a problem forest for $\act$ and the intersection indices $\coll$ satisfy condition~\ref{convlemma:coll}. 
-
-
-Consider $w(\pre)$ added to $\forest_n$ while processing strong component $j$. 
-This shows that defining condition~(\ref{def:forest2}) above holds for $\forest_{n + 1}$ by induction, since the vertices in $c(w(\pre))$ are only new children added during the change $\forest_n \to \forest_{n + 1}$.  
+Next, we show that defining conditions~(\ref{def:forest2}) and~(\ref{def:forest3}) still hold for $\forest_{n + 1}$, making use of our characterization of the collision digraph in lemma~\ref{lemma:graph} above.
+Let $v_k, v_{\ell} \in \strongcomp_j$, a strong component of $G = (V,E)$ (after removing irrelevant singletons on line~\ref{alg2:cstrong}, and denote $r(w_k) = w_{k'}$ and $r(w_{\ell}) = w_{\ell'}$.
+By (strong) induction, $\forest'$ is a problem forest, so by lemma~\ref{lemma:forest2} above, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell})$ and $\fix(\pre_k) = \fix(\pre_{k'})$. 
+Moreover, the indices $\coll'$ at initialization satisfy condition~(\ref{convlemma:coll}), by the inductive hypothesis again, so lemma~\ref{lemma:graph} shows that, in fact, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell}) = \fix(\pre_k) = \fix(\pre_{k'})$. 
+Now $w(\pre)$ is added to $\forest_n$ with $c(w(\pre)) = \{r(w_k):v_k \in \strongcomp_j\}$. 
+Then the previous argument shows that $w_i,w_k \in c(w(\pre))$ implies that $\fix(\pre_i) = \fix(\pre_k)$. 
+Since these are the only \emph{new} sibling relations added in $\forest_{n+1}$, by the inductive hypothesis we have shown condition~(\ref{def:forest2}) defining a problem forest for $\forest_{n+1}$. 
 
 For the final defining condition of a problem forest, consider adding $\pre$ as above and let $v_i \in \strongcomp_j$. 
 Clearly $i \in \reach_j$, so that $i \in K_j$. 
-Then $\pre \peq \pre_i$, so $\fix(\pre) \sub \fix(\pre_i)$. 
-If $v_k \in \reach_j$, then there is a directed path $v_i \to v_k$, so $\fix(\pre_i) \sub \fix(\pre_k)$ by the observations above. 
+Then $\pre \peq \pre_i$, so $\fix(\pre) \sub \fix(\pre_i)$, and the second statement of condition~(\ref{def:forest3}) is satisfied. 
+If $v_k \in \reach_j$, then there is a directed path $v_i \to v_k$, so $\fix(\pre_i) \sub \fix(\pre_k)$ by statement~(\ref{lemma:graph:reach}) of lemma~\ref{lemma:graph} above.
 In particular, $\fix(\pre_i) \peq \pre_k$ for all $k \in K_j$. 
 Then $\fix(\pre_i) \peq \pre = \min_{k \in K_j} \pre_k$, so that $\fix(\pre_i) \sub \fix(\pre)$, and we are done. 
+This is the only new parent-child relation added to $\forest_n$, so, using the inductive hypothesis, $\forest_{n+1}$ satisfies defining condition~(\ref{def:forest3}) of a problem forest. 
 
-Condition~(\ref{convlemma:coll}) of the lemma follows automatically as discussed in case 3, since we have not modified any collision index $\coll(i)$. 
-
-This exhausts all cases, so the proof is complete. 
-
-
-
-
-
-
-
+For condition~(\ref{convlemma:coll}) of the lemma about collision indices, it suffices to consider $w_{\ell}$ with $r(w_{\ell}) = w(\pre)$, because otherwise the statement follows directly from the inductive hypothesis, since $w(\pre)$ is the only root added to $\forest_n$.
+Let $k' \in \coll(\ell)$ and suppose $r(w_{\ell}) = w(\pre)$. 
+Let $w_j$ the root of $w_{\ell}$ in $\forest_n$
+Then it must be that $p(w_j) = w(\pre)$; for instance, by lemma~\ref{lemma:forest}, since otherwise the reachable set of some $w' \in \forest_n$ would have changed as $\forest_n \to \forest_{n+1}$. 
+Then by lemma~\ref{lemma:forest2}, we have $\fix(\pre) = \fix(\pre_j) \sub \fix(\pre_{k'})$, where we use the inductive hypothesis in the subset relation, so condition~(\ref{convlemma:coll}) still holds for $\pair_{n+1}$. 
+This finishes the proof.
+We have exhausted all cases, so the proof is complete. 
 
 \eprf 
 
