@@ -633,7 +633,7 @@ Next, consider the information combination algorithm.
 \end{algorithm}
 
 First, we handle termination analysis.
-\begin{lemma}
+\begin{lemma} \label{lemma:termination}
 FindStrictCore terminates in finite time
 \end{lemma}
 \prf
@@ -1023,13 +1023,53 @@ As above, this was the only modification to $\coll_n$, so condition~(\ref{convle
 We have exhausted all cases, so the proof is complete. 
 \eprf 
 
-We are now ready to prove correctness using the lemmas above.
+We are now ready to prove correctness of FindStrictCore.
+We will make heavy use of the collision digraph and problem forest structure lemmas proved above.
 \begin{thm}
 FindStrictCore finds all fixed points $\fix(T)$. 
 \end{thm}
 \prf
-Consider
-Following the general approach of Echenique and Yenmez, we show by induction that at any point during FindStrictCore, $\pre \in \fix(T)$ has either (i) $\pre \in \fixfind$ or (ii) there is a $\pre' \in \acto$ such that $\pre' \peq \pre$. 
+We will show that at any point during FindStrictCore, $\pre \in \fix(T)$ has either (i) $\pre \in \fixfind$ or (ii) there is a $\pre' \in \acto$ such that $\pre' \peq \pre$. 
+We work by induction on the number of distinct states $\actok$ of the set of active problems $\acto$ returned by InformationAcquire and InformationCombine during the main loop of FindStrictCore\footnote{Note that $\fixfind$ changes only if $\acto$ changes, so it suffices to consider states of $\acto$} (line~\ref{alg3:while1}). 
+For a set of problems $E$, we denote $\fix(E) \equiv \bigcup_{\pre \in E} \fix(\pre)$.
+
+For the base case, note that if $\toppre \in \fix(T)$ or $\ul{\pre} \in \fix(T)$, then by lemma xxxx above $\fix(T) = \{\toppre\}$ or $\{\ul{\pre}\}$, so the algorithm is correct. 
+Then suppose not, so we set $\acto = \bigcup_{i = 1}^m \{\toppre - e_i\}$, identifying $\prealloc$ with a grid as above.
+Then since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, the inductive hypothesis is clearly satisfied. 
+Then suppose by induction that (i) and (ii) above are satisfied up to $k = n$.
+We show that these still hold for $k = n +1$.
+There are two main cases
+
+\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ when InformationAcquire (subroutine 1) returns.
+Let $(\acto',\fixfind')$ denote the state of $\acto$ and $\fixfind$ at the beginning of the subroutine, and let $\acto''$ be the state of $\acto$ when the algorithm returns.
+For any set $E$, let $E'$ denote the state of the set at algorithm initialization, and $E''$ denote the state at algorithm return.
+Thus, for instance, $\acto^{k+1} = \actc''$ is the set of problems and $\fixtemp''$ the set of fixed points returned by the algorithm.
+By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
+Then, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \actc''$.
+Formally, we work by induction (\emph{within} this subroutine), on distinct states of the tuple $(\acta,\acto,\actc,\fixtemp)_{\ell}$.
+Note that, by inspection of the algorithm, the last three sets in the tuple change \emph{only if} $\acta$ changes. 
+Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states between iterations of the processing for loop at line~\ref{alg1:for1}.
+Thus, we are allowed to remove fixed points and add them back within the processing code in this for loop.} of the working set of active problems $\acta$.
+We will show by induction that $\fix(\acto_{\ell}) \sub \fix(\acta_{\ell}) \cup \fix(\actc_{\ell}) \cup \fixtemp_{\ell}$
+By lemma~\ref{lemma:termination}, this subroutine terminates, with $\acta'' = \emptyset$. 
+Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, the state of $\acto$ at the end of the algorithm.
+Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \sub \fix(\actc'') \cup \fixtemp'' \sub \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
+
+First, we show that $\fix(\acto') \sub \fix(\acto'')$.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1037,9 +1077,19 @@ Following the general approach of Echenique and Yenmez, we show by induction tha
 
 \subsubsection{Notes}
 
+We showed in lemma~\ref{lemma:termination} that FindStrictCore terminates so that, eventually, $\acto = \emptyset$.
+Then, if at termination we have $\acto = \emptyset$, we must have $\fix(T) \sub \fixfind$, so that we have found all fixed points.
+
+
+
+
 AGENDA
+
 work through key lemma with new lemma 
 prove main result
+
+for the induction - suffices to consider distinct states of $\acta$, because other state change indices are a subset // modulo changes that happen within for loop i.e. we look for changes up to for loop - this suffices
+    should be - each is contained in some active problem, below, weakly, so that set is not empty and not just equal to $\pre$ for $\pre - e$
 
 ok so 2 potential strats
     only if you actually are an old cone 
