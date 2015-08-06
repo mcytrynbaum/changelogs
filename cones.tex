@@ -119,6 +119,7 @@
 \newcommand{\roott}{R}
 \newcommand{\depth}{D}
 \newcommand{\unproc}{\mathcal{J}_u}
+\newcommand{\glob}{G}
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -140,8 +141,8 @@ We define choice functions in the usual way for $Y\in 2^{X_a}$ by
 \[
 C_a(Y) = \argmax_{Z\subseteq Y} \, U_a(Z)
 \]
-and, by an abuse of notation, extend choice functions to $Y\in 2^X$ by setting $C_a(Y) \equiv C_a(Y_a)$.
-Throughout the matching portion of this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
+and, by an abuse of notation, extend these functions to $Y\in 2^X$ by setting $C_a(Y) \equiv C_a(Y_a)$.
+Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
 \section{Finding All Stable Matchings} 
 In this section, we illustrate the technique in the classical Hatfield and Milgrom model -- literature, etc... 
 \subsection{Model and Notation} 
@@ -164,7 +165,7 @@ We start by generalizing the classical notion of a \emph{prematching}.
 \begin{defn}[Preallocation] We call a map $\pre: A \to 2^X$ a \emph{preallocation} if $\pre(a) \in 2^{X_a}$ for all $a\in A$. Let $(2^X)^A$ denote the set of all preallocations.  
 \end{defn}
 
-Intuitively, a preallocation assigns each agent to a bundle of contracts naming him or her. We can think of $\pre(a)$ as the set of contracts ``held'' by agent $a$.   
+Intuitively, a preallocation assigns each agent to a bundle of contracts naming him or her. We may think of $\pre(a)$ as the set of contracts ``held'' by agent $a$.   
 
 We can associate each allocation $Y\subseteq X$ with a unique preallocation $\pre_Y$ in a natural way by setting $\pre_Y(a) = Y_a$.
 \begin{remark} Note, however, that not all preallocations can be derived from allocations in this way.
@@ -233,10 +234,10 @@ For any $b \in d(Y)$, $Y$ then satisfies the conditions in the definition of $V(
 Therefore, $\pre(b) = T\pre(b) \suq Y_b \suq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
 
 Fix $a_1 \in A$. Since $\pre \in \fix(T)$, the argument above shows that there exists an allocation $Y$ such that $Y_{a_1} = \pre(a_1)$, and, in particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
-Therefore, $U(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \suq \pre(b)\: \forall b \in d(Y)\setminus \{a_1\}\}$, the collection of global allocations available to $a_1$ at $\pre$, is non-empty, so there exists an allocation 
+Therefore, the collection of global allocations available to $a_1$ at $\pre$ \[\glob(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \suq \pre(b)\: \forall b \in d(Y)\setminus \{a_1\}\}\] is non-empty, so there exists an allocation 
 
 \[
-Y \in \argmax_{Z \in U(\pre,a_1)} |d(Z)|
+Y \in \argmax_{Z \in \glob(\pre,a_1)} |d(Z)|
 \]
 
 Let $A_1 = d(Y)$. If $A_1 = A$, we are done, since then by the construction above $Y_a = \pre(a)$ for all $a \in A$, so $\pre = \pre_Y$ and $\pre \in \coordpre$. 
@@ -260,11 +261,11 @@ Set $W = Y \cup S$. We have now shown that $A_2 \not = \emptyset$ and $A_1 \cap 
 Since $d(Y) = A_1$ and $d(W) = A_2$, it follows that $W \cap Y = \emptyset$, so we have  
 
 \begin{enumerate}
-\item $W_b = Y_b = \pre(b)$ for all $b \in A_1$; in particular, $W_{a_1} = \pre(a_1)$. 
+\item $W_b = Y_b = \pre(b)$ for all $b \in A_1$.
 \item $W_b = S_b = \pre(b)$ for all $b \in A_2$.
 \end{enumerate}
 
-Then apparently $W \in U(\pre,a_1)$ as defined above. However, by construction $|d(W)| > |d(Y)|$, which contradicts our original choice of $Y$.
+Then apparently $W \in \glob(\pre,a_1)$ as defined above. However, by construction $|d(W)| > |d(Y)|$, which contradicts our original choice of $Y$.
 This finishes the proof.
 \eprf
 \subsubsection{Discussion}
@@ -281,8 +282,9 @@ Say that $\pre \su \pre'$ if and only if $\pre(a) \suq_a \pre'(a)$ for all $a \i
 Thus, we write $\pre \suq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
 This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
 Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
-These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez.
-For convenience, we reproduce the first result in our framework - the rest follow from work in Echenique in and Yenmez. 
+These results are an almost direct extension of lemmas 4.x through 4.y of Echenique and Yenmez.
+For the purposes of illustration, we include the proof the first result for the more general framework of preallocations considered in this paper.
+The rest of the lemmas follow from straightforward extensions of the work in Echenique in and Yenmez. 
 \begin{lemma} \label{lemma:antitone}
 $T$ is antitone 
 \end{lemma}
@@ -307,15 +309,15 @@ There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \
 \subsubsection{Introduction}
 In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
 Our algorithm builds upon the original approach in Echenique and Yenmez xxxxx.
-Modifying Echenique and Yenmez's original algorithm, we show how to fully exploit the geometric structure of the problem to efficiently find the full set of strict core matchings. 
+Modifying this paper's original algorithm, we show how to fully exploit the geometric structure of the problem to efficiently find the full set of strict core matchings. 
 
 At a basic level, the algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
-Our contribution is to realize that many of the subproblems created while we search the lattice $\fix(T^2)$  are either completely redundant or share information with other subproblems.
-Using cone geometry, we show how to efficiently combine this shared information to identify the full set of strict core matchings significantly more quickly. 
+Our contribution is to realize that many of the subproblems created while searching the lattice $\fix(T^2)$ share geometric information with other subproblems.
+Using cone geometry, we show how to efficiently combine this shared information to more quickly identify the full set of strict core matchings. 
 
 From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether or not a specific allocation $Y$ is in the strict core.
 This operation can be very costly even in classical matching models\footnote{add some concrete complexity reference}.
-Our algorithm attempts to minimize the number of evaluations of $T^2$ by using lattice structure to combine geometric information from related subproblems. 
+Our algorithm attempts to minimize the number of evaluations of $T^2$ by using lattice geometry to combine the information from related subproblems. 
 
 \subsubsection{Notation and Intuition} 
 Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
@@ -795,26 +797,26 @@ For the other lemma statements, we work by induction on $\ell$, the total number
 For $\ell = 0$ the statements are trivially true. 
 Then assume that (1) and (2) above hold up to $\ell = n \geq 0$. 
 There are several cases. 
-Throughout, let $(\acto',\forest')$ and $(\acto'',\forest'')$ denote the states of $(\acto,\forest)$ at the beginning and end, respectively, of the subroutine that returns at $\ell = n + 1$.  
+Throughout, let $(\acto',\forest')$ and $(\acto'',\forest'')$ denote the states of $(\acto,\forest)$ at initialization and return, respectively, of the subroutine that finishes at $\ell = n + 1$.  
 
-\emph{Case 1}: Subroutine 1 returns at $\ell = n + 1$. 
+\emph{Case 1}: InformationAcquire (subroutine 1) returns at $\ell = n + 1$. 
 Note that subroutine~\ref{infac} is called either directly after initialization or after evaluation of subroutine~\ref{infcomb}. 
-Note that $\forest''$ is obtained from $\forest'$ by adding vertices and edges as in lemma~\ref{lemma:forest}. 
-Then $\forest''$ is also a rooted forest by the lemma.
-If the subroutine executes following initialization of FindStrictCore, clearly $w(\pre) \in \roott(\forest')$ for $\pre \in \acto'$ by construction.
+$\forest''$ is obtained from $\forest'$ by adding vertices and edges satisfying the conditions of lemma~\ref{lemma:forest}. 
+Then, by the lemma, $\forest''$ is also a rooted forest.
+If subroutine 1 directly follows initialization of FindStrictCore, clearly $w(\pre) \in \roott(\forest')$ for $\pre \in \acto'$ by construction.
 Otherwise, this statement holds by the inductive hypothesis and (\ref{lemma:roots:comb}) above. 
 Note that each $\pre$ added to $\acto$ during this subroutine is initialized as an isolated root. 
-Then we have shown that, any time before $\pre$ is processed (the Tarski sequence for $\pre \in \acta$ is evaluated), $w(\pre) \in \roott(\forest)$. 
+This shows that, at any time before $\pre$ is processed (the Tarski sequence for $\pre \in \acta$ is evaluated), $w(\pre) \in \roott(\forest)$. 
 In particular, $\depth(w_i, \forest) = 0$ when $\pre_i$ is added to the $\acto$ during the subroutine. 
 
 Suppose that for $\pre_i \not = \pre_j \in \acto''$, $r(w_i) = r(w_j) = w$ in $\forest''$. 
 Then there are directed paths $w \to w_i$ and $w \to w_j$. 
 The directed path $w \to w_i$ can be represented as a sequence of vertices $w = w^1,w^2,\hdots, w^k = w_i$ and similarly for $w_j$. 
-Clearly, there is at leat one vertex in the path $w \to w_j$ not in $w \to w_i$. 
-Let $k'$ denote the minimal index of such a vertex in either of the paths. 
+Clearly, there is at least one vertex in the path $w \to w_j$ not in $w \to w_i$. 
+Let $k'$ denote the minimal index of such a vertex in either path. 
 By minimality, the paths are identical up to $w_{k' - 1}$. 
 
-In subcase 1, one of the paths, without loss the path $w \to w_i$, ends at $w_{k'-1}$. 
+Subcase 1: One of the paths, without loss $w \to w_i$, ends at $w_{k'-1}$. 
 Then there is a directed path $w_i \to w_j$.
 But $\depth(w_j, \forest) = 0$ when $\pre_j$ is added to $\acto$ as above, so all edges on this path must have been added during the subroutine, with $\pre_i$ added after $\pre_j$, since in-edges are only added to problems already in $\acto$. %more formal 
 By the monotonicity of the Tarski sequence for any problem, any edge $(w_1,w_2)$ added during the algorithm satisifies $\pre_1 \peq \pre_2$. 
@@ -822,10 +824,10 @@ In particular, $\pre_i \peq \pre_j$.
 But then $\pre_i$ is redundant given $\pre_j$, so it was not added to $\acto$ after $\pre_j$ (by line~\ref{alg1:redundant}). 
 This is a contradiction, so there is no such path.
 
-In subcase 2, both paths $w \to w_i$ and $w \to w_j$ continue beyond $w_{k'-1}$.
+Subcase 2: Both paths $w \to w_i$ and $w \to w_j$ continue beyond $w_{k'-1}$.
 Then $w' \equiv w_{k' - 1}$ has out-degree $\geq 2$.
 Only vertices of out-degree $1$ are ever added to $\forest$ during the subroutine, so we must have $w' \in \forest'$, the problem forest at the beginning of the subroutine.
-Again, modifications to $\forest'$ during the subroutine satisfy the assumptions of lemma~\ref{lemma:forest}, so the reachable sets for $w'$ have $\reach(w',\forest') = \reach(w',\forest'')$.  
+By lemma~\ref{lemma:forest} the reachable sets for $w'$ have $\reach(w',\forest') = \reach(w',\forest'')$.  
 Then, in particular, $w_i \in \forest'$ and $\depth(w_i, \forest') \geq 1$
 By lemma~\ref{lemma:forest} again, $\depth(w_i, \forest) \geq \depth(w_i, \forest') \geq 1$  for any state of the forest $\forest$ during the subroutine. 
 Then $\pre_i$ is never in $\acto$ during the algorithm, since we showed that, for any $\pre_i \in \acto$, $w_i \in \roott(\forest)$ at some point during the algorithm. 
