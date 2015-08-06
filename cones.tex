@@ -1090,7 +1090,7 @@ Note that, by inspection of the algorithm, the last three sets in the tuple chan
 Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states that occur at \emph{different} iterations of the processing loop at line~\ref{alg1:for1}.
 Thus, we are allowed to remove a fixed point from $\acta \cup \actc$ and add it back later while processing a single problem $\pre_i$ without creating a ``distinct'' state.} of the working set of active problems $\acta$.
 We will show by induction that for any $\ell \geq 0$ if $\pre'' \in \fix(\pre)$ for some problem $\pre \in \acto^{\ell}$ then either $\pre'' \in \fixtemp^{\ell}$ or there exists $\pre' \in \acta^{\ell} \cup \actc^{\ell}$ with $\pre'' \peq \pre' \peq \pre$ (GAR).
-We call such a relationship a guarantee (GAR) on $\pre''$ afforded by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$, which is either still active, or in the set of ``collided'' problems to be returned by the algorithm.
+We call such a relationship a guarantee (GAR) on $\pre''$ \emph{afforded} by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$, which is either still active, or in the set of ``collided'' problems to be returned by the algorithm.
 In particular, this will show that $\fix(\acto^{\ell}) \sub \fix(\acta^{\ell}) \cup \fix(\actc^{\ell}) \cup \fixtemp^{\ell}$ for all $\ell \geq 0$.
 By lemma~\ref{lemma:termination}, this subroutine terminates with $\acta'' = \emptyset$. 
 Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''$ is the state of $\acto$ when the algorithm returns. 
