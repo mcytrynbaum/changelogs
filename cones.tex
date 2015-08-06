@@ -112,6 +112,8 @@
 \newcommand{\fixfindk}{\mathcal{E}^k_F}
 \newcommand{\fixfindkk}{\mathcal{E}^{k + 1}_F}
 \newcommand{\fixtemp}{\mathcal{E}_{temp}}
+\newcommand{\fixtempk}{\mathcal{E}^k_{temp}}
+\newcommand{\fixtempkk}{\mathcal{E}^{k + 1}_{temp}}
 \newcommand{\stp}{\mathrm{STOP}}
 \newcommand{\pair}{(F,I)}
 \newcommand{\roott}{R}
@@ -497,7 +499,7 @@ Similarly, for any state $\pre_i \in \acto$, we let $\pref_i$ denote the final v
 
 \emph{Stage 2 - Information Combination}: In this stage, we use efficient digraph algorithms to combine information from related problems.
 First, we define a graph structure relates subproblems solved during the algorithm
-\begin{defn}
+\begin{defn} \label{def:forest}
 A set of rooted trees $\forest$ is said to be \emph{problem forest} for a problem collection $\act$ if
 \end{defn}
 
@@ -611,7 +613,7 @@ Next, consider the information combination algorithm.
     \STATE Remove $\{v_k\}\in \strongc$ for $\pre_k \not \in \acto$, leaving components $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:cstrong}
     \FOR[Use $G$ to combine information]{$j \in \mathcal{J}$} \label{alg2:for2}
         \STATE Compute reachable component $\reach_j$ 
-        \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$
+        \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$ \label{alg2:indices}
         \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
         \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{r(w_k): v_k \in \strongcomp_j\}$ \label{alg2:forest}
     \ENDFOR
@@ -1091,63 +1093,65 @@ By the argument above, it suffices to consider changes to $\acta$ after redundan
 There are several cases.
 
 \emph{Subcase 1}: There is a state change $\actak \to \actakk$ when stopping condition (1) or (2) is triggered for a problem $\pre_i \in \actak$, which is then removed $\actakk \leftarrow \actak \setminus \{\pre_i\}$.
-Let $\pren \in \acto$ and $\pre \in \fix(\pren)$ and suppose that $\pre \not \in \fixtemp_{k + 1}$.
-We show that the guarantee (g) on $\pre$ cannot be afforded by $\pre_i$, so it is safe to remove from $\actak \cup \actck$.
+Let $\pren \in \acto$ and $\pre \in \fix(\pren)$ and suppose that $\pre \not \in \fixtempkk$, the set of fixed points found by $\ell = k + 1$.
+We show that the guarantee (GAR) on $\pre$ cannot be afforded by $\pre_i$, so it is safe to remove $\pre_i$ from $\actak \cup \actck$.
 Suppose that $\pre \peq \pre_i$.
 We have $\pre' = (T_i^2)^k \pre_i$ for some $k \geq 0$, and $\pre' \peq \bopre$ or $T \pre' = \pre'$.
-By the Tarski argument discussed earlier in the text, $\fix(\pre_i) \sub \fix(\pre')$, so $\pre \peq \pre'$.
-But $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $\pre_i$, and we assumed $\pre' \in \fixtemp_{k + 1}$.
+By the Tarski argument discussed earlier in the text, $\fix(\pre_i) \sub \fix(\pre')$, so, in fact, $\pre \peq \pre'$.
+But $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $\pre_i$, and we assumed $\pre' \in \fixtempkk}$.
 Then $\pre \pe \pre'$ strictly.
-For stopping condition (1), note that $\fix(T) \sub \fix(T^2) \succ \bopre$, so, by the check at initialization. 
-For stopping condition (2), note that by lemma~\ref{lemma:top}, which shows that no fixed points of $T$ are ordered strictly by ``$\pe$'', if $T\pre' = \pre'$ then there can be no $\pre \pe \pre'$ fixed by $T$. 
-In either case, we actually have $\fix(\pre') = \emptyset$, which is a contradiction, so $\pre \not \peq \pre_i$.
-By the inductive hypothesis, there must be $\pre'' \in \actak \cup \actck$ affording a guarantee $\pre \peq \pre'' \peq \pren$, where $\pre'' \not = pre_i$.
-Then $\pre'' \in \actakk \cup \actckk$ still, so we are done.
+For stopping condition (1), note that $\fix(T) \sub \fix(T^2) \succeq \bopre$.
+Combining these, $\pre \pe \pre' \peq \bopre$, which is a contradiction.
+For stopping condition (2), note that by lemma~\ref{lemma:top}, which shows that no fixed points of $T$ are ordered strictly by ``$\pe$'', if $T\pre' = \pre'$ then there can be no $\pre \pe \pre'$ fixed by $T$, so this also results in a contradiction. 
+By the inductive hypothesis, there must be $\pre'' \not = \pre_i$ such that $\pre'' \in \actak \cup \actck$ and affords a guarantee $\pre \peq \pre'' \peq \pren$.
+Then $\pre'' \in \actakk \cup \actckk$ since it is not removed, so we are done.
 
 \emph{Subcase 2}: There is a state change $\actak \to \actakk$ when stopping condition (3) is triggered for a problem $\pre_i \in \actak$.
 Again, we have $\pre'$ the lowest element of the Tarski sequence, and, as above, $\fix(\pre_i) \sub \fix(\pre')$.
 We then remove $\pre_i$ and add $\pre' - e_i$ for $1 \leq i \leq m$, so $\actakk = \actak \setminus \{\pre_i \} \cup \left (\bigcup_{i \in I} \{\pre' - e_i \} \right )$, where $I \sub \{1,\hdots,m\}$ are the indices such that $\pre' - e_i$ is non-redundant (as in line~\ref{alg1:addq}).
-Let $\pre \in \fix(\pren)$ for $\pren \in \acto$, and suppose that $\pre \not \in \fixtemp_{k +1}$.
-Suppose $\pre \peq \pre_i \peq \pren$ as in the guarantee (g) above, so that $\pre \peq \pre'$ by the Tarski argument.
-In fact, $\pre \pe \pre'$, because we check for points of $\fix(T)$, as in the previous case.
+Let $\pre \in \fix(\pren)$ for $\pren \in \acto$, and suppose that $\pre \not \in \fixtempkk}$, so we need to show that there exists some guarantee for $\pre$.
+Suppose $\pre \peq \pre_i \peq \pren$ as in (GAR) above, so that $\pre \peq \pre'$ by the Tarski argument.
+In fact, $\pre \pe \pre'$, because we check if $\pre' \in \fix(T)$, as in the previous case.
 Then we must have, $\pre \peq \pre' - e_i$ for some $i$.
-If $i \in I$ then $\pre \peq \pre' - e_i \pe \pre' \peq \pren$, so $\pre' - e_i$ gives a new guarantee (g) on this fixed point for $\pren \in \acto$.
+If $i \in I$ then $\pre \peq \pre' - e_i \pe \pre' \peq \pren$, so $\pre' - e_i \in \actakk$ gives a new guarantee (GAR) on this fixed point for $\pren \in \acto$.
 No other points of $\actak \cup \actck$ are removed, so we are done.
 Suppose, conversely, that $i \not \in I$; that is, the problem $\pre' - e_i$ is redundant.
 Then $\pre - e_i = \pre'' \in \actok$, so we actually have $\pre \in \fix(\pre'') \cap \fix(\pren)$.
-By working with the guarantee (g) for $\pre'' \in \acto$ (rather than the guarantee for $\pren$), there is $\pre_g \in \actak \cup \actck$ such that $\pre \peq \pre_g \peq \pre'' = \pre' - e_i \pe \pre' \pre \pre_i$.
-Then $\pre_g \not = \pre_i$, so, in particular, it is not removed: $\pre_g \in \actkk \cup \actckk$.
-Then in either case, we still have a guarantee on all fixed points.
+By working with the guarantee (GAR) for $\pre'' \in \actok$ (rather than the guarantee for $\pren \in \actok$), by the inductive hypothesis for $\ell = k$ there exists $\pre_g \in \actak \cup \actck$ such that $\pre \peq \pre_g \peq \pre'' = \pre' - e_i \pe \pre' \peq \pre_i$.
+Then $\pre_g \not = \pre_i$, so, in particular, it is not removed at step $k+1$, and we have $\pre_g \in \actakk \cup \actckk$.
+Then, in either case, we still have a guarantee on all fixed points.
 
 \emph{Subcase 3}: There is a state change $\actak \to \actakk$ when stopping condition (4) is triggered for a problem $\pre_i \in \actak$.
-Note that in this case we just \emph{move} $\pre_i$; that is, $\actakk = \actak \setminus \{\pre_i\}$ and $\actckk = \actck \cup \{\pre_i\}$.
-Then $\actak \cup \actck = \actakk \cup \actckk$, so none of the guarantees of the form (g) above can change, which finishes the subcases.
+Note that in this case we just move $\pre_i$ between sets.
+Specifically, $\actakk = \actak \setminus \{\pre_i\}$ and $\actckk = \actck \cup \{\pre_i\}$.
+Then $\actak \cup \actck = \actakk \cup \actckk$, so none of the guarantees of the form (GAR) above can change, which finishes the subcases.
 
-By the remarks at the beginning, we have shown that $\fix(\acto') \sub \fix(\actc'') \cup \fixtemp''$, so we are done.
-Returning to the original induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (subroutine 1), we have, by the inductive hypothesis, $\fix(T) \sub \fix(\actok) \cup \fixfind_k \sub \fix(\actokk) \cup \fixfind_k \cup \fixtemp'' = \fix(\actokk) \cup \fixfind_{k + 1}$.
+By the remarks at the beginning and since the algorithm terminates by lemma~\ref{lemma:termination}, we have shown by induction that $\fix(\acto') \sub \fix(\actc'') \cup \fixtemp''$, so we are done.
+Returning to the first induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (subroutine 1), we have, using the inductive hypothesis, that $\fix(T) \sub \fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindk \cup \fixtemp'' = \fix(\actokk) \cup \fixfindkk$.
 
-\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine returns.
+\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine (subroutine 2) returns.
 In the notation above, $\acto'$ is the input to the subroutine, and $\actt'' = \actokk$ is the set returned by the subroutine. 
 We will argue that, for any $\pre \in \acto'$, there is a $\pre' \in \actt''$ such that $\fix(\pre) \sub \fix(\pre')$.
 It will follow immediately that $\fix(\actok) = \fix(\acto') \sub \fix(\actt'') = \fix(\actokk)$.
-We rely strongly on the collision digraph and problem forest structure results developed above.
+The proof relies crucially on the collision digraph and problem forest structure results developed above.
+
 Fix $\pre_i \in \acto'$.
 By construction, we have $v_i \in G$, where $G = (V,E)$ is the collision digraph built during the algorithm.
-Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after we trim irrelevant singletons (line~\ref{alg2:cstrong}).
-By our key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$, we have that $\forest$ is a problem forest at any time during the execution of FindStrictCore.
-Moreover, condition~(\ref{convlemma:coll}) of this lemma also holds, showing that collision indices are well-defined.
-Then proposition~\ref{lemma:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph also holds.
+Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after trimming irrelevant singletons (line~\ref{alg2:cstrong}).
+By key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$ during the algorithm, $\forest$ is a problem forest, as in definition~\ref{def:forest}, at any time during the execution of FindStrictCore.
+Moreover, condition~(\ref{convlemma:coll}) of lemma~\ref{lemma:forest} also holds, showing that collision indices are compatible with $\forest$.
+Then proposition~\ref{lemma:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph, can be applied. 
 Let $\reach_j$ denote the reachable set of strong component $\strongcomp_j$.
-Then by item~(\ref{lemma:graph:reach}) of this proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
-With, $K_j$ the set of indices associated with this reachable set, we have $\fix(\pre_i) \peq \min_{k \in K_j} \pre_k \equiv \pre'$, which is added to $\actt$.
+By item~(\ref{lemma:graph:reach}) of the graph structure proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
+If $K_j$ denotes the set of indices associated with $\reach_j$ (as in line~\ref{alg2:indices}), we have $\fix(\pre_i) \peq \min_{k \in K_j} \pre_k \equiv \pre'$, which is added to $\actt$.
 In particular, $\fix(\pre_i) \sub \fix(\pre')$, where $\pre' \in \actt'' = \actokk$.
-Then we have shown that $\fix(\actok) \sub \fix(\actokk)$, so, in particular, $\fix(\actok) \cup \fixfind_k \sub \fix(\actokk) \cup \fixfind_{k + 1}$ since $\fixfind_k = \fixfind_{k + 1}$.
+This shows that $\fix(\actok) \sub \fix(\actokk)$, so, in particular, $\fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindkk$ since $\fixfindk = \fixfindkk$.
 
 We have exhausted both cases, so this completes the induction. 
-By our termination result lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
+By our termination analysis in lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
 Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, so clearly $\fixfind \sub \fix(T)$.
 Then $\fixfind = \fix(T)$. 
-That is, by lemma xxxx above, the algorithm finds all strict core allocations.
+That is, by lemma~\ref{lemma:strictcore} above, the algorithm finds all strict core allocations.
 \eprf
 
 
