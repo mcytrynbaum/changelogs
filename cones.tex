@@ -668,8 +668,8 @@ Before proving lemma~\ref{lemma:key}, we give definitions, some needed auxillary
 For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
 For clarity, if $t$ is a rooted tree in $\forest$, we will let $r(t)$ denote the (unique) root node of this tree.
-The depth of a vertex $w$ in a forest $\forest$ is defined as its depth in the unique rooted tree containing it, denoted by $\depth(w, \forest)$
-The reachable set of a vertex $w$ in a forest $\forest$ is defined as its reachable set in the unique tree (a maximal connected component) containing it, denoted by $\reach(w, \forest)$
+The depth of a vertex $w$ in a forest $\forest$ is defined as its depth in the unique rooted tree containing it, denoted by $\depth(w, \forest)$.
+The reachable set of a vertex $w$ in a forest $\forest$ is denoted similarly by $\reach(w, \forest)$.
 
 Next, we develop some graph-theoretic results for problem forests. 
 
@@ -740,7 +740,7 @@ Then, since $\forest$ is a problem forest by assumption, we get a chain of inclu
 \eprf 
 
 The following lemma shows that, conditional on the problem forest structure of $\forest$, the collision digraph can be used to combine the information contained in distinct problem cones.
-\begin{lemma} \label{prop:graph}
+\begin{prop} \label{prop:graph}
 Suppose that the following conditions hold when InformationCombine is called: 
 \begin{enumerate}
 \item[(i)] $\forest$ is a problem forest
@@ -752,7 +752,7 @@ Let $G = (V,E)$ be the collision digraph and $S$ one of its strong components, t
 \item If $v_i, v_j \in \strongcomp$ then $\fix(\pre_i) = \fix(\pre_j)$. \label{prop:graph:strong}
 \item If $v_j \in \strongcomp$ and $v_k \in \reach$, the reachable set of $\strongcomp$, then $\fix(\pre_i) \peq \pre_k$. \label{prop:graph:reach}
 \end{enumerate}
-\end{lemma}
+\end{prop}
 In particular, item~(\ref{prop:graph:strong}) shows that the strong components of $G$ identify groups of equivalent problems, which can then be consolidated.
 Statement (3) shows that fast digraph algorithms for computing reachable sets can be used to combine the information learned in different subproblems.
 
@@ -863,34 +863,43 @@ We are now ready for the proof of our key lemma on the structure of the graph $\
 
 \prf[Proof of Lemma~\ref{lemma:key}]
 A straightforward induction on distinct states $(\forest,\act)_k$ of the pair $(\forest, \act)$ shows that condition~(\ref{def:forest1}) of the definition of a problem forest is always satisfied.
-Specifically, By inspection, any line in which we add $\pre$ to $\act$ (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) is paired with a line where $w(\pre)$ is added to $\forest$. 
+Specifically, any line in which we add $\pre$ to $\act$ is paired with a line where $w(\pre)$ is added to $\forest$. 
 
 For the remaining statements, we work by induction on the sequence $\pair_k$ of distinct states of the pair $\pair$. 
-For $k = 0$, note that we set $F$ to be a collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest, and the other defining conditions are trivial. 
-Initially, we set $\coll = \emptyset$, so item~\ref{convlemma:coll} above is trivially satisfied. 
+For $k = 0$, note that we initialize $F$ as the collection of isolated roots $w(\toppre - e_i)$ for $1 \leq i \leq m$, so clearly $F$ is a forest.
+The other defining conditions are trivial.
+Also, we initialize $\coll = \emptyset$, so item~\ref{convlemma:coll} above is trivially satisfied. 
 Then assume by induction that the statements above hold for $\pair_k$ up to $k = n \geq 0$. 
-By an abuse of notation, we will denote the components of $\pair_k$ as $\forest_k$ and $\coll_k$ when the meaning is clear.
-Consider separately each case where the pair $\pair$ can change.
+By an abuse of notation, we will denote components of $\pair_k$ as $\forest_k$ and $\coll_k$ when the meaning is clear.
+We consider separately each case where the pair $\pair$ can change.
 
 \emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{infac} when stopping condition (1) or (2) is triggered, and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree1}). 
-Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of subroutine~\ref{infac}.
-From lemma~\ref{lemma:roots}, we know that (i) any distinct problem $\pre \in \acto$ is processed (the Tarski sequence for $\lag \pre \rag$ evaluated).
-Moreover, the lemma also shows that (ii) any $\pre \in \acto'$ has $w(\pre) \in \roott(\forest')$ and, from the proof, (iii) any $\pre$ added to $\acto$ during the subroutine has $w(\pre) \in \roott(\forest)$ before $\pre$ is processed. 
+Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of InformationAcquire (subroutine 1).
+From lemma~\ref{lemma:roots}, we know that (i) for any distinct preallocation $\pre$, the problem $\lag \pre \rag$ is processed (the Tarski sequence evaluated) at most once.
+Moreover, the lemma also shows that (ii) any $\pre \in \acto'$ has $w(\pre) \in \roott(\forest')$ and, from the proof of this lemma, (iii) any $\pre$ added to $\acto$ during the subroutine has $w(\pre) \in \roott(\forest)$ before $\pre$ is processed. 
 We will use these facts below. 
 
-At state change of $\pair_n \to \pair_{n + 1}$, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
+At the state change $\pair_n \to \pair_{n + 1}$, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
 By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}$ for any $j$. 
 In particular, $\fix(T_i) \peq (T_i^2)^{\ell} = \pre'$.
 Combining this with lemma~\ref{lemma:contain} above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
-By monotonicity of the Tarski sequence, we have $\pre_i^f \peq \pre_i$, so $\fix(\pre_i^f) \sub \fix(\pre_i)$, so $\fix(\pre_i) = \fix(\pre_i^f)$.
-Since $w(\pre_i^f) = p(w_i)$ by definition, we have shown that $\fix(\pre_i) = \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest_n$. 
-We add $c(w(\pre_i^f)) = \{\pre_i\}$ by definition, so there are no new sibling relations. 
+By monotonicity of the Tarski sequence, we have $\pre_i^f \peq \pre_i$, so $\fix(\pre_i^f) \sub \fix(\pre_i)$. 
+Then $\fix(\pre_i) = \fix(\pre_i^f)$.
+Since $w(\pre_i^f) = p(w_i)$, we have shown that $\fix(\pre_i) = \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest_n$. 
+We add $w(\pre_i^f)$ with $c(w(\pre_i^f)) = \{\pre_i\}$, so there are no new sibling relations. 
 Then by the inductive hypothesis, $\forest_{n+1}$ also satisfies condition~(\ref{def:forest2}) and (\ref{def:forest3}) defining a a problem forest.
-By (iii) above, $\forest_n$ satisfies $w(\pre_i) = r(w(\pre_i))$, so the modification $\forest_n \to \forest_{n + 1}$ satisfies the conditions of lemma~\ref{lemma:forest}.
-The, by the lemma, $\forest_{n + 1}$ is also a rooted forest. 
+By (iii) above, $\forest_n$ has $w(\pre_i) = r(w(\pre_i))$, so the modification $\forest_n \to \forest_{n + 1}$ satisfies the conditions of lemma~\ref{lemma:forest}.
+Then, by the lemma, $\forest_{n + 1}$ is also a rooted forest. 
 This completes the proof that $\forest_{n + 1}$ is a problem forest.
 
-Finally, by mutual exclusion of stopping conditions and single-processing condition (i) above, we must have $\coll(i) = \emptyset$, so item~(\ref{convlemma:coll}) above holds trivially.
+By mutual exclusion of stopping conditions and single-processing condition (i) above, we must have $\coll(i) = \emptyset$.
+Then fix any $\ell \in \mathcal{I}$ and suppose that $k \in \coll_{n+1}(\ell) = \coll_{n}(\ell)$. 
+By the inductive hypothesis on $\pair_n$, if $r(w_{\ell}) = w_j$ in problem forest $\forest_n$, then $\fix(\pre_j) \sub \fix(\pre_k)$. 
+If we still have $r(w_{\ell}) = w_j$ in the forest $\forest_{n+1}$, we are done by induction. 
+If not, then it must be that $r(w_{\ell}) = w(\pre_i^f)$. 
+But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$ in $\forest_n$.
+Case (1) of the proof of lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
+Then condition~(\ref{convlemma:coll}) holds as well, and we are done.
 
 \emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{infac} during processing of $\pre_i$, where stopping condition (4) is triggered and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree2}). 
 By the exact same arguments as in case 1, $F_{n + 1}$ remains a problem forest after this modification. 
@@ -899,15 +908,10 @@ $\coll_n(i) = \emptyset$ because $I = \emptyset$ at initialization, and each pre
 For stopping condition (4), we evaluate the Tarski sequence for $\lag \pre_i \rag$ and find that $\pre_i^f \peq \pre_j \in \act$, and $j$ is added to $I_n(i)$ so that $I_{n + 1}(i) = \{j\}$. 
 By (iii) above from lemma~\ref{lemma:roots}, $w(\pre_i) \in \roott(\forest_n)$. 
 We add $w(\pre_i^f) = p(w_i)$, so $r(w_i) = w(\pre_i^f)$ in $\forest_{n+1}$. 
-Since $\pre_i^f \peq \pre_j$, $\fix(pre_i^f) \sub \fix(\pre_j)$ for the only new collision index added during the change $\pair_n \to \pair_{n+1}$.
+Since $\pre_i^f \peq \pre_j$, $\fix(\pre_i^f) \sub \fix(\pre_j)$ for the only new collision index added during the change $\pair_n \to \pair_{n+1}$.
 
-Now consider an index $\ell \not = i$, so that $\coll_n(\ell) = \coll_{n + 1}(\ell)$. 
-Suppose that $k \in \coll(\ell)$. 
-By the inductive hypothesis, if $r(w_{\ell}) = w_j$ in problem forest $\forest_n$, then $\fix(\pre_j) \sub \fix(\pre_k)$. 
-If we still have $r(w_{\ell}) = w_j$ in the forest $\forest_{n+1}$, we are done by induction. 
-If not, then it must be that $r(w_{\ell}) = w(\pre_i^f)$. 
-But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$ in $\forest_n$.
-Subcase (1) of lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
+If $\ell \not = i$, then we have $\coll_n(\ell) = \coll_{n + 1}(\ell)$. 
+In this case, condition~(\ref{convlemma:coll}) holds by the argument at the end of case (1).
 Then we have shown that condition~(\ref{convlemma:coll}) holds for the pair $\pair_{n + 1}$, and we are done. 
 
 \emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{infac} during processing of $\pre_i$, when stopping condition (3) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root (line~\ref{alg1:addq}). 
@@ -917,7 +921,7 @@ No edges are added, so no new parent or child relations are added.
 Then, by the inductive hypothesis, $\forest_{n + 1}$ remains a problem forest.
 For condition~(\ref{convlemma:coll}) above, fix $\ell$ and let $j \in \coll(\ell)$.
 If $\ell \not = k$, then, because no edge is added to the graph, $r(w_{\ell})$ is unchanged, so the condition holds by the inductive hypothesis. 
-If $\ell = i$, then $\coll(i) = \emptyset$, so the condition is trivially true. 
+If $\ell = k$, then $\coll(i) = \emptyset$, so the condition is trivially true. 
 We have shown (1) and (2) hold for $\pair_{n + 1}$, so we are done.
 
 \emph{Case 4} Before constructing the collision digraph in subroutine~\ref{infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
