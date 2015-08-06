@@ -107,8 +107,10 @@
 \newcommand{\res}{\act_{int}}
 \newcommand{\reach}{H}
 \newcommand{\forest}{F}
-\newcommand{\fixfind}{\mathcal{E}}
-\newcommand{\fixtemp}{\mathcal{E}'}
+\newcommand{\fixfind}{\mathcal{E}_F}
+\newcommand{\fixfindk}{\mathcal{E}^k_F}
+\newcommand{\fixfindkk}{\mathcal{E}^{k + 1}_F}
+\newcommand{\fixtemp}{\mathcal{E}_{temp}}
 \newcommand{\stp}{\mathrm{STOP}}
 \newcommand{\pair}{(F,I)}
 \newcommand{\roott}{R}
@@ -194,7 +196,8 @@ Before our first result, we note a simple fact: if $\pre \in \coordpre$, then $\
 To see this, note that $\pre \in \coordpre$ means that there exists $Y \sub X$ with $\pre = \pre_Y$. 
 Then $Y$ is an allocation satisfying the conditions in $V(\pre_Y,a)$, so that $Y_a  = \pre(a) \in V(\pre,a)$. 
 With the definitions above, we have a simple result
-\begin{lemma} $\fecon(T) = \strcore$
+\begin{lemma} \label{lemma:strictcore}
+$\fecon(T) = \strcore$
 \end{lemma}
 \prf
 First, suppose that $Y \not \in \strcore$. Then by definition, there exists some blocking allocation $\emptyset \not = Z \sub X$ such $Z_b \suq_b Y_b$ for all $b \in d(Z)$.
@@ -215,7 +218,8 @@ However, if there are \emph{uncoordinated} preallocations that are also fixed by
 The following lemma, which is essential for the construction of our algorithm, shows that there are no such preallocations.
 Note that this result significantly generalizes the corresponding lemma in Echenique and Yenmez and also subsumes the main theorem of Kojima (xxxx). 
 
-\begin{lemma} $\fix(T) \sub \coordpre$
+\begin{lemma} \label{lemma:coordinated}
+$\fix(T) \sub \coordpre$
 \end{lemma}
 \prf
 We begin with an important fact that will be used repeatedly.
@@ -276,7 +280,8 @@ This is a product order on a product space, which makes $\prealloc$ into a compl
 Next, we give a suquence of results concerning the operator $T$ and its fixed points. 
 These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez.
 For convenience, we reproduce the first result in our framework - the rest follow from work in Echenique in and Yenmez. 
-\begin{lemma} $T$ is antitone 
+\begin{lemma} \label{lemma:antitone}
+$T$ is antitone 
 \end{lemma}
 \prf
 Let $\pre \leq \pre'$ be preallocations.
@@ -288,9 +293,11 @@ Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \suq T\pre'(a)$. $a$ wa
 The following lemmas follow exactly as in Echenique and Yenmez, using the antitonicity of $T$. 
 \begin{cor} $T^2$ is isotone, and $\fix(T^2)$ is a non-empty complete lattice. 
 \end{cor}
-\begin{lemma} No two preallocations $\pre$ and $\pre'$ can be compared under the partial order on $\prealloc$.
+\begin{lemma} \label{lemma:order}
+No two preallocations $\pre$ and $\pre'$ can be compared under the partial order on $\prealloc$.
 \end{lemma}
-\begin{lemma} There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \suq \pre \suq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
+\begin{lemma} \label{lemma:top}
+There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \suq \pre \suq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
 \end{lemma}
 
 \subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
@@ -316,7 +323,7 @@ Often in what follows, we will identify a problem $\lag \pre \rag$ with its maxi
 Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$ denote the fixed points of $T$ below $\pre$.  
 
 By Tarski's Theorem\footnote{add standard Tarski argument}, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
-If $T \toppre = \toppre$, then by lemma xxxx, $\fix(T) = \{\toppre\}$.
+If $T \toppre = \toppre$, then by lemma~\ref{lemma:top}, $\fix(T) = \{\toppre\}$.
 So suppose that $T \toppre \not = \toppre$. 
 Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iteratively applying $T^2$, we have learned that $\fix(T) \sub \fix (T^2) \sub \{\pre': \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}$. We will often denote cone relations of this type by $\fix(T) \peq \toppre$. 
 
@@ -340,7 +347,7 @@ We can compute $\wh{T}\pre(a) = \max \wh{V}(\pre,a) \leq \max V(\pre,a) = T\pre(
 
 Now, suppose that $\pre \in \fix(T)\cap\{\pre' \peq \wh{\pre}\}$.
 Then we have have $\pre(a) = T\pre(a) \suq_a \wh{T}\pre(a)$ for all $a \in A$. 
-By lemma xxxx above, $\fix(T) \sub \coordpre$, so $\pre = \pre_Y$ for some allocation $Y \in 2^X$.
+By lemma~\ref{lemma:coordinated} above, $\fix(T) \sub \coordpre$, so $\pre = \pre_Y$ for some allocation $Y \in 2^X$.
 In particular, $Y_a = \pre(a) \peq_a \wh{\pre}(a)$, so $\pre(a) \in \wh{V}(\pre,a)$.
 Then by the definition of $\wh{T}$, we get $\wh{T}\pre(a) \suq_a \pre(a)$. 
 
@@ -350,7 +357,7 @@ Returning to the discussion above, we showed that $\fix(T) \sub \bigcup_{i = 1}^
 That is, $\fix(T) \sub \bigcup_{i = 1}^m \fix(\toppre - e_i)$.
 Fix $i$ and consider $\fix(\toppre - e_i)$, the fixed points of $T$ below $\toppre - e_i$.
 For convenience, denote $S_i \equiv T_i^2$ and $\toppre_i \equiv \toppre - e_i$.
-Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, lemma xxxx and the Tarski argument used above show that each iteration of $S_i$ gives a ``cone guarantee'' on the fixed points $\fix(T)$ of the form $\fix(\toppre_i) \peq S_i^k \toppre_i$.
+Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, lemma~\ref{lemma:strictcore} and the Tarski argument used above show that each iteration of $S_i$ gives a ``cone guarantee'' on the fixed points $\fix(T)$ of the form $\fix(\toppre_i) \peq S_i^k \toppre_i$.
 
 Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of subproblem cones. 
 We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$. 
@@ -478,7 +485,7 @@ We initialize $\pre \leftarrow \pre_i$ and successively iterate $\pre \leftarrow
 
 In case (1), $\fix(\pre_i) \peq \min \fix(T^2)$, so $\fix(\pre_i) = \emptyset$, and we may stop iteration. 
 In case (2), the Tarski sequence for $\pre_i$ stops, so we stop the problem $\lag \pre_i \rag$ and form new subproblems $\lag \pre - e_j \rag$ for $j = 1 \hdots m$, each of which we add to $\acto$.  
-In case (3), $\pre = S_i^k \pre_i$ is fixed by $T$, so by lemma xxxx, $\fix(T) \cap \{\pre' \pe \pre \} = \emptyset$.
+In case (3), $\pre = S_i^k \pre_i$ is fixed by $T$, so by lemma~\ref{lemma:contain}, $\fix(T) \cap \{\pre' \pe \pre \} = \emptyset$.
 That is, we can stop searching this problem.
 In case (4), we have learned that $\fix(\pre_i) \sub \fix(\pre')$ for some other problem $\pre'$, so we stop work on $\preo_i$ and wait for the next stage of the algorithm, where we will combine the guarantees on $\fix(\pre')$ with those on $\fix(\pre_i)$.
 
@@ -1038,29 +1045,30 @@ We will make heavy use of the collision digraph and problem forest structure lem
 FindStrictCore finds all fixed points $\fix(T)$. 
 \end{thm}
 \prf
-We will show that at any point during FindStrictCore, $\pre \in \fix(T)$ has either (i) $\pre \in \fixfind$ or (ii) there is a $\pre' \in \acto$ such that $\pre' \peq \pre$. 
-We work by induction on the number of distinct states $\actok$ of the set of active problems $\acto$ returned by InformationAcquire and InformationCombine during the main loop of FindStrictCore\footnote{Note that $\fixfind$ changes only if $\acto$ changes, so it suffices to consider states of $\acto$} (line~\ref{alg3:while1}). 
-For a set of problems $E$, we denote $\fix(E) \equiv \bigcup_{\pre \in E} \fix(\pre)$.
+We will show that at any point during the execution of FindStrictCore, a fixed point $\pre \in \fix(T)$ satisfies either (i) $\pre \in \fixfind$, the fixed points already found by the algorithm, or (ii) there exists a $\pre' \in \acto$ such that $\pre' \peq \pre$. 
+We work by induction on $k$, the number of distinct states $\actok$ of the set of active problems $\acto$ during the main loop of FindStrictCore\footnote{Note that $\fixfind$ changes only if $\acto$ changes, so it suffices to consider distinct states of $\acto$}. 
+For any set of problems $W$, we denote $\fix(W) \equiv \bigcup_{\pre \in W} \fix(\pre)$.
 
-For the base case, note that if $\toppre \in \fix(T)$ or $\ul{\pre} \in \fix(T)$, then by lemma xxxx above $\fix(T) = \{\toppre\}$ or $\{\ul{\pre}\}$, so the algorithm is correct. 
-Then suppose not, so we set $\acto = \bigcup_{i = 1}^m \{\toppre - e_i\}$, identifying $\prealloc$ with a grid as above.
-Then since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, the inductive hypothesis is clearly satisfied. 
+For the base case, note that if $\toppre \in \fix(T)$ or $\ul{\pre} \in \fix(T)$, then, by lemma~\ref{lemma:contain} above, $\fix(T) = \{\toppre\}$ or $\{\ul{\pre}\}$, so the algorithm is correct. 
+Suppose the algorithm continues, and we set $\acto = \bigcup_{i = 1}^m \{\toppre - e_i\}$ (identifying $\prealloc$ with a grid as above).
+Since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, the inductive hypothesis is clearly satisfied. 
 Then suppose by induction that (i) and (ii) above are satisfied up to $k = n$.
-We show that these still hold for $k = n +1$.
-There are two main cases.
-Throughout, for a set $E$, we let $E'$ denote the state of the set at algorithm initialization, and $E''$ denote the state at algorithm return.
+We show that these statements still hold for $k = n +1$.
+Throughout, for a set $E$, we let $E'$ denote the state of $E$ at algorithm initialization, and $E''$ its state at algorithm return.
+There are two main cases, corresponding to each subroutine.
 
-\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ when InformationAcquire (subroutine 1) returns.
-In the above notation, $\acto^{k+1} = \actc''$ is the set of problems and $\fixtemp''$ the set of fixed points returned by the algorithm.
+\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ and $\fixfindk \to \fixfindkk$ when InformationAcquire (subroutine 1) returns.
+InformationAcquire returns a set $\actc$ of problems, the information from which will be combined during subroutine 2.
+In the above notation, $\actc'' = \acto^{k+1}$ is the set of problems and $\fixtemp''$ is the set of fixed points returned by the subroutine.
 By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
-Then, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \actc''$.
+Then, to show that no fixed points are ``lost'' during the subroutine, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \fix(\actc'')$.
 Formally, we work by induction (\emph{within} this subroutine), on distinct states of the tuple $(\acta,\acto,\actc,\fixtemp)_{\ell}$.
 Note that, by inspection of the algorithm, the last three sets in the tuple change \emph{only if} $\acta$ changes. 
-Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states between iterations of the processing for loop at line~\ref{alg1:for1}.
-Thus, we are allowed to remove fixed points and add them back within the processing code in this for loop.} of the working set of active problems $\acta$.
-We will show by induction that if $\pre'' \in \fix(\pre)$ for some $\pre \in \acto_{\ell}$ then either $\pre'' \in \fixtemp_{\ell}$ or there exists $\pre' \in \acta_{\ell} \cup \actc_{\ell}$ with $\pre'' \peq \pre' \pre \pre$ (g).
-We call such a relationship a guarantee (g) afforded by the problem $\pre' \in \acta_{\ell} \cup \actc_{\ell}$.
-In particular, this will show that $\fix(\acto_{\ell}) \sub \fix(\acta_{\ell}) \cup \fix(\actc_{\ell}) \cup \fixtemp_{\ell}$ for al $\ell$.
+Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states that occur at \emph{different} iterations of the processing loop at line~\ref{alg1:for1}.
+Thus, we are allowed to remove a fixed point from $\acta \cup \actc$ and add it back later while processing a single problem $\pre_i$ without creating a ``distinct'' state.} of the working set of active problems $\acta$.
+We will show by induction that for any $\ell \geq 0$ if $\pre'' \in \fix(\pre)$ for some problem $\pre \in \acto^{\ell}$ then either $\pre'' \in \fixtemp^{\ell}$ or there exists $\pre' \in \acta^{\ell} \cup \actc^{\ell}$ with $\pre'' \peq \pre' \pre \pre$ (g).
+We call such a relationship a guarantee (g) afforded by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$.
+In particular, this will show that $\fix(\acto^{\ell}) \sub \fix(\acta^{\ell}) \cup \fix(\actc^{\ell}) \cup \fixtemp^{\ell}$ for al $\ell$.
 By lemma~\ref{lemma:termination}, the subroutine terminates, with $\acta'' = \emptyset$. 
 Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''$ is the state of $\acto$ when the algorithm returns. 
 Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \cup \fix(\actc'') \cup \fixtemp'' \sub \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
@@ -1088,7 +1096,9 @@ We have $\pre' = (T_i^2)^k \pre_i$ for some $k \geq 0$, and $\pre' \peq \bopre$ 
 By the Tarski argument discussed earlier in the text, $\fix(\pre_i) \sub \fix(\pre')$, so $\pre \peq \pre'$.
 But $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $\pre_i$, and we assumed $\pre' \in \fixtemp_{k + 1}$.
 Then $\pre \pe \pre'$ strictly.
-But by lemma xxxx and because $\fix(T) \sub \fix(T^2) \succ \bopre$ by the check at initialization, we actually have $\fix(\pre') = \emptyset$, which is a contradiction, so $\pre \not \peq \pre_i$.
+For stopping condition (1), note that $\fix(T) \sub \fix(T^2) \succ \bopre$, so, by the check at initialization. 
+For stopping condition (2), note that by lemma~\ref{lemma:top}, which shows that no fixed points of $T$ are ordered strictly by ``$\pe$'', if $T\pre' = \pre'$ then there can be no $\pre \pe \pre'$ fixed by $T$. 
+In either case, we actually have $\fix(\pre') = \emptyset$, which is a contradiction, so $\pre \not \peq \pre_i$.
 By the inductive hypothesis, there must be $\pre'' \in \actak \cup \actck$ affording a guarantee $\pre \peq \pre'' \peq \preo$, where $\pre'' \not = pre_i$.
 Then $\pre'' \in \actakk \cup \actckk$ still, so we are done.
 
@@ -1158,8 +1168,10 @@ Then, if at termination we have $\acto = \emptyset$, we must have $\fix(T) \sub 
 
 AGENDA
 
-work through key lemma with new lemma 
-prove main result
+read through work 
+change index stuff 
+write some of our maximal results?
+
 
 for the induction - suffices to consider distinct states of $\acta$, because other state change indices are a subset // modulo changes that happen within for loop i.e. we look for changes up to for loop - this suffices
     should be - each is contained in some active problem, below, weakly, so that set is not empty and not just equal to $\pre$ for $\pre - e$
