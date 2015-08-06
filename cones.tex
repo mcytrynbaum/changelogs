@@ -1033,6 +1033,7 @@ We have exhausted all cases, so the proof is complete.
 
 We are now ready to prove correctness of FindStrictCore.
 We will make heavy use of the collision digraph and problem forest structure lemmas proved above.
+
 \begin{thm}
 FindStrictCore finds all fixed points $\fix(T)$. 
 \end{thm}
@@ -1046,12 +1047,11 @@ Then suppose not, so we set $\acto = \bigcup_{i = 1}^m \{\toppre - e_i\}$, ident
 Then since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, the inductive hypothesis is clearly satisfied. 
 Then suppose by induction that (i) and (ii) above are satisfied up to $k = n$.
 We show that these still hold for $k = n +1$.
-There are two main cases
+There are two main cases.
+Throughout, for a set $E$, we let $E'$ denote the state of the set at algorithm initialization, and $E''$ denote the state at algorithm return.
 
 \emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ when InformationAcquire (subroutine 1) returns.
-Let $(\acto',\fixfind')$ denote the state of $\acto$ and $\fixfind$ at the beginning of the subroutine, and let $\acto''$ be the state of $\acto$ when the algorithm returns.
-For any set $E$, let $E'$ denote the state of the set at algorithm initialization, and $E''$ denote the state at algorithm return.
-Thus, for instance, $\acto^{k+1} = \actc''$ is the set of problems and $\fixtemp''$ the set of fixed points returned by the algorithm.
+In the above notation, $\acto^{k+1} = \actc''$ is the set of problems and $\fixtemp''$ the set of fixed points returned by the algorithm.
 By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
 Then, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \actc''$.
 Formally, we work by induction (\emph{within} this subroutine), on distinct states of the tuple $(\acta,\acto,\actc,\fixtemp)_{\ell}$.
@@ -1114,7 +1114,33 @@ Then $\actak \cup \actck = \actakk \cup \actckk$, so none of the guarantees of t
 By the remarks at the beginning, we have shown that $\fix(\acto') \sub \fix(\actc'') \cup \fixtemp''$, so we are done.
 Returning to the original induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (subroutine 1), we have, by the inductive hypothesis, $\fix(T) \sub \fix(\actok) \cup \fixfind_k \sub \fix(\actokk) \cup \fixfind_k \cup \fixtemp'' = \fix(\actokk) \cup \fixfind_{k + 1}$.
 
-\emph{Case 2}:
+\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine returns.
+In the notation above, $\acto'$ is the input to the subroutine, and $\actt'' = \actokk$ is the set returned by the subroutine. 
+We will argue that, for any $\pre \in \acto'$, there is a $\pre' \in \actt''$ such that $\fix(\pre) \sub \fix(\pre')$.
+It will follow immediately that $\fix(\actok) = \fix(\acto') \sub \fix(\actt'') = \fix(\actokk)$.
+We rely strongly on the collision digraph and problem forest structure results developed above.
+Fix $\pre_i \in \acto'$.
+By construction, we have $v_i \in G$, where $G = (V,E)$ is the collision digraph built during the algorithm.
+Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after we trim irrelevant singletons (line~\ref{alg2:cstrong}).
+By our key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$, we have that $\forest$ is a problem forest at any time during the execution of FindStrictCore.
+Moreover, condition~(\ref{convlemma:coll}) of this lemma also holds, showing that collision indices are well-defined.
+Then proposition~\ref{lemma:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph also holds.
+Let $\reach_j$ denote the reachable set of strong component $\strongcomp_j$.
+Then by item~(\ref{lemma:graph:reach}) of this proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
+With, $K_j$ the set of indices associated with this reachable set, we have $\fix(\pre_i) \peq \min_{k \in K_j} \pre_k \equiv \pre'$, which is added to $\actt$.
+In particular, $\fix(\pre_i) \sub \fix(\pre')$, where $\pre' \in \actt'' = \actokk$.
+Then we have shown that $\fix(\actok) \sub \fix(\actokk)$, so, in particular, $\fix(\actok) \cup \fixfind_k \sub \fix(\actokk) \cup \fixfind_{k + 1}$ since $\fixfind_k = \fixfind_{k + 1}$.
+
+We have exhausted both cases, so this completes the induction. 
+By our termination result lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
+Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, so clearly $\fixfind \sub \fix(T)$.
+Then $\fixfind = \fix(T)$. 
+That is, by lemma xxxx above, the algorithm finds all strict core allocations.
+\eprf
+
+
+
+
 
 
 
