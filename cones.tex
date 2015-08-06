@@ -91,9 +91,9 @@
 \newcommand{\acta}{Q_A} 
 \newcommand{\actak}{Q_A^{k}} 
 \newcommand{\actakk}{Q_A^{k + 1}} 
-\newcommand{\actc}{Q_C} 
-\newcommand{\actck}{Q_C^k} 
-\newcommand{\actckk}{Q_C^{k + 1}} 
+\newcommand{\actc}{Q_I} 
+\newcommand{\actck}{Q_I^k} 
+\newcommand{\actckk}{Q_I^{k + 1}} 
 \newcommand{\act}{Q} 
 \newcommand{\actt}{Q_{temp}} 
 \newcommand{\actacum}{\wh{Q_A}} 
@@ -108,9 +108,9 @@
 \newcommand{\res}{\act_{int}}
 \newcommand{\reach}{H}
 \newcommand{\forest}{F}
-\newcommand{\fixfind}{\mathcal{E}_F}
-\newcommand{\fixfindk}{\mathcal{E}^k_F}
-\newcommand{\fixfindkk}{\mathcal{E}^{k + 1}_F}
+\newcommand{\fixfind}{\mathcal{E}_C}
+\newcommand{\fixfindk}{\mathcal{E}^k_C}
+\newcommand{\fixfindkk}{\mathcal{E}^{k + 1}_C}
 \newcommand{\fixtemp}{\mathcal{E}_{temp}}
 \newcommand{\fixtempk}{\mathcal{E}^k_{temp}}
 \newcommand{\fixtempkk}{\mathcal{E}^{k + 1}_{temp}}
@@ -280,7 +280,7 @@ First, we define a natural partial order on the set of preallocations $\prealloc
 Say that $\pre \su \pre'$ if and only if $\pre(a) \suq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
 Thus, we write $\pre \suq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
 This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
-Next, we give a suquence of results concerning the operator $T$ and its fixed points. 
+Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
 These results are an almost direct extension Lemmas 4.x through 4.y of Echenique and Yenmez.
 For convenience, we reproduce the first result in our framework - the rest follow from work in Echenique in and Yenmez. 
 \begin{lemma} \label{lemma:antitone}
@@ -454,7 +454,7 @@ Then if at some step of the algorithm we obtain a guarantee that $\fix(\pre_j) \
 This dynamic gives our algorithm a ``Chutes and Ladders'' effect. 
 In particular, we make efficient use of both the geometric information shared between active problems as well as the information gained during previous steps of the algorithm. 
 
-\subsubsection{Algorithm - Description and Intuition} 
+\subsubsection{Algorithm - Informal Description} 
 
 In this section, we introduce notation and give a brief, intuitive explanation of the full algorithm, building on the examples above.
 Pseudocode and correctness proofs for the full algorithm follow. 
@@ -462,23 +462,22 @@ First, we discuss indexing.
 
 \emph{Labels for Preallocations, Vertices, and Operators}:
 During the algorithm, we will build a collection of graphs.
-For any of these graphs, each vertex of the graph will correspond to a preallocation $\pre \in \prealloc$.
+For any such graph, each vertex will correspond to a problem $\lag \pre \rag$, where $\pre \in \prealloc$.
 We thus require a way to denote correspondences between vertices and preallocations. 
-We thus fix an index set $\mathcal{I}$, which uniquely labels every preallocation in $\prealloc$. 
-We will denote corresponding vertices and preallocations with the same subindex, for instance, $\pre_i \sim v_i \sim w_i$, where $i \in \mathcal{I}$. 
-We will also let $v(\pre)$ and $w(\pre)$ denote the vertices corresponding to a certain preallocation. 
+We thus fix an index set $\mathcal{I}$, which we use to label problems and vertices.
+We will denote corresponding vertices and problems with the same subindex, for instance, $\pre_i \sim v_i \sim w_i$, where $i \in \mathcal{I}$. 
+Because storing information on all problems ever initialized can be costly, we allow the possibility that $\pre_i = \pre_j$ as preallocations for $i \not = j$.
+When clear, we let $v(\pre)$ and $w(\pre)$ denote the vertices corresponding to a certain problem $\lag \pre \rag$.
 Thus, for instance, $v(\pre_i) = v_i$.
 For clarity, vertices of a digraph $G$ are always denoted by $v$, while vertices of a forest $F$ are always denoted by $w$.
 Similarly, the operator for a subproblem $\pre_i$ will be denoted by $T_i$.
 The algorithm consists of two alternating stages. 
 
-\emph{Stage 1 - Information Acquisiton}: In the first stage, we consider a set of preallocations $\acto$, each of which corresponds to the maximal point of an active subproblem. 
+\emph{Stage 1 - Information Acquisiton}: In the first stage, we consider a set of problems $\acto$.
 As above, each problem $\lag \pre_i \rag$ is associated with an isotone operator $S_i = T_i^2$.
-In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$.
-We define two more collections of preallocations.
-Let $\acta$ be the collection of preallocations of the form $\{S_i^k \pre_i: \pre_i \in \acto\}$, which contains the current value of the Tarski sequence for each subproblem $\pre_i \in \acto$ that we are still working on.
-Let $Q$ be a set of preallocations $\acto \sub Q$, which we think of as the past and current subproblems that still contain useful information.  
-We initialize $\pre \leftarrow \pre_i$ and successively iterate $\pre \leftarrow S_i \pre$ until one of the following occurs \emph{stopping conditions} occurs
+In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$, creating new problems in $\acto$ when necessary.
+Let $\act$ be a set of problems $\acto \sub \act$, which we think of as the problems from all previous steps of the algorithm that still contain useful information.  
+We initialize $\pre = \pre_i$ and successively iterate $\pre \to S_i \pre$ until one of the following \emph{stopping conditions} occurs
 \begin{enumerate}
 \item $\pre \peq \ul{\pre} = \min \fix(T^2)$ 
 \item $T \pre = \pre$
@@ -487,62 +486,62 @@ We initialize $\pre \leftarrow \pre_i$ and successively iterate $\pre \leftarrow
 \end{enumerate} 
 
 In case (1), $\fix(\pre_i) \peq \min \fix(T^2)$, so $\fix(\pre_i) = \emptyset$, and we may stop iteration. 
-In case (2), the Tarski sequence for $\pre_i$ stops, so we stop the problem $\lag \pre_i \rag$ and form new subproblems $\lag \pre - e_j \rag$ for $j = 1 \hdots m$, each of which we add to $\acto$.  
-In case (3), $\pre = S_i^k \pre_i$ is fixed by $T$, so by lemma~\ref{lemma:contain}, $\fix(T) \cap \{\pre' \pe \pre \} = \emptyset$.
+In case (2), $\pre = S_i^k \pre_i$ is fixed by $T$, so, by lemma~\ref{lemma:contain}, $\fix(T) \cap \{\pre' \pe \pre \} = \emptyset$.
 That is, we can stop searching this problem.
-In case (4), we have learned that $\fix(\pre_i) \sub \fix(\pre')$ for some other problem $\pre'$, so we stop work on $\preo_i$ and wait for the next stage of the algorithm, where we will combine the guarantees on $\fix(\pre')$ with those on $\fix(\pre_i)$.
-
-During stage 1, we obtain intermediate states $\pre$ as above.
-Any such state is of the form $\pre = S_j^k \pre_j$ for some $\pre_j \in \acto$.
-When the context is clear, we denote this $\pre_j$ by $\preo$. 
-Similarly, for any state $\pre_i \in \acto$, we let $\pref_i$ denote the final value of the problem $\lag \pre_i \rag$'s Tarski sequence before it stops, as above. 
+In case (3), the Tarski sequence for $\pre_i$ stops, so we stop the problem $\lag \pre_i \rag$ below $\pre$ and form new subproblems $\lag \pre - e_j \rag$ for $j = 1 \hdots m$, each of which we add to $\acto$.  
+In case (4), we have learned that $\fix(\pre_i) \sub \fix(\pre')$ for some other problem $\pre'$, so we stop work on $\pre_i$ and wait for the next stage of the algorithm, where we will combine the fixed point guarantees on $\fix(\pre')$ with those on $\fix(\pre_i)$.
+We let $\pref_i$ denote the final value of $\pre$ in the Tarski sequence for $\lag \pre_i \rag$ when one of the stopping conditions above is triggered. 
 
 \emph{Stage 2 - Information Combination}: In this stage, we use efficient digraph algorithms to combine information from related problems.
-First, we define a graph structure relates subproblems solved during the algorithm
+First, we define a graph structure that relates different problems solved during the algorithm
 \begin{defn} \label{def:forest}
-A set of rooted trees $\forest$ is said to be \emph{problem forest} for a problem collection $\act$ if
-\end{defn}
+A collection of rooted trees $\forest$ is said to be \emph{problem forest} for a set of problems $\act$ when the following hold:
 
 \begin{enumerate}
 \item If $\pre_k \in Q$, then $w_k \in \forest$. \label{def:forest1}
 \item If there exists a $w_k \in F$ such that $w_i, w_j \in c(w_k)$, then $\fix(\pre_i) = \fix(\pre_j)$. \label{def:forest2}
-\item If $w_i = p(w_j)$, then $\fix(\pre_j) = \fix(\pre_i)$ and $\pre_i \peq \pre_j$ \label{def:forest3} 
-\end{itemize} 
+\item If $w_i = p(w_j)$, then $\pre_i \peq \pre_j$ and $\fix(\pre_j) = \fix(\pre_i)$ \label{def:forest3} 
+\end{enumerate} 
+
+\end{defn}
 
 Thus, siblings in a problem forest share fixed points of $T$, and the fixed points of a child are the same as the fixed points of its parent. 
-For now, we assume the existence of such a forest for the problems considered below (proof in section~\ref{fullalgo}). 
+For now, we assume the existence of such a forest for the problems considered below (construction in section~\ref{fullalgo}). Next, we define a graph structure that allows us to combine the information from intersecting problem cones.
 
-For each $\pre_i \in \acto$, form a digraph $G = (V,E)$ by letting $(v_i,v_k) \in E$ if and only if there exists $\pre_j \in Q$ such that (i) $\pref_i \peq \pre_j$, (ii) $\pre_i \not \peq \pre_j$, and (iii) $r(w_j) = w_k$.
-That is, by the correspondence between vertices and preallocations, during Stage 1 $\pre_i$ ``collided'' with some vertex $w_j$ in the problem forest which has $w_k$ as its root.  
+\begin{defn} \label{def:graph}
+Let $\forest$ be a collection of rooted trees. A digraph $G = (V,E)$ is said to be a \emph{collision digraph} when, with the notation above, $(v_i,v_k) \in E$ if and only if there exist $\pre_i \in \acto$ and $\pre_j \in \act$ such that (i) $\pref_i \peq \pre_j$, (ii) $\pre_i \not \peq \pre_j$, and (iii) $r(w_j) = w_k$.
+\end{defn}
 
-Next, we form the strong components\footnote{Tarjan's algorithm for computing strong components of an arbitrary digraph $G$ runs in $\mathcal{O}(|V| + |E|)$ time.}
-of the digraph $G$, denoted by $\strongc = \{\strongcomp_j\}_{j\in \mathcal{J}}$, where $\mathcal{J}$ is some index set. 
-For $j \in \mathcal{J}$, pick $v \in \strongcomp_j$ and compute the reachable set of $v$, by which we define $\reach_j$, the reachable set of component $j$. 
+That is, using the correspondence between vertices and problems, $(v_i,v_k)$ is added to $G$ only if during Stage 1 problem $\pre_i$ ``collided'' with some vertex $w_j$ in the tree which has $w_k$ as its root.  
+
+In stage 2 of the algorithm, the ``information combination'' stage, we start with a collection of problems $\acto$ and a list of problem collisions. We form the collision digraph $G$ as above and compute its strong components, denoted by $\strongc = \{\strongcomp_j\}_{j\in \mathcal{J}}$, where $\mathcal{J}$ is an index set. 
+For $j \in \mathcal{J}$, pick $v \in \strongcomp_j$ and compute its reachable set, by which we define $\reach_j$, the reachable set of component $j$. 
 Since strong components are strongly connected, this definition is independent of the choice of $v$. 
 
-By our construction of the collision digraph and inductive assumption on the forest $\forest$, we have $\fix(\pre_i) \sub \fix(\pre_j)$ for any $i,j$ such that $v_k \in \strongcomp_k$ and $v_j \in \reach_k$, that is, whenever $v_j$ is in the reachable set of the strong component containing $v_i$. 
+In proposition~\ref{prop:graph}, we show that our construction of the collision digraph and inductive assumption on the forest $\forest$ guarantees that $\fix(\pre_i) \sub \fix(\pre_k)$ whenever $(v_i,v_k) \in E$. In particular, we can show that $\fix(\pre_i) \sub \fix(\pre_j)$ whenever $v_i \in \strongcomp_k$ and $v_j \in \reach_k$, that is, whenever $v_j$ is in the reachable set of the strong component containing $v_i$.
 
-Let $Q' = \emptyset$ and, for each strong component $\strongcomp_j \in \strongc$, add $\pre = \min\limits_{v_k \in \reach_j} \pre_k$ to $Q'$. 
-By the guarantees above, we can combine all previous problems into a new active set by letting $\acto = Q'$ without missing any points of $\fix(T)$.  
-
-Note that, by changing $\acto$ in this way, we may have caused more cone collisions.
+Let $\actt = \emptyset$ and, for each strong component $\strongcomp_j \in \strongc$, add $\pre = \min\limits_{v_k \in \reach_j} \pre_k$ to $\actt$.
+By the guarantees above, we can combine all problems represented in strong component $k$ of the digraph into a new active set of problems by letting $\acto \leftarrow \actt$ \emph{without losing any points} of $\fix(T)$.
+Note that, by changing $\acto$ in this way, we may have actually caused new cone collisions.
 We can combine the geometric information from these collisions as above to weakly improve the progress of the algorithm.
-Thus, we run stage 2 iteratively until there are no more cone collisions. 
-This process terminates, as discussed in the appendix.  
-After stage 2 terminates, we return to stage 1 with the new active set $\acto$.
+Thus, we run the information combination subroutine in stage 2 iteratively until there are no more cone collisions.
+This process terminates, as discussed in lemma~\ref{lemma:termination}.
+After termination, we return to stage 1 with a new collection of active problems $\acto \leftarrow \actt$.
 
-In general, we would like to spend more time in stage 2, since stage 2 improves the progress of the search by using fast digraph algorithms, as opposed to the often costly process (how costly xxxx) of computing the operator $T$, equivalent to checking whether an allocation is strict core.  
+In general, we would like to spend as much time as possible in the information combination stage, since this stage improves the progress of the search for $\fix(T)$ by using fast\footnote{Tarjan's algorithm for finding strong components of a graph $G = (V,E)$ runs in $\mathcal{O}(|V| + |E|)$, for instance.} digraph algorithms, as opposed to the often costly process of computing the operator $T$, which is equivalent to checking whether a given allocation is strict core.  
 
 \subsubsection{Full Algorithm and Correctness} \label{fullalgo}
 In this section, we state the full algorithm and provide correctness proofs.
-First we define the main subroutines, which implement each of the stages discussed above. 
-Throughout, we maintain global variables $\forest$, a problem forest, and $\act$, a collection of preallocations corresponding to both active and inactive problem cones. 
+First we define the main subroutines, which implement each of the stages discussed above.
+Throughout, we maintain global variables $\forest$, a rooted forest, and $\act$, a collection of preallocations corresponding to both active and inactive problem cones.
 
-To initialize the algorithm, set $\fixfind = \emptyset$ and $F = \emptyset$. 
-Let $\pre^*$ and $\pre_*$ denote the maximal and minimal allocations in $\prealloc$. Apply $T^2$ iteratively to each to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
+To initialize the algorithm, set $\fixfind = \emptyset$ and $F = (\emptyset,\emptyset)$. 
+Apply $T^2$ iteratively to each of $\pre^*$ and $\pre_*$, the maximal and minimal allocations in $\prealloc$, to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
 If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
 Similarly, if $T\ul{\pre} = \ul{\pre}$, then set $\fixfind = \{\ul{\pre}\}$ and terminate. 
-Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and add $w(\pre - e_i)$ to $F$ as an isolated root. 
+Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, add $w(\pre - e_i)$ to $F$ as an isolated root, and run FindStrictCore. 
+
+Subroutine details are given below.
  
 \begin{algorithm}
 \caption{InformationAcquire - Subroutine for Stage 1}     
@@ -590,7 +589,6 @@ Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$ and ad
 \end{algorithmic}
 \end{algorithm}
 
-Next, consider the information combination algorithm. 
 
 \begin{algorithm}
 \caption{InformationCombine - Subroutine for Stage 2}  
@@ -649,6 +647,10 @@ Next, consider the information combination algorithm.
 \RETURN $\fixfind$
 \end{algorithmic}
 \end{algorithm}
+
+\subsubsection{Algorithm Analysis}
+
+In this section, we show termination and correctness of FindStrictCore and also prove structure theorems for the collision digraph and problem forest defined above.
 
 First, we handle termination analysis.
 \begin{lemma} \label{lemma:termination}
@@ -744,20 +746,22 @@ At any point during the execution of FindStrictCore
 \end{enumerate}
 \end{lemma}
 
-First, we give definitions and some useful auxillary lemmas. 
+Before proving lemma~\ref{lemma:key}, we give definitions, some needed auxillary lemmas, and a structure result for the collision digraph $G$. 
+
 For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
 For clarity, if $t$ is a rooted tree in $\forest$, we will let $r(t)$ denote the (unique) root node of this tree.
 The depth of a vertex $w$ in a forest $\forest$ is defined as its depth in the unique rooted tree containing it, denoted by $\depth(w, \forest)$
+The reachable set of a vertex $w$ in a forest $\forest$ is defined as its reachable set in the unique tree (a maximal connected component) containing it, denoted by $\reach(w, \forest)$
 
-Next, we develop some needed graph-theoretic results for problem forests. 
+Next, we develop some graph-theoretic results for problem forests. 
 
 \begin{lemma} \label{lemma:forest}
 Let $\forest$ be a rooted forest. 
 Suppose that $\forest'$ is obtained from $\forest$ in one of the following ways 
 \begin{enumerate}
 \item Adding an isolated vertex to $\forest$ \label{forest:solo}
-\item Adding a vertex $w$ and directed edges $(w,w')$ such that $w' \in \roott(\forest)$. \label{forest:child}
+\item Adding a vertex $w$ and directed edges $(w,w')$ with $w' \in \roott(\forest)$. \label{forest:child}
 \end{enumerate}
 Then the following are true  
 \begin{enumerate}
@@ -819,7 +823,7 @@ Then, since $\forest$ is a problem forest by assumption, we get a chain of inclu
 \eprf 
 
 The following lemma shows that, conditional on the problem forest structure of $\forest$, the collision digraph can be used to combine the information contained in distinct problem cones.
-\begin{lemma} \label{lemma:graph}
+\begin{lemma} \label{prop:graph}
 Suppose that the following conditions hold when InformationCombine is called: 
 \begin{enumerate}
 \item[(i)] $\forest$ is a problem forest
@@ -827,12 +831,12 @@ Suppose that the following conditions hold when InformationCombine is called:
 \end{enumerate}
 Let $G = (V,E)$ be the collision digraph and $S$ one of its strong components, then 
 \begin{enumerate}
-\item If $(v_i, v_k) \in E$ then $\fix(\pre_i) \sub \fix(\pre_k)$. \label{lemma:graph:edge}
-\item If $v_i, v_j \in \strongcomp$ then $\fix(\pre_i) = \fix(\pre_j)$. \label{lemma:graph:strong}
-\item If $v_j \in \strongcomp$ and $v_k \in \reach$, the reachable set of $\strongcomp$, then $\fix(\pre_i) \peq \pre_k$. \label{lemma:graph:reach}
+\item If $(v_i, v_k) \in E$ then $\fix(\pre_i) \sub \fix(\pre_k)$. \label{prop:graph:edge}
+\item If $v_i, v_j \in \strongcomp$ then $\fix(\pre_i) = \fix(\pre_j)$. \label{prop:graph:strong}
+\item If $v_j \in \strongcomp$ and $v_k \in \reach$, the reachable set of $\strongcomp$, then $\fix(\pre_i) \peq \pre_k$. \label{prop:graph:reach}
 \end{enumerate}
 \end{lemma}
-In particular, item~(\ref{lemma:graph:strong}) shows that the strong components of $G$ identify groups of equivalent problems, which can then be consolidated.
+In particular, item~(\ref{prop:graph:strong}) shows that the strong components of $G$ identify groups of equivalent problems, which can then be consolidated.
 Statement (3) shows that fast digraph algorithms for computing reachable sets can be used to combine the information learned in different subproblems.
 
 \prf
@@ -841,13 +845,13 @@ Consider $\pre_i \in \acto$ at initialization of the subroutine and $j \in \coll
 Since $\forest$ is a problem tree, by lemma~\ref{lemma:forest2} above $\fix(\pre_i) = \fix(\pre_{\ell})$ and $\fix(\pre_j) = \fix(\pre_k)$.
 By our assumption about collision indices, we have $\fix(\pre_{\ell}) \sub \fix(\pre_j)$. 
 Putting this together, we have $\fix(\pre_i) \sub \fix(\pre_k)$ for every $(v_i, v_k) \in E$.
-This shows that~(\ref{lemma:graph:edge}) above holds.
+This shows that~(\ref{prop:graph:edge}) above holds.
 
 Now consider a strong component $\strongcomp$ (after removing singletons $\{v_i\}$ for $\pre_i \not \in \acto$). 
 For $v_i,v_k \in \strongcomp$, there are directed paths $v_i \to v_k$ and $v_k \to v_i$. 
-Then, by the correspondence between directed edges and fixed point inclusion shown above, we have $\fix(\pre_i) \sub \fix(\pre_k)$ and $\fix(\pre_k) \sub \fix(\pre_i)$, so $\fix(\pre_i) = \fix(\pre_k)$ for all $v_i, v_k \in \strongcomp$, completing the proof of~(\ref{lemma:graph:strong}) above. 
+Then, by the correspondence between directed edges and fixed point inclusion shown above, we have $\fix(\pre_i) \sub \fix(\pre_k)$ and $\fix(\pre_k) \sub \fix(\pre_i)$, so $\fix(\pre_i) = \fix(\pre_k)$ for all $v_i, v_k \in \strongcomp$, completing the proof of~(\ref{prop:graph:strong}) above. 
 
-Finally, if $\pre_i \in \strongcomp$ and $\pre_k \in \reach$, then there exists a path $v_i \to v_k$ by definition, so by~(\ref{lemma:graph:reach}) above there is a chain of inclusions $\fix(\pre_i) \sub \hdots \sub \fix(\pre_k)$. 
+Finally, if $\pre_i \in \strongcomp$ and $\pre_k \in \reach$, then there exists a path $v_i \to v_k$ by definition, so by~(\ref{prop:graph:reach}) above there is a chain of inclusions $\fix(\pre_i) \sub \hdots \sub \fix(\pre_k)$. 
 In particular, $\fix(\pre_i) \peq \pre_k$.
 This completes the proof of the lemma.
 \eprf 
@@ -864,7 +868,7 @@ Moreover, the following statements are true:
 \end{lemma}
 \prf 
 
-We start with the first statement of the lemma.  
+The first statement is a simple observation.
 If $\pre_i$ is processed more than once, then $\pre_i$ is added to $\acta$ more than once during the algorithm . 
 Since $\acta \sub \acto$, and elements are \emph{only added} (never removed) to $\acto$ after processing begins at line~\ref{alg1:while1}, then $\pre_i \in \acto$ when it is added to $\acta$ the second time. 
 But we check for redundancy before we add a program in line~\ref{alg1:addq}, so this is impossible. 
@@ -926,7 +930,7 @@ Suppose we process index $j$ at $m = k+1$ and let $\unproc$ be the set of unproc
 For $i \in \unproc$, $R(\forest_j,i) = R(\forest',i)$ for $i \in \unproc$ by induction.
 In particular, $R(\forest_j,i)$ are pairwise disjoint for $i \in \unproc$.
 Then adding a new vertex $w(\pre_j)$ as a root with $c(w(\pre_j)) = R(\forest',j)$ cannot change any of the other component root sets $R(\forest', \ell)$ for $\ell \in \unproc \setminus \{j\}$.
-If $k$ is processed after $j$, this shows $R(\forest_k,\ell) = R(\forest',\ell)$ for $\ell \in \unproc \setminus \{j\}$, which completes the induction. 
+If $k$ is processed next after $j$, this shows $R(\forest_k,\ell) = R(\forest',\ell)$ for $\ell \in \unproc \setminus \{j\}$, which completes the induction. 
 
 In particular, for any $\pre \in \actt$, $w(\pre) \not \in \forest'$ at the beginning of the subroutine, so $w(\pre) \not \in R(\forest_j,j) = R(\forest',j)$ for any $j$. 
 Then no edge of the form $(w', w(\pre))$ is ever added during this procedure. 
@@ -938,9 +942,10 @@ Then $R(\forest',j) = \{r(w_k): v_k \in S_j\} = \{w_k: v_k \in S_j\}$.
 Then the root sets are disjoint in this case as well, by disjointness of strong components.
 The inductive argument from case 2 then establishes~(\ref{lemma:roots:comb}) above for this case as well. 
 \eprf 
-We are now ready for the proof of our key lemma.  %proof of key lemma 
+We are now ready for the proof of our key lemma on the structure of the graph $\forest$ during the algorithm. 
+
 \prf[Proof of Lemma~\ref{lemma:key}]
-A straightforward induction on distinct states $(\forest,\act)_k$ of the pair $(\forest, \act)$ shows that condition~(\ref{def:forest1}) of the definition of a problem forest is always satisfied. 
+A straightforward induction on distinct states $(\forest,\act)_k$ of the pair $(\forest, \act)$ shows that condition~(\ref{def:forest1}) of the definition of a problem forest is always satisfied.
 Specifically, By inspection, any line in which we add $\pre$ to $\act$ (lines~\ref{alg1:addq} of subroutine~\ref{infac} and \ref{alg2:addq} of subroutine~\ref{infcomb}) is paired with a line where $w(\pre)$ is added to $\forest$. 
 
 For the remaining statements, we work by induction on the sequence $\pair_k$ of distinct states of the pair $\pair$. 
@@ -1008,10 +1013,10 @@ Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:col
 Note that $\coll_n = \coll_{n + 1}$. 
 By construction (on line~\ref{alg2:forest}), we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
 
-Next, we show that defining conditions~(\ref{def:forest2}) and~(\ref{def:forest3}) still hold for $\forest_{n + 1}$, making use of our characterization of the collision digraph in lemma~\ref{lemma:graph} above.
+Next, we show that defining conditions~(\ref{def:forest2}) and~(\ref{def:forest3}) still hold for $\forest_{n + 1}$, making use of our characterization of the collision digraph in lemma~\ref{prop:graph} above.
 Let $v_k, v_{\ell} \in \strongcomp_j$, a strong component of $G = (V,E)$ (after removing irrelevant singletons on line~\ref{alg2:cstrong}, and denote $r(w_k) = w_{k'}$ and $r(w_{\ell}) = w_{\ell'}$.
 By (strong) induction, $\forest'$ is a problem forest, so by lemma~\ref{lemma:forest2} above, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell})$ and $\fix(\pre_k) = \fix(\pre_{k'})$. 
-Moreover, the indices $\coll'$ at initialization satisfy condition~(\ref{convlemma:coll}), by the inductive hypothesis again, so lemma~\ref{lemma:graph} shows that, in fact, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell}) = \fix(\pre_k) = \fix(\pre_{k'})$. 
+Moreover, the indices $\coll'$ at initialization satisfy condition~(\ref{convlemma:coll}), by the inductive hypothesis again, so lemma~\ref{prop:graph} shows that, in fact, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell}) = \fix(\pre_k) = \fix(\pre_{k'})$. 
 Now $w(\pre)$ is added to $\forest_n$ with $c(w(\pre)) = \{r(w_k):v_k \in \strongcomp_j\}$. 
 Then the previous argument shows that $w_i,w_k \in c(w(\pre))$ implies that $\fix(\pre_i) = \fix(\pre_k)$. 
 Since these are the only \emph{new} sibling relations added in $\forest_{n+1}$, by the inductive hypothesis we have shown condition~(\ref{def:forest2}) defining a problem forest for $\forest_{n+1}$. 
@@ -1019,7 +1024,7 @@ Since these are the only \emph{new} sibling relations added in $\forest_{n+1}$, 
 For the final defining condition of a problem forest, consider adding $\pre$ as above and let $v_i \in \strongcomp_j$. 
 Clearly $i \in \reach_j$, so that $i \in K_j$. 
 Then $\pre \peq \pre_i$, so $\fix(\pre) \sub \fix(\pre_i)$, and the second statement of condition~(\ref{def:forest3}) is satisfied. 
-If $v_k \in \reach_j$, then there is a directed path $v_i \to v_k$, so $\fix(\pre_i) \sub \fix(\pre_k)$ by statement~(\ref{lemma:graph:reach}) of lemma~\ref{lemma:graph} above.
+If $v_k \in \reach_j$, then there is a directed path $v_i \to v_k$, so $\fix(\pre_i) \sub \fix(\pre_k)$ by statement~(\ref{prop:graph:reach}) of lemma~\ref{prop:graph} above.
 In particular, $\fix(\pre_i) \peq \pre_k$ for all $k \in K_j$. 
 Then $\fix(\pre_i) \peq \pre = \min_{k \in K_j} \pre_k$, so that $\fix(\pre_i) \sub \fix(\pre)$, and we are done. 
 This is the only new parent-child relation added to $\forest_n$, so, using the inductive hypothesis, $\forest_{n+1}$ satisfies defining condition~(\ref{def:forest3}) of a problem forest. 
@@ -1042,7 +1047,7 @@ We have exhausted all cases, so the proof is complete.
 \eprf 
 
 We are now ready to prove correctness of FindStrictCore.
-We will make heavy use of the collision digraph and problem forest structure lemmas proved above.
+We will make heavy use of the collision digraph and problem forest structure results proved above.
 
 \begin{thm}
 FindStrictCore finds all fixed points $\fix(T)$. 
@@ -1138,11 +1143,11 @@ The proof relies crucially on the collision digraph and problem forest structure
 Fix $\pre_i \in \acto'$.
 By construction, we have $v_i \in G$, where $G = (V,E)$ is the collision digraph built during the algorithm.
 Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after trimming irrelevant singletons (line~\ref{alg2:cstrong}).
-By key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$ during the algorithm, $\forest$ is a problem forest, as in definition~\ref{def:forest}, at any time during the execution of FindStrictCore.
+By our key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$ during the algorithm, $\forest$ is a problem forest, as in definition~\ref{def:forest}, at any time during the execution of FindStrictCore.
 Moreover, condition~(\ref{convlemma:coll}) of lemma~\ref{lemma:forest} also holds, showing that collision indices are compatible with $\forest$.
-Then proposition~\ref{lemma:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph, can be applied. 
+Then proposition~\ref{prop:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph, can be applied. 
 Let $\reach_j$ denote the reachable set of strong component $\strongcomp_j$.
-By item~(\ref{lemma:graph:reach}) of the graph structure proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
+By item~(\ref{prop:graph:reach}) of the graph structure proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
 If $K_j$ denotes the set of indices associated with $\reach_j$ (as in line~\ref{alg2:indices}), we have $\fix(\pre_i) \peq \min_{k \in K_j} \pre_k \equiv \pre'$, which is added to $\actt$.
 In particular, $\fix(\pre_i) \sub \fix(\pre')$, where $\pre' \in \actt'' = \actokk$.
 This shows that $\fix(\actok) \sub \fix(\actokk)$, so, in particular, $\fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindkk$ since $\fixfindk = \fixfindkk$.
