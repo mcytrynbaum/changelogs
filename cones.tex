@@ -101,6 +101,7 @@
 \newcommand{\disto}{d}
 \newcommand{\distt}{D}
 \newcommand{\preo}{\pre^{0}} 
+\newcommand{\pren}{\pre_{0}} 
 \newcommand{\pref}{\pre^{f}} 
 \newcommand{\coll}{I}
 \newcommand{\collk}{I^k}
@@ -1062,34 +1063,35 @@ InformationAcquire returns a set $\actc$ of problems, the information from which
 In the above notation, $\actc'' = \acto^{k+1}$ is the set of problems and $\fixtemp''$ is the set of fixed points returned by the subroutine.
 By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
 Then, to show that no fixed points are ``lost'' during the subroutine, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \fix(\actc'')$.
-Formally, we work by induction (\emph{within} this subroutine), on distinct states of the tuple $(\acta,\acto,\actc,\fixtemp)_{\ell}$.
+
+Formally, we work by induction on $\ell \geq 0$ (\emph{within} this subroutine), for distinct states of the tuple \[(\acta,\acto,\actc,\fixtemp)_{\ell}\]
 Note that, by inspection of the algorithm, the last three sets in the tuple change \emph{only if} $\acta$ changes. 
 Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states that occur at \emph{different} iterations of the processing loop at line~\ref{alg1:for1}.
 Thus, we are allowed to remove a fixed point from $\acta \cup \actc$ and add it back later while processing a single problem $\pre_i$ without creating a ``distinct'' state.} of the working set of active problems $\acta$.
-We will show by induction that for any $\ell \geq 0$ if $\pre'' \in \fix(\pre)$ for some problem $\pre \in \acto^{\ell}$ then either $\pre'' \in \fixtemp^{\ell}$ or there exists $\pre' \in \acta^{\ell} \cup \actc^{\ell}$ with $\pre'' \peq \pre' \pre \pre$ (g).
-We call such a relationship a guarantee (g) afforded by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$.
-In particular, this will show that $\fix(\acto^{\ell}) \sub \fix(\acta^{\ell}) \cup \fix(\actc^{\ell}) \cup \fixtemp^{\ell}$ for al $\ell$.
-By lemma~\ref{lemma:termination}, the subroutine terminates, with $\acta'' = \emptyset$. 
+We will show by induction that for any $\ell \geq 0$ if $\pre'' \in \fix(\pre)$ for some problem $\pre \in \acto^{\ell}$ then either $\pre'' \in \fixtemp^{\ell}$ or there exists $\pre' \in \acta^{\ell} \cup \actc^{\ell}$ with $\pre'' \peq \pre' \peq \pre$ (GAR).
+We call such a relationship a guarantee (GAR) on $\pre''$ afforded by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$, which is either still active, or in the set of ``collided'' problems to be returned by the algorithm.
+In particular, this will show that $\fix(\acto^{\ell}) \sub \fix(\acta^{\ell}) \cup \fix(\actc^{\ell}) \cup \fixtemp^{\ell}$ for all $\ell \geq 0$.
+By lemma~\ref{lemma:termination}, this subroutine terminates with $\acta'' = \emptyset$. 
 Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''$ is the state of $\acto$ when the algorithm returns. 
-Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \cup \fix(\actc'') \cup \fixtemp'' \sub \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
+Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \cup \fix(\actc'') \cup \fixtemp'' = \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
 
 First, we show that $\fix(\acto') \sub \fix(\acto'')$. 
-Let $\acto^r$ denote the state of $\acto$ after removing redundant problems at the beginning of the subroutine (line~\ref{\alg1:redundant})
-If $\pre \in \acto'$ and $\pre \peq \min \fix(T^2)$, then $\fix(\pre) = \emptyset$. 
+Consider the beginning of subroutine 1, where we remove redundant subproblems (line~\ref{alg1:redundant}).
+If $\pre \in \acto'$ and $\pre \peq \min \fix(T^2)$, then $\fix(\pre) = \emptyset$ since we checked $\bopre = \min \fix(T^2) \not \in \fix(T)$. 
 Otherwise, if we remove $\pre$ from $\acto$ during this loop, then there is a $\pre \peq \pre' \in \acto$, so that $\fix(\pre) \sub \fix(\pre')$, and no fixed points are lost.
-Let $\acto^r$ be the state of $\acto$ after the removal loop.
-Then $\fix(\acto^r) = \fix(\acto')$.
-After this line, we only add, never remove, points from $\acto$, so we have $\fix(\acto') \sub \fix(\acto^r) \sub \fix(\acto'')$, as required.
+Let $\acto^R$ denote the state of $\acto$ after this removal step.
+Then $\fix(\acto^R) = \fix(\acto')$.
+After this step, we only add, never remove, points from $\acto$, so we have $\fix(\acto') \sub \fix(\acto^R) \sub \fix(\acto'')$, as required.
 
 We now begin the induction.
 The base case is clear, since we set $\acta' \leftarrow \acto'$ at initialization.
 Then suppose by induction that our hypothesis holds up to $\ell = k$.
-We will show that the conclusion still holds for $k + 1$.
-Note that the argument above shows that it suffices to consider changes to $\acta$ after redundant problem removal (line~\ref{alg1:redundant}), since no fixed points are lost during this step.
+We will show that guarantees of the form (GAR) above still exist for all $\pre \in \fix(\actokk)$.
+By the argument above, it suffices to consider changes to $\acta$ after redundant problem removal (line~\ref{alg1:redundant}), since no fixed points guarantees are lost during this step.
 There are several cases.
 
-\emph{Subcase 1}: There is a state change $\actak \to \actakk$ when stopping condition (1) or (2) is triggered for a problem $\pre_i \in \actak$, which is then removed $\actakk = \actak \setminus \{\pre_i\}$.
-Let $\preo \in \acto$ and $\pre \in \fix(\preo)$ and suppose that $\pre \not \in \fixtemp_{k + 1}$.
+\emph{Subcase 1}: There is a state change $\actak \to \actakk$ when stopping condition (1) or (2) is triggered for a problem $\pre_i \in \actak$, which is then removed $\actakk \leftarrow \actak \setminus \{\pre_i\}$.
+Let $\pren \in \acto$ and $\pre \in \fix(\pren)$ and suppose that $\pre \not \in \fixtemp_{k + 1}$.
 We show that the guarantee (g) on $\pre$ cannot be afforded by $\pre_i$, so it is safe to remove from $\actak \cup \actck$.
 Suppose that $\pre \peq \pre_i$.
 We have $\pre' = (T_i^2)^k \pre_i$ for some $k \geq 0$, and $\pre' \peq \bopre$ or $T \pre' = \pre'$.
@@ -1099,21 +1101,21 @@ Then $\pre \pe \pre'$ strictly.
 For stopping condition (1), note that $\fix(T) \sub \fix(T^2) \succ \bopre$, so, by the check at initialization. 
 For stopping condition (2), note that by lemma~\ref{lemma:top}, which shows that no fixed points of $T$ are ordered strictly by ``$\pe$'', if $T\pre' = \pre'$ then there can be no $\pre \pe \pre'$ fixed by $T$. 
 In either case, we actually have $\fix(\pre') = \emptyset$, which is a contradiction, so $\pre \not \peq \pre_i$.
-By the inductive hypothesis, there must be $\pre'' \in \actak \cup \actck$ affording a guarantee $\pre \peq \pre'' \peq \preo$, where $\pre'' \not = pre_i$.
+By the inductive hypothesis, there must be $\pre'' \in \actak \cup \actck$ affording a guarantee $\pre \peq \pre'' \peq \pren$, where $\pre'' \not = pre_i$.
 Then $\pre'' \in \actakk \cup \actckk$ still, so we are done.
 
 \emph{Subcase 2}: There is a state change $\actak \to \actakk$ when stopping condition (3) is triggered for a problem $\pre_i \in \actak$.
 Again, we have $\pre'$ the lowest element of the Tarski sequence, and, as above, $\fix(\pre_i) \sub \fix(\pre')$.
 We then remove $\pre_i$ and add $\pre' - e_i$ for $1 \leq i \leq m$, so $\actakk = \actak \setminus \{\pre_i \} \cup \left (\bigcup_{i \in I} \{\pre' - e_i \} \right )$, where $I \sub \{1,\hdots,m\}$ are the indices such that $\pre' - e_i$ is non-redundant (as in line~\ref{alg1:addq}).
-Let $\pre \in \fix(\preo)$ for $\preo \in \acto$, and suppose that $\pre \not \in \fixtemp_{k +1}$.
-Suppose $\pre \peq \pre_i \peq \preo$ as in the guarantee (g) above, so that $\pre \peq \pre'$ by the Tarski argument.
+Let $\pre \in \fix(\pren)$ for $\pren \in \acto$, and suppose that $\pre \not \in \fixtemp_{k +1}$.
+Suppose $\pre \peq \pre_i \peq \pren$ as in the guarantee (g) above, so that $\pre \peq \pre'$ by the Tarski argument.
 In fact, $\pre \pe \pre'$, because we check for points of $\fix(T)$, as in the previous case.
 Then we must have, $\pre \peq \pre' - e_i$ for some $i$.
-If $i \in I$ then $\pre \peq \pre' - e_i \pe \pre' \peq \preo$, so $\pre' - e_i$ gives a new guarantee (g) on this fixed point for $\preo \in \acto$.
+If $i \in I$ then $\pre \peq \pre' - e_i \pe \pre' \peq \pren$, so $\pre' - e_i$ gives a new guarantee (g) on this fixed point for $\pren \in \acto$.
 No other points of $\actak \cup \actck$ are removed, so we are done.
 Suppose, conversely, that $i \not \in I$; that is, the problem $\pre' - e_i$ is redundant.
-Then $\pre - e_i = \pre'' \in \actok$, so we actually have $\pre \in \fix(\pre'') \cap \fix(\preo)$.
-By working with the guarantee (g) for $\pre'' \in \acto$ (rather than the guarantee for $\preo$), there is $\pre_g \in \actak \cup \actck$ such that $\pre \peq \pre_g \peq \pre'' = \pre' - e_i \pe \pre' \pre \pre_i$.
+Then $\pre - e_i = \pre'' \in \actok$, so we actually have $\pre \in \fix(\pre'') \cap \fix(\pren)$.
+By working with the guarantee (g) for $\pre'' \in \acto$ (rather than the guarantee for $\pren$), there is $\pre_g \in \actak \cup \actck$ such that $\pre \peq \pre_g \peq \pre'' = \pre' - e_i \pe \pre' \pre \pre_i$.
 Then $\pre_g \not = \pre_i$, so, in particular, it is not removed: $\pre_g \in \actkk \cup \actckk$.
 Then in either case, we still have a guarantee on all fixed points.
 
