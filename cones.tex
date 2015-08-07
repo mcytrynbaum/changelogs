@@ -72,7 +72,7 @@
 \newcommand{\strcore}{\mathrm{SC}(X,U)}
 \newcommand{\core}{\mathrm{C}(X,U)}
 \newcommand{\stable}{\mathrm{S}(X,U)}
-\newcommand{\fecon}{E}
+\newcommand{\fecon}{\mathrm{E}}
 \newcommand{\fix}{\mathcal{E}}
 \newcommand{\suq}{\succeq}
 \newcommand{\peq}{\preceq}
@@ -180,9 +180,9 @@ An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does n
 \[
 U_b(Z_b) \geq U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
-where \emph{at least one} of the above inequalities holds strictly. We denote the strict core by $SC(X,U)$. 
+where \emph{at least one} of the above inequalities holds strictly. We denote the strict core by $strict$. 
 \subsection{Fixed Preallocations and the Strict Core}
-Our method proceeds by identifying allocations $Y \in SC(X,U)$ with fixed points of an operator on preallocations, generalizing the construction in Echenique and Yenmez. 
+Our method proceeds by identifying allocations $Y \in \strcore$ with fixed points of an operator on preallocations, generalizing the construction in Echenique and Yenmez. 
 
 For each agent $a \in A$, we define 
 
@@ -191,7 +191,7 @@ V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_
 \]
 
 Intuitively, $V(\pre, a)$ is the \emph{possibility set} for an agent $a$ at a preallocation $\pre$. 
-It contains all sets of contracts naming $a$ that are part of a larger economy $Y$ where every other agent $b \in d(Y)$ weakly prefers their contracts under $Y$ to their contracts under the pre-allocation $\pre$.  
+It contains all bundles of contracts naming $a$ that are part of a larger economy $Y$ in which every other agent $b \in d(Y)$ weakly prefers their contracts under $Y$ to their contracts under the preallocation $\pre$.  
 
 Next, we define an operator $T: \prealloc \to \prealloc$ by setting $T \pre(a) = \max V(\pre, a)$, where the maximum is taken under the preference relation $\suq_a$ for each $a \in A$.
 Note that $\emptyset_a \in V(\pre,a)$ for any $\pre \in \prealloc$, so $T$ is well-defined. Let $\fix(T)$ denote the fixed points of $T$. Define $\fecon(T) = \{Y \in 2^X: \, \pre_Y \in \fix(T)\}$, the collection of allocations $Y$ whose corresponding preallocation $\pre_Y$ is fixed by $T$.
@@ -234,7 +234,9 @@ For any $b \in d(Y)$, $Y$ then satisfies the conditions in the definition of $V(
 Therefore, $\pre(b) = T\pre(b) \suq Y_b \suq \pre(b)$, so equality holds throughout. In particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
 
 Fix $a_1 \in A$. Since $\pre \in \fix(T)$, the argument above shows that there exists an allocation $Y$ such that $Y_{a_1} = \pre(a_1)$, and, in particular, $Y_b = \pre(b)$ for all $b \in d(Y)$. 
-Therefore, the collection of global allocations available to $a_1$ at $\pre$ \[\glob(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \suq \pre(b)\: \forall b \in d(Y)\setminus \{a_1\}\}\] is non-empty, so there exists an allocation 
+Therefore, the collection of global allocations available to $a_1$ at $\pre$ 
+\[\glob(\pre,a_1) = \{Y \in 2^X: Y_{a_1} = \pre(a_1), \: Y_b \suq \pre(b)\: \forall b \in d(Y)\}\]
+is non-empty, so there exists an allocation 
 
 \[
 Y \in \argmax_{Z \in \glob(\pre,a_1)} |d(Z)|
@@ -1176,26 +1178,19 @@ That is, by lemma~\ref{lemma:strictcore} above, the algorithm finds all strict c
 
 
 
-
-
-
-
-
-
-
 \subsubsection{Notes}
 
 We showed in lemma~\ref{lemma:termination} that FindStrictCore terminates so that, eventually, $\acto = \emptyset$.
 Then, if at termination we have $\acto = \emptyset$, we must have $\fix(T) \sub \fixfind$, so that we have found all fixed points.
 
 
-
-
 AGENDA
 
-read through work 
-change index stuff 
-write some of our maximal results?
+write maximal domain results and examples
+write connection / extension to other results 
+write out stable allocation stuff 
+references
+nice figures
 
 
 for the induction - suffices to consider distinct states of $\acta$, because other state change indices are a subset // modulo changes that happen within for loop i.e. we look for changes up to for loop - this suffices
