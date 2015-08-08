@@ -1198,12 +1198,12 @@ As in the case of strict core, for $a \in A$ we define a set
 W(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \} \cup \{\pre(a)\}
 \]
 
-which can be thought of as the collection of allocations $Z \in 2^{X_a}$ corresponding to a ``block'' $Y \supseteq Z$ that agent $a$ could successfully propose to the coalition $d(Y)$.
+which can be thought of as the collection of allocations $Z \in 2^{X_a}$ with $Y \supseteq Z$ that agent $a$ could successfully propose to the coalition $d(Y)$.
 Define a new operator $\optwo: \prealloc \to \prealloc$ by $\optwo (\pre) (a) = \max\limits_{\suq_a} W(\pre,a)$.
 Note that in this case, the inequalities in the definition of $W(\pre,a)$ are \emph{strict}, and we are also forced to include $\pre(a) \in W(\pre,a)$, which is not necessary for strict core.
 Define the fixed allocation set $\fecon(\optwo) = \{Y \in 2^X: \optwo(\pre_Y) = \pre_Y\}$ as above.
 With these modifications, we get a similar fixed point characterization.
-\begin{lemma}
+\begin{lemma} \label{lemma:core}
 $\core = \fecon(\optwo)$
 \end{lemma}
 \prf
@@ -1225,11 +1225,12 @@ This completes the proof.
 
 We have thus characterized the core allocations $\core$ as the fixed points of an operator defined on the preallocation lattice $\prealloc$.
 
-\emph{Discussion}: Note that, by definition of the set $W(\pre,a)$, we must have $\optwo \pre \suq \pre$ for \emph{any} $\pre \in \prealloc$.
+\emph{Remark}: Note that, by definition of the set $W(\pre,a)$, we must have $\optwo \pre \suq \pre$ for \emph{any} $\pre \in \prealloc$.
 For the original operator $T$ with $\fecon(T) = \strcore$, this relationship only holds when $\pre \in \coordpre$; that is, $\pre = \pre_Y$ for some allocation $Y \sub X$.
 Because of this, $\optwo$ may also fix \emph{uncoordinated} preallocations, as we demonstrate shortly.
-This fact also shows immediately that the monotonically decreasing Tarski sequence $(T^2)^k \pre$ which our algorithm relies on can never actually decrease.
-The following example shows that the structure results for the operator $T$, which the fixed point approach relies on, may fail for the operator $\optwo$ even for two-sided, matching with bilateral contracts.
+Even more problematically, this fact shows that the monotonically decreasing Tarski sequence $(T^2)^k \pre$, which is the centerpiece of this approach, can never actually decrease.
+
+The following example shows that the structure results for the operator $T$, which the fixed point approach crucially relies on, may fail for the operator $\optwo$ even for the the setting of two-sided matching with bilateral contracts.
 
 \begin{prop}
 The operator $\optwo$ may not be antitone.
@@ -1238,20 +1239,32 @@ $\optwo$ may fix uncoordinated preallocations; that is, $\fix(\optwo) \not \sub 
 \end{prop}
 \prf 
 Consider an embryonic trading network with two sellers and a buyer $A = \{s_1,s_2,b\}$. 
-We let $(i,j)$ denote the contract where $i$ trades with $j$.
+We let $(i,j)^k$ denote the contract where $i$ sells $k$ units to $j$.
 Suppose that agents have preferences as follows:
 \begin{align*}
 s1:& \{(s_1,b)\}, \emptyset_{s_1} \\
-s2:& \{(s_2,b), (s_2,b)\}, \{(s_2,b)\}, \emptyset_{s_2} \\
-b:& \{(s_1,b), (s_2,b) \}, \{(s_2,b),(s_2,b)\}, \{(s_2,b)\}, \{(s_1,b)\}, \emptyset_b
+s2:& \{(s_2,b)^2\}, \{(s_2,b)\}, \emptyset_{s_2} \\
+b:& \{(s_1,b), (s_2,b) \}, \{(s_2,b)^2\}, \{(s_2,b)\}, \{(s_1,b)\}, \emptyset_b
 \end{align*}
 
-Where the contract space is $X = \{(s_1,b), (s_2,b), (s_2,b), \emptyset_{s_1}, \emptyset_{s_2}, \emptyset_b\}$.
-Thus, 
+Thus, $b$ prefers would like to execute two trades and prefers to buy from $s_2$, but, conditional on availability of a contract with both sellers, prefers to be diversified.
+The contract space is $X = \{(s_1,b), (s_2,b)^2, (s_2,b), \emptyset_{s_1}, \emptyset_{s_2}, \emptyset_b\}$, and we assume that all elements of $2^{X_a}$ not listed in the relations above are ranked below\footnote{Note that the specific order of allocations ranked below $\emptyset_a$ is irrelevant with respect to the evaluation of $\optwo$, since trivially $\emptyset_a \in W(\pre,a)$ for any $a$.} the single-agent contract $\emptyset_a$.
 
+Now define preallocations $\pre$ and $\pre'$ by setting $\pre'(a) = \emptyset_a$ for all $a \in A$ and $\pre(b) = \{(s_2,b)^2\}$, $\pre(s_1) = \emptyset_{s_1}$, $\pre(s_2) = \{(s_2,b)^2\}$.
+Note that $\pre = \pre_Y$, where $Y \in \core$ is the core allocation consisting of a single contract $\{(s_2,b)^2\}$. 
+Then by lemma~\ref{lemma:core} above $\optwo(\pre) = \pre$.
+Since $\pre'(a) = \emptyset_a$ for all $a$, so that any trade is a strict improvement for each agent involved, so every agent can propose its most preferred network structure.
+Thus, we get $\pre'' = \optwo(\pre')$ defined by $\pre''(b) = \{(s_1,b),(s_2,b)\}$ and $\pre''(s_1) = \{(s_1,b)\}$ and $\pre''(s_2) = \{(s_2,b)^2\}$.
+$\pre''$ is the unanimously most preferred preallocation, so, by the remarks above, $\optwo(\pre'') = \pre''$.
 
+Note that $\pre'' \su \pre$ and $\optwo(\pre'') \su \optwo(\pre)$, so $\optwo$ is not antitone on the lattice $\prealloc$.
+We also have $\pre \su \pre'$ but $\optwo^2(\pre') \su \optwo^2(\pre)$, so $\optwo^2$ is not isotone.
+Finally, $\pre''(b)_{s_2} = \{(s_2,b)\}$, but $\{(s_2,b)\} \not \in \pre(s_2)$, so $\pre''$ is not coordinated.
+However, we have shown that $\optwo(\pre'') = \pre''$, so $\fix(\optwo) \not \sub \coordpre$.
 \eprf
 
+\emph{Discussion}: These results, and the remark above, show that the fixed point approach to finding all core allocations is doomed to fail on the lattice $\prealloc$.
+Similar results can be shown, for instance, for 
 
 
 
@@ -1271,11 +1284,9 @@ nice figures
 
 TODO
 look in the Echenique and Oviedo paper to find some core equivalences
-
-
-
-
-
+open question - is there a lattice such that this works?
+look: what does substituability have to do with core equivalence results?
+    possible note above, since I constructed non-sub prefs
 
 
 for the induction - suffices to consider distinct states of $\acta$, because other state change indices are a subset // modulo changes that happen within for loop i.e. we look for changes up to for loop - this suffices
