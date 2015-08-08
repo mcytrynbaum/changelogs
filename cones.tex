@@ -120,6 +120,7 @@
 \newcommand{\depth}{D}
 \newcommand{\unproc}{\mathcal{J}_u}
 \newcommand{\glob}{G}
+\newcommand{\optwo}{T_2}
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -167,7 +168,7 @@ We start by generalizing the classical notion of a \emph{prematching}.
 
 Intuitively, a preallocation assigns each agent to a bundle of contracts naming him or her. We may think of $\pre(a)$ as the set of contracts ``held'' by agent $a$.   
 
-We can associate each allocation $Y\subseteq X$ with a unique preallocation $\pre_Y$ in a natural way by setting $\pre_Y(a) = Y_a$.
+We can associate each allocation $Y\subseteq X$ with a unique preallocation $\pre_Y$ in a natural way by setting $\pre_Y(a) = Y_a$ for $a \in d(Y)$ and $\pre_Y(a) = \emptyset_a$ otherwise.
 \begin{remark} Note, however, that not all preallocations can be derived from allocations in this way.
 For example, consider the case where $\emptyset \not = \pre(a)_b \not = \pre(b)_a$. In the preallocation $\pre$, $a$ holds contracts naming $b$ that are \emph{not} in the bundle of contracts held by $b$ naming $a$.  
 In particular, there does not exist an allocation $Y$ such that $\pre = \pre_Y$. 
@@ -180,14 +181,23 @@ An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does n
 \[
 U_b(Z_b) \geq U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
-where \emph{at least one} of the above inequalities holds strictly. We denote the strict core by $strict$. 
+where \emph{at least one} of the above inequalities holds strictly.
+We denote the strict core by $\strcore$. 
+
+Similarly, an allocation $Y$ is said to be \emph{core} if there does not exist a blocking set $Z \sub X$ such that 
+\[
+U_b(Z_b) > U_b(Y_b) \qquad  \forall b\in d(Z)
+\]
+We denote the core by $\core$. 
+Note that $\core \supseteq \strcore$.
+
 \subsection{Fixed Preallocations and the Strict Core}
 Our method proceeds by identifying allocations $Y \in \strcore$ with fixed points of an operator on preallocations, generalizing the construction in Echenique and Yenmez. 
 
 For each agent $a \in A$, we define 
 
 \[
-V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \}
+V(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \suq_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \}
 \]
 
 Intuitively, $V(\pre, a)$ is the \emph{possibility set} for an agent $a$ at a preallocation $\pre$. 
@@ -1175,6 +1185,31 @@ Then $\fixfind = \fix(T)$.
 That is, by lemma~\ref{lemma:strictcore} above, the algorithm finds all strict core allocations.
 \eprf
 
+\emph{Discussion}: talk about main algorithmic advantages, how this is incommensurable with E and Y and depends on the structure of the lattice (but there may be a prob. type result to be had).
+
+\subsubsection{Extension to Core Allocations} It is tempting to attempt to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to class of true core allocations $\core \supseteq \strcore$ in the general mathcing with contracts setting considered above. 
+Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
+For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered in the original paper by Echenique and Yenmez\footnote{something about other examples of this}.
+
+At first glance, it appears that such a generalization will be forthcoming. 
+As in the case of strict core, for $a \in A$ we define a set 
+
+\[
+W(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \} \cup \{\pre(a)\}
+\]
+
+which can be thought of as the collection of allocations $Z \in 2^{X_a}$ corresponding to a ``block'' $Y \supseteq Z$ that agent $a$ could successfully propose to the coalition $d(Y)$.
+Define a new operator $\optwo: \prealloc \to \prealloc$ by $\optwo (\pre) (a) = \max\limits_{\suq_a} W(\pre,a)$.
+Note that in this case, the inequalities in the definition of $W(\pre,a)$ are \emph{strict}, and we are also forced to include $\pre(a) \in W(\pre,a)$, which is not necessary for strict core.
+Define the fixed allocation set $\fecon(\optwo) = \{Y \in 2^X: \optwo(\pre_Y) = \pre_Y\}$ as above.
+With these modifications, we get a similar fixed point characterization.
+\begin{lemma}
+$\core = \fecon(\optwo)$
+\end{lemma}
+\prf
+
+\eprf
+
 
 
 
@@ -1185,12 +1220,20 @@ Then, if at termination we have $\acto = \emptyset$, we must have $\fix(T) \sub 
 
 
 AGENDA
-
 write maximal domain results and examples
 write connection / extension to other results 
 write out stable allocation stuff 
 references
 nice figures
+
+
+TODO
+look in the Echenique and Oviedo paper to find some core equivalences
+
+
+
+
+
 
 
 for the induction - suffices to consider distinct states of $\acta$, because other state change indices are a subset // modulo changes that happen within for loop i.e. we look for changes up to for loop - this suffices
