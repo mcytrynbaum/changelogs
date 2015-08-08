@@ -177,14 +177,14 @@ In particular, there does not exist an allocation $Y$ such that $\pre = \pre_Y$.
 With this example in mind, we say that $\pre \in \prealloc$ is a \emph{coordinated} preallocation if there exists an allocation $Y$ such that $\pre = \pre_Y$. 
 We denote the set of all cooordinated preallocations by $\coordpre\sub \prealloc$.
 
-An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does not exist a blocking set $Z \sub X$ such that 
+An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does not exist a non-empty blocking set $Z \sub X$ such that 
 \[
 U_b(Z_b) \geq U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
 where \emph{at least one} of the above inequalities holds strictly.
 We denote the strict core by $\strcore$. 
 
-Similarly, an allocation $Y$ is said to be \emph{core} if there does not exist a blocking set $Z \sub X$ such that 
+Similarly, an allocation $Y$ is said to be \emph{core} if there does not exist a non-empty blocking set $Z \sub X$ such that 
 \[
 U_b(Z_b) > U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
@@ -1187,7 +1187,7 @@ That is, by lemma~\ref{lemma:strictcore} above, the algorithm finds all strict c
 
 \emph{Discussion}: talk about main algorithmic advantages, how this is incommensurable with E and Y and depends on the structure of the lattice (but there may be a prob. type result to be had).
 
-\subsubsection{Extension to Core Allocations} It is tempting to attempt to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to class of true core allocations $\core \supseteq \strcore$ in the general mathcing with contracts setting considered above. 
+\subsubsection{Extension to True Core Allocations} It is tempting to attempt to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to class of true core allocations $\core \supseteq \strcore$ in the general mathcing with contracts setting considered above. 
 Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
 For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered in the original paper by Echenique and Yenmez\footnote{something about other examples of this}.
 
@@ -1207,6 +1207,48 @@ With these modifications, we get a similar fixed point characterization.
 $\core = \fecon(\optwo)$
 \end{lemma}
 \prf
+Suppose $Y \not \in \fecon(\optwo)$.
+Denoting $\pre = \pre_Y$, we have $\optwo(\pre) \not = \pre$.
+Then there exists $a \in A$ with $\optwo(\pre)(a) \not = \pre(a)$.
+In particular, $\optwo(\pre)(a) = Z_a$ for some $Z$ satisfying $Z_b \su_b \pre(b) = Y_b$ for $b \in d(Z) \setminus \{a\}$
+Moreover, $\pre(a) \in W(\pre,a)$, so we have $Z_a \su_a \pre(a)$.
+Then, in fact, $Z_b \su_b Y_b$ for all $b \in d(Z)$, so $Z$ blocks $Y$ and $Y \not \in \core$.
+
+Suppose $Y \not \in \core$. 
+Let $Z$ be a blocking set and denote $\pre = \pre_Y$ as above.
+Then $Z_b \su_b Y_b$ for $b \in d(Z)$ by definition.
+$d(Z) \not = \emptyset$ by definition, so fix $a \in d(Z)$.
+Then apparently $Z_a \in W(\pre,a)$ and, moreover, $Z_a \su_a Y_a = \pre(a)$.
+In particular, $\optwo(\pre)(a) \su_a \pre(a)$, so that $\pre \not \in \fecon(\optwo)$.
+This completes the proof.
+\eprf
+
+We have thus characterized the core allocations $\core$ as the fixed points of an operator defined on the preallocation lattice $\prealloc$.
+
+\emph{Discussion}: Note that, by definition of the set $W(\pre,a)$, we must have $\optwo \pre \suq \pre$ for \emph{any} $\pre \in \prealloc$.
+For the original operator $T$ with $\fecon(T) = \strcore$, this relationship only holds when $\pre \in \coordpre$; that is, $\pre = \pre_Y$ for some allocation $Y \sub X$.
+Because of this, $\optwo$ may also fix \emph{uncoordinated} preallocations, as we demonstrate shortly.
+This fact also shows immediately that the monotonically decreasing Tarski sequence $(T^2)^k \pre$ which our algorithm relies on can never actually decrease.
+The following example shows that the structure results for the operator $T$, which the fixed point approach relies on, may fail for the operator $\optwo$ even for two-sided, matching with bilateral contracts.
+
+\begin{prop}
+The operator $\optwo$ may not be antitone.
+The squared operator $\optwo^2$ may not be isotone.
+$\optwo$ may fix uncoordinated preallocations; that is, $\fix(\optwo) \not \sub \coordpre$.
+\end{prop}
+\prf 
+Consider an embryonic trading network with two sellers and a buyer $A = \{s_1,s_2,b\}$. 
+We let $(i,j)$ denote the contract where $i$ trades with $j$.
+Suppose that agents have preferences as follows:
+\begin{align*}
+s1:& \{(s_1,b)\}, \emptyset_{s_1} \\
+s2:& \{(s_2,b), (s_2,b)\}, \{(s_2,b)\}, \emptyset_{s_2} \\
+b:& \{(s_1,b), (s_2,b) \}, \{(s_2,b),(s_2,b)\}, \{(s_2,b)\}, \{(s_1,b)\}, \emptyset_b
+\end{align*}
+
+Where the contract space is $X = \{(s_1,b), (s_2,b), (s_2,b), \emptyset_{s_1}, \emptyset_{s_2}, \emptyset_b\}$.
+Thus, 
+
 
 \eprf
 
