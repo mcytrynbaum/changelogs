@@ -124,6 +124,7 @@
 \newcommand{\opthree}{T_3}
 \newcommand{\oper}{F}
 \newcommand{\point}{P}
+\newcommand{\lattice}{L}
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -1272,27 +1273,44 @@ Our results do not prove, however, that there is no fixed point method for findi
 Indeed, our construction of an algorithm to find all stable matchings relies on adapting the approach for $\strcore$ above to a lattice and partial order more appropriate for this solution concept. 
 
 \subsubsection{Generalized Information Sharing and Applications}
-In this section, we briefly describe how the notion of information sharing as well as the collision digraph algorithm developed above can be extended to similar economic problems on more general complete lattices.
-We demonstrate the utility of this generalization in two ways.
-First, we briefly describe an information sharing algorithm for finding all pure strategy Nash equilibria in games with strategic complementarities (GSC), extending the algorithm pioneered in Echenique (2003).
-Second, we show how these ideas subsume an information sharing based algorithm for more quickly finding all stable allocations.
+In this section, we briefly describe how the notion of information sharing and the collision digraph algorithm developed above can be extended to similar economic problems on more general complete lattices.
+This extension informs our algorithm for finding all stable allocations. 
+We also show briefly how these ideas can be used to extend the algorithm for finding all pure strategy Nash equilibria in games with strategic complementarities (GSC) pioneered in Echenique (2003).
 
-In the algorithm for finding all strict core allocations presented above, we relied on an embedding of preallocations $\prealloc$ into a lattice in $\mr^m$, say, where $m = |A|$.
-Here, we show that this Euclidean structure is not necessary and attempt to clarify the mathematical and economic aspects of the problem.
 
-\emph{Lattice Structure} - Fix a complete lattice $L$ with partial order $\peq$, and let $\point \sub L$ be a set of points that we are would like to find. 
-For instance, these could be preallocations $\fix(T)$ corresponding to strict core outcomes in the lattice $\prealloc$ or stable allocations $\stable$ in the lattice $(2^X,\sub)$, where subsets are partially ordered by set inclusion. 
-Let $\oper: L \to L$ be an isotonic operator such that $\point \sub \fix(\oper)$; that is, the fixed points of $\oper$ \emph{bound} $\point$.
-It is easy to show that for any $x_i \in L$, where $i$ is some index, the set $\{x' \peq x_i\} \equiv L_i \sub L$ is also a complete lattice.
-Suppose that isotone operators $F_i : L_i \to L_i$ can also be defined.
+Let $(\lattice,\peq)$ be a complete lattice, and suppose $\point \sub \lattice$ is a set of points that we are would like to find. 
+For instance, these could be stable allocations $\stable$ in the lattice $(2^X,\sub)$, where subsets are partially ordered by set inclusion. 
+Let $\oper: \lattice \to \lattice$ be isotonic with $\point \sub \fix(\oper)$; that is, the fixed points of $\oper$ \emph{bound} $\point$.
+Note that for any $x_i \in \lattice$, where $i$ is some index, the cone $\{x' \in \lattice: x' \peq x_i\} \equiv \lattice_i \sub L$ is also a complete lattice.
+Suppose that an isotone operator $F_i : \lattice_i \to \lattice_i$ can be defined for each such sublattice.
 
-\emph{Economic Structure} - To complete the construction, we need to assume some economic structure. 
-Specifically, suppose that fixed points of $\oper$ in the sublattic $L_i$ have $\fix(\oper) \cap L_i \sub \fix(\oper_i)$.
+\emph{Fixed Point Guarantees}: To complete the construction, we need to assume some economic structure. 
+Specifically, suppose that we can show $\fix(\oper)$ satisfies $\fix(\oper) \cap \lattice_i \sub \fix(\oper_i)$.
 Guarantees of this form are surprisingly common in economics.
-For finding strict core allocations in $\prealloc$, for instance, the guarantee is provided by lemma~\ref{lemma:contain}. 
-This lemma is based on the very general observation that truncating agents' preference profiles can only shrink the available set of blocking allocations.
-The corresopnding guarantee for the problem of finding all stable allocations in the lattice $(2^X, \sub)$ is similar, based on the observation of Hatfield and Kominers that substitutability is preserved under the coarsening of a contract language (see section xxxxx).
+For the problem of finding $\fix(T) \sub \prealloc$, this guarantee is given by lemma~\ref{lemma:contain}, which holds because truncating agents' preference profiles shrinks the set of available blocking allocations.
+The corresponding result in Echenique (2003) for Nash equilibria is similarly derived from the invariance of Nash equilibria under truncation of strategy profiles.
+For finding stable allocations, the guarantee is given by the invariance of substitutability under coarsening of the contract language $X$.
 
+The following discussion shows how to extend our information sharing algorithm for finding $\fix(T) \sub \prealloc$ to an arbitrary complete lattice, conditional on an economic guarantee of the form above.
+
+\emph{Example - Information Sharing and Collision Chains}:
+In this example, we show how to extend the notion of combining subproblem information to general complete lattices.
+Suppose that we currently have $n$ active problems on lattices $L_i = \{x' \in \lattice:x'\peq x_i\}$. 
+Denote $\fix(\oper) \cap \lattice_i \equiv \fix(x_i)$ and $\point_i = \point \cap L_i$
+Forming the Tarski sequence for $\oper_i$ on the sublattice $\lattice_i$, we find $y_i = \max \fix(\oper_i)$, obtaining a guarantee of the form $\point_i \sub \fix(\oper) \cap \lattice_i \sub \fix(\oper_i) \peq y_i$.
+Suppose then that there are collisions $y_i \peq x_{i + 1}$ for $1 \leq i \leq n-1$.
+Then, for instance, $\point_1 \peq y_1$, so $\point_1 \sub P_2$. 
+In fact, we can conclude that $\point_1 \peq y_2 \peq x_3$, so $\point_1 \peq y_3$.
+Continuing in this way, we get a guarantee $\point_1 \peq y_i$ for $1 \leq i \leq n$.
+Since $\lattice$ is a complete lattice, we find that $P_1 \peq \bigwedge_{i = 1}^n y_i$, whereas without information sharing we only knew that $P_1 \peq y_1$.
+Note that here $\bigwedge$ denotes the meet\footnote{For the lattice $(2^X, \sub)$, for instance, and subsets $A_i \sub X$, we have $\bigwedge_{i = 1}^n A_i = \bigcap_{i =1}^n A_i$, the standard intersection.}, or greatest lower bound, guaranteed to exist for any subset of a complete lattice.
+The full collision digraph construction for sharing information extends to an arbitrary complete lattice by simply replacing the pointwise minimum $\min_{k \in K} \pre_k$ over a reachable component $K$ with the appropriate lattice meet.
+
+To fully extend the algorithm, we discuss the intialization of new subproblems when, for instance, a Tarski sequence for the subproblem on $\lattice_i$ hits a fixed point of $\oper_i$.
+For $\prealloc$, we noted that $\{\pre' \pe \pre\} \sub \bigcup_{i=1}^m \{\pre' \peq \pre - e_i\}$.
+In general, the lattice may not have such a regular structure.
+For instance, for the $(2^X, \sub)$, for $X_i \sub X$, we can form subproblems by noting that $\{Y \in 2^X: Y \subsetneq X_i\} \sub \bigcup_{x \in X_i} \{Y \in 2^X: Y \sub X \setminus \{x\} \}$.
+For more general problems, we must work with whatever regularity is offered by the lattice.
 
 
 
@@ -1497,7 +1515,9 @@ If $w_j$ was added during subroutine~\ref{infcomb}
 
 
 
+In the algorithm for finding all strict core allocations presented above, we relied on an embedding of preallocations $\prealloc$ into a lattice in $\mr^m$, say, where $m = |A|$.
 
+Here, we show that this Euclidean structure is not necessary and attempt to clarify the mathematical and economic aspects of the problem.
 
 
 
