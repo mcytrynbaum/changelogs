@@ -121,6 +121,9 @@
 \newcommand{\unproc}{\mathcal{J}_u}
 \newcommand{\glob}{G}
 \newcommand{\optwo}{T_2}
+\newcommand{\opthree}{T_3}
+\newcommand{\oper}{F}
+\newcommand{\point}{P}
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -331,7 +334,7 @@ From a computational complexity perspective, evaluating the $T$ operator is equi
 This operation can be very costly even in classical matching models\footnote{add some concrete complexity reference}.
 Our algorithm attempts to minimize the number of evaluations of $T^2$ by using lattice geometry to combine the information from related subproblems. 
 
-\subsubsection{Notation and Intuition} 
+\subsubsection{Notation and Intuition} \label{section:description1}
 Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
 That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for each $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
@@ -1228,7 +1231,7 @@ We have thus characterized the core allocations $\core$ as the fixed points of a
 \emph{Remark}: Note that, by definition of the set $W(\pre,a)$, we must have $\optwo \pre \suq \pre$ for \emph{any} $\pre \in \prealloc$.
 For the original operator $T$ with $\fecon(T) = \strcore$, this relationship only holds when $\pre \in \coordpre$; that is, $\pre = \pre_Y$ for some allocation $Y \sub X$.
 Because of this, $\optwo$ may also fix \emph{uncoordinated} preallocations, as we demonstrate shortly.
-Even more problematically, this fact shows that the monotonically decreasing Tarski sequence $(T^2)^k \pre$, which is the centerpiece of this approach, can never actually decrease.
+Even more problematically, this fact shows that the monotonically decreasing Tarski sequence $(T^2)^k \pre$, which is the centerpiece of this approach, \emph{can never actually decrease}.
 
 The following example shows that the structure results for the operator $T$, which the fixed point approach crucially relies on, may fail for the operator $\optwo$ even for the the setting of two-sided matching with bilateral contracts.
 
@@ -1248,7 +1251,7 @@ b:& \{(s_1,b), (s_2,b) \}, \{(s_2,b)^2\}, \{(s_2,b)\}, \{(s_1,b)\}, \emptyset_b
 \end{align*}
 
 Thus, $b$ prefers would like to execute two trades and prefers to buy from $s_2$, but, conditional on availability of a contract with both sellers, prefers to be diversified.
-The contract space is $X = \{(s_1,b), (s_2,b)^2, (s_2,b), \emptyset_{s_1}, \emptyset_{s_2}, \emptyset_b\}$, and we assume that all elements of $2^{X_a}$ not listed in the relations above are ranked below\footnote{Note that the specific order of allocations ranked below $\emptyset_a$ is irrelevant with respect to the evaluation of $\optwo$, since trivially $\emptyset_a \in W(\pre,a)$ for any $a$.} the single-agent contract $\emptyset_a$.
+The contract space is $X = \{(s_1,b), (s_2,b)^2, (s_2,b), \emptyset_{s_1}, \emptyset_{s_2}, \emptyset_b\}$, and we assume that all elements of $2^{X_a}$ not listed in the relations above are ranked below\footnote{Note that the specific order of allocations ranked below $\emptyset_a$ is irrelevant with respect to the evaluation of $\optwo$, since trivially $\emptyset_a \in W(\pre,a)$ for any $a$.} the single-agent contract $\emptyset_a$ for $a \in A$.
 
 Now define preallocations $\pre$ and $\pre'$ by setting $\pre'(a) = \emptyset_a$ for all $a \in A$ and $\pre(b) = \{(s_2,b)^2\}$, $\pre(s_1) = \emptyset_{s_1}$, $\pre(s_2) = \{(s_2,b)^2\}$.
 Note that $\pre = \pre_Y$, where $Y \in \core$ is the core allocation consisting of a single contract $\{(s_2,b)^2\}$. 
@@ -1259,34 +1262,61 @@ $\pre''$ is the unanimously most preferred preallocation, so, by the remarks abo
 
 Note that $\pre'' \su \pre$ and $\optwo(\pre'') \su \optwo(\pre)$, so $\optwo$ is not antitone on the lattice $\prealloc$.
 We also have $\pre \su \pre'$ but $\optwo^2(\pre') \su \optwo^2(\pre)$, so $\optwo^2$ is not isotone.
-Finally, $\pre''(b)_{s_2} = \{(s_2,b)\}$, but $\{(s_2,b)\} \not \in \pre(s_2)$, so $\pre''$ is not coordinated.
+Finally, $ \{(s_2,b)\} \in \pre''(b)$, but $\{(s_2,b)\} \not \in \pre''(s_2)$, so $\pre''$ is not coordinated.
 However, we have shown that $\optwo(\pre'') = \pre''$, so $\fix(\optwo) \not \sub \coordpre$.
 \eprf
 
-\emph{Discussion}: These results, and the remark above, show that the fixed point approach to finding all core allocations is doomed to fail on the lattice $\prealloc$.
-Similar results can be shown, for instance, for 
+\emph{Discussion}: These results, and the previous remark, show that the fixed point approach to finding all core allocations is doomed to fail on the lattice $\prealloc$.
+Similar negative results can be shown, for instance, for an operator $\opthree: \prealloc \to \prealloc$ associated with the set of all stable matchings $\stable$.
+Our results do not prove, however, that there is no fixed point method for finding all true core allocations $\core$ on \emph{any lattice}.
+Indeed, our construction of an algorithm to find all stable matchings relies on adapting the approach for $\strcore$ above to a lattice and partial order more appropriate for this solution concept. 
+
+\subsubsection{Generalized Information Sharing and Applications}
+In this section, we briefly describe how the notion of information sharing as well as the collision digraph algorithm developed above can be extended to similar economic problems on more general complete lattices.
+We demonstrate the utility of this generalization in two ways.
+First, we briefly describe an information sharing algorithm for finding all pure strategy Nash equilibria in games with strategic complementarities (GSC), extending the algorithm pioneered in Echenique (2003).
+Second, we show how these ideas subsume an information sharing based algorithm for more quickly finding all stable allocations.
+
+In the algorithm for finding all strict core allocations presented above, we relied on an embedding of preallocations $\prealloc$ into a lattice in $\mr^m$, say, where $m = |A|$.
+Here, we show that this Euclidean structure is not necessary and attempt to clarify the mathematical and economic aspects of the problem.
+
+\emph{Lattice Structure} - Fix a complete lattice $L$ with partial order $\peq$, and let $\point \sub L$ be a set of points that we are would like to find. 
+For instance, these could be preallocations $\fix(T)$ corresponding to strict core outcomes in the lattice $\prealloc$ or stable allocations $\stable$ in the lattice $(2^X,\sub)$, where subsets are partially ordered by set inclusion. 
+Let $\oper: L \to L$ be an isotonic operator such that $\point \sub \fix(\oper)$; that is, the fixed points of $\oper$ \emph{bound} $\point$.
+It is easy to show that for any $x_i \in L$, where $i$ is some index, the set $\{x' \peq x_i\} \equiv L_i \sub L$ is also a complete lattice.
+Suppose that isotone operators $F_i : L_i \to L_i$ can also be defined.
+
+\emph{Economic Structure} - To complete the construction, we need to assume some economic structure. 
+Specifically, suppose that fixed points of $\oper$ in the sublattic $L_i$ have $\fix(\oper) \cap L_i \sub \fix(\oper_i)$.
+Guarantees of this form are surprisingly common in economics.
+For finding strict core allocations in $\prealloc$, for instance, the guarantee is provided by lemma~\ref{lemma:contain}. 
+This lemma is based on the very general observation that truncating agents' preference profiles can only shrink the available set of blocking allocations.
+The corresopnding guarantee for the problem of finding all stable allocations in the lattice $(2^X, \sub)$ is similar, based on the observation of Hatfield and Kominers that substitutability is preserved under the coarsening of a contract language (see section xxxxx).
+
 
 
 
 \subsubsection{Notes}
 
-We showed in lemma~\ref{lemma:termination} that FindStrictCore terminates so that, eventually, $\acto = \emptyset$.
-Then, if at termination we have $\acto = \emptyset$, we must have $\fix(T) \sub \fixfind$, so that we have found all fixed points.
-
-
 AGENDA
-write maximal domain results and examples
 write connection / extension to other results 
 write out stable allocation stuff 
-references
+references / reference based content
 nice figures
 
 
 TODO
 look in the Echenique and Oviedo paper to find some core equivalences
-open question - is there a lattice such that this works?
-look: what does substituability have to do with core equivalence results?
-    possible note above, since I constructed non-sub prefs
+what does substituability have to do with $\strcore = \core$?
+    possible note above, since I use non-sub prefs for bilateral matching
+note down cases where SC = C, tie in with substitutability
+----ask scott about what should be appendix level material 
+appendix note about calculation down a chain and inclusions?
+appendix note about generalization to arbitrary complete lattices
+add line / language above about how general our approach is
+link this with coarsening results
+
+
 
 
 for the induction - suffices to consider distinct states of $\acta$, because other state change indices are a subset // modulo changes that happen within for loop i.e. we look for changes up to for loop - this suffices
