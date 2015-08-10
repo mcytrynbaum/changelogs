@@ -125,6 +125,10 @@
 \newcommand{\oper}{F}
 \newcommand{\point}{P}
 \newcommand{\lattice}{L}
+\newcommand{\topx}{\ol{X}}
+\newcommand{\topy}{\ol{Y}}
+\newcommand{\box}{\ol{X}}
+\newcommand{\boy}{\ol{X}}
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -142,23 +146,7 @@ For $a\in A$, we let $Y_a = \{y\in Y: \, a\in d(y)\}$ denote the set of contract
 We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where the utility of an allocation is given by the one-to-one function $U_a: 2^{X_a} \to \mr$.
 Let $\su_a$ denote the strict preference relation induced by these utility functions over bundles $Y \in 2^{X_a}$, with $\suq_a$ denoting the weak relation. Thus, $Y \suq_a  Z \iff$ $Y \su_a Z$ or $Y = Z$.
 
-We define choice functions in the usual way for $Y\in 2^{X_a}$ by 
-\[
-C_a(Y) = \argmax_{Z\subseteq Y} \, U_a(Z)
-\]
-and, by an abuse of notation, extend these functions to $Y\in 2^X$ by setting $C_a(Y) \equiv C_a(Y_a)$.
 Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
-\section{Finding All Stable Matchings} 
-In this section, we illustrate the technique in the classical Hatfield and Milgrom model -- literature, etc... 
-\subsection{Model and Notation} 
-Let $X = D\times H$, where we think of $D$ as ``doctors'' and $H$ as ``Hospitals''. We may think of the set of contracts as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
-
-An allocation $Y$ is said to be \emph{stable} if it is 
-\begin{enumerate}
-\item \emph{individually rational} - $C_a(Y) = Y_a$ for all $a \in A$
-\item \emph{unblocked} - There is no allocation $Z \not = \emptyset$ such that $Z_b \sub C_b(Y\cup Z)$ for all $b \in d(Z)$. 
-\end{enumerate}
-We let $S(X,U)$ denote the set of all stable matchings.
 
 \section{Finding All Strict Core Matchings}
 Talk about Echenique's contribution and what we are going to do, strict core is equivalent to...
@@ -1272,11 +1260,10 @@ Similar negative results can be shown, for instance, for an operator $\opthree: 
 Our results do not prove, however, that there is no fixed point method for finding all true core allocations $\core$ on \emph{any lattice}.
 Indeed, our construction of an algorithm to find all stable matchings relies on adapting the approach for $\strcore$ above to a lattice and partial order more appropriate for this solution concept. 
 
-\subsubsection{Generalized Information Sharing and Applications}
+\subsubsection{Generalized Information Sharing and Applications} \label{section:general}
 In this section, we briefly describe how the notion of information sharing and the collision digraph algorithm developed above can be extended to similar economic problems on more general complete lattices.
-This extension informs our algorithm for finding all stable allocations. 
-We also show briefly how these ideas can be used to extend the algorithm for finding all pure strategy Nash equilibria in games with strategic complementarities (GSC) pioneered in Echenique (2003).
-
+This extension is the basis of our algorithm for finding all stable allocations. 
+We also show how information sharing may be used to find Nash equilibria in games with strategic complementarities (GSC), extending Echenique (2003).
 
 Let $(\lattice,\peq)$ be a complete lattice, and suppose $\point \sub \lattice$ is a set of points that we are would like to find. 
 For instance, these could be stable allocations $\stable$ in the lattice $(2^X,\sub)$, where subsets are partially ordered by set inclusion. 
@@ -1285,7 +1272,7 @@ Note that for any $x_i \in \lattice$, where $i$ is some index, the cone $\{x' \i
 Suppose that an isotone operator $F_i : \lattice_i \to \lattice_i$ can be defined for each such sublattice.
 
 \emph{Fixed Point Guarantees}: To complete the construction, we need to assume some economic structure. 
-Specifically, suppose that we can show $\fix(\oper)$ satisfies $\fix(\oper) \cap \lattice_i \sub \fix(\oper_i)$.
+Specifically, suppose that we can show $\fix(\oper)$ satisfies $\fix(\oper) \cap \lattice_i \sub \fix(\oper^i)$ (E).
 Guarantees of this form are surprisingly common in economics.
 For the problem of finding $\fix(T) \sub \prealloc$, this guarantee is given by lemma~\ref{lemma:contain}, which holds because truncating agents' preference profiles shrinks the set of available blocking allocations.
 The corresponding result in Echenique (2003) for Nash equilibria is similarly derived from the invariance of Nash equilibria under truncation of strategy profiles.
@@ -1297,7 +1284,7 @@ The following discussion shows how to extend our information sharing algorithm f
 In this example, we show how to extend the notion of combining subproblem information to general complete lattices.
 Suppose that we currently have $n$ active problems on lattices $L_i = \{x' \in \lattice:x'\peq x_i\}$. 
 Denote $\fix(\oper) \cap \lattice_i \equiv \fix(x_i)$ and $\point_i = \point \cap L_i$
-Forming the Tarski sequence for $\oper_i$ on the sublattice $\lattice_i$, we find $y_i = \max \fix(\oper_i)$, obtaining a guarantee of the form $\point_i \sub \fix(\oper) \cap \lattice_i \sub \fix(\oper_i) \peq y_i$.
+Forming the Tarski sequence for $\oper^i$ on the sublattice $\lattice_i$, we find $y_i = \max \fix(\oper^i)$, obtaining a guarantee of the form $\point_i \sub \fix(\oper) \cap \lattice_i \sub \fix(\oper^i) \peq y_i$.
 Suppose then that there are collisions $y_i \peq x_{i + 1}$ for $1 \leq i \leq n-1$.
 Then, for instance, $\point_1 \peq y_1$, so $\point_1 \sub P_2$. 
 In fact, we can conclude that $\point_1 \peq y_2 \peq x_3$, so $\point_1 \peq y_3$.
@@ -1306,19 +1293,77 @@ Since $\lattice$ is a complete lattice, we find that $P_1 \peq \bigwedge_{i = 1}
 Note that here $\bigwedge$ denotes the meet\footnote{For the lattice $(2^X, \sub)$, for instance, and subsets $A_i \sub X$, we have $\bigwedge_{i = 1}^n A_i = \bigcap_{i =1}^n A_i$, the standard intersection.}, or greatest lower bound, guaranteed to exist for any subset of a complete lattice.
 The full collision digraph construction for sharing information extends to an arbitrary complete lattice by simply replacing the pointwise minimum $\min_{k \in K} \pre_k$ over a reachable component $K$ with the appropriate lattice meet.
 
-To fully extend the algorithm, we discuss the intialization of new subproblems when, for instance, a Tarski sequence for the subproblem on $\lattice_i$ hits a fixed point of $\oper_i$.
+To fully extend the algorithm, we discuss the intialization of new subproblems when, for instance, a Tarski sequence for the subproblem on $\lattice_i$ hits a fixed point of $\oper^i$.
 For $\prealloc$, we noted that $\{\pre' \pe \pre\} \sub \bigcup_{i=1}^m \{\pre' \peq \pre - e_i\}$.
 In general, the lattice may not have such a regular structure.
 For instance, for the $(2^X, \sub)$, for $X_i \sub X$, we can form subproblems by noting that $\{Y \in 2^X: Y \subsetneq X_i\} \sub \bigcup_{x \in X_i} \{Y \in 2^X: Y \sub X \setminus \{x\} \}$.
-For more general problems, we must work with whatever regularity is offered by the lattice.
+For more general problems, we work with whatever regularity is offered by the lattice.
+
+\emph{Games with Strategic Complementarities}: We briefly show how the above discussion can be used to incorporate information sharing in Echenique's algorithm for finding all pure strategy Nash equilibria in GSC. 
+In GSC, we suppose a set of players $1 \leq i \leq n$ with strategy profiles $S_i$, each of which is a complete lattice.
+Then $S = \bigtimes_{i = 1}^n S_i$ is also a complete lattice under the product order.
+Let $\beta_i: S \to 2^{S_i}$ denote the best response correspondence for player $i$.
+Then we can form a map $\oper: S \to S$ by setting $\oper_i = \sup \beta_i(s) \in S_i$.
+Lemma 2 of Echenique shows that this map is isotone on $S$.
+For a sublattice $S_r = \bigtimes_{i = 1}^n \{s' \in S_i: s' \peq s^r_i\}$, we can define a restricted best response correspondence $\beta^r$ using only strategies in $S_r$, which extends to an operator $\oper_r: S_r \to S_r$ as above.
+Lemmas 3 and 4 of Echenique show that the guarantee $\fix(\oper) \cap S_r \sub \fix (F_r)$ of the form (E) above holds for this family of operators $\oper_r$ on sublattices $S_r \sub S$, showing that the information sharing algorithm above may be applied.
+
+\section{Finding All Stable Matchings} 
+In this section, we illustrate the technique in the classical Hatfield and Milgrom model -- literature, etc... 
+\subsection{Model and Notation} 
+In this section, we restrict our attention to two-sided bilateral matching with contracts, and we may think of the contract language as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
+
+We define choice functions in the usual way for $Y\in 2^{X_a}$ as 
+\[
+C_a(Y) = \argmax_{Z\subseteq Y} \, U_a(Z)
+\]
+and, with abuse of notation, extend these functions to $Y\in 2^X$ by setting $C_a(Y) \equiv C_a(Y_a)$.
+
+An allocation $Y$ is said to be \emph{stable} if it is 
+\begin{enumerate}
+\item \emph{individually rational} - $C_a(Y) = Y_a$ for all $a \in A$
+\item \emph{unblocked} - There is no allocation $Z \not = \emptyset$ such that $Z_b \sub C_b(Y\cup Z)$ for all $b \in d(Z)$. 
+\end{enumerate}
+We let $S(X,U)$ denote the set of all stable matchings.
+
+We say that an agent $a \in A$ has \emph{substitutable preferences} if for any $Y \sub Y' \sub X$ and $z \in X$ we have $z \in C_a(Y' \cup \{ z \}) \implies z \in C_a(Y \cup \{z \})$. 
+Similarly, a choice function $C_a$ is said to satisfy \emph{irrelevance of rejected contracts} if for any $Y \sub X$ and $z \not \in Y$, if $z \in C_a(Y \cup \{ z \})$ then $C_a(Y \cup \{z\}) = C_a(Y)$.
+In this setting, for a set $Y \sub X$, we let $C_D(Y) = \bigcup_{d \in D} C_d(Y)$ and similarly let $C_H(Y) = \bigcup_{h \in H} C_h(Y)$ denote the set of contracts chosen out of $Y$ by the hospitals.
+
+\subsubsection{Lattice Definition and Fixed Point Guarantee}
+
+Consider $\lattice = 2^X \times 2^X$, pairs of subsets of $X$, where we define a partial order by $(Z,W) \peq (Z',W')$ if and only if $Z \sub Z'$ and $W' \sub W$. 
+It is easy to check that this partial order defines a complete lattice.
+For instance, given a collection of $(Z_i, W_i) \in \lattice$, the greatest lower bound is $\bigwedge_i (Z_i, W_i) = \lft \bigcap_i Z_i, \bigcup_i W_i \rt \in 2^X \times 2^X$.
+The least upper bound is attained similarly by swapping unions and intersections. 
+
+As in Hatfield and Kominers, we may define an operator $\Phi: \lattice \to \lattice$ by $\Phi(Z,W) = (\Phi_D(W), \Phi_H(Z))$, where $\Phi_D(Z) = \{z \in X: z \in C_D(\{z \} \cup Z) \}$ and $\Phi_H(W) = \{z \in X: z \in C_H(\{z \} \cup W) \}$.
+It is easy to see from the definition of substitutability that this operator is isotone on $\lattice$.
+As usual, we define the fixed point set $\fix(\Phi) \equiv \{(Z,W) \in 2^X \times 2^X: \Phi(Z,W) = (Z,W) \}$.
+
+The following characterization of stable matchings is due to Hatfield and Kominers
+\begin{lemma}[Hatfield and Kominers, Lemma 1]
+For any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
+Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
+\end{lemma}
+
+This lemma shows that finding all stable matchings $\stable$ is equivalent to finding all fixed points of the operator $\fix(\Phi)$.
+By isotonicity of $\Phi$, the standard Tarski argument from previous sections shows that the sequence formed by $\Phi^k(X, \emptyset)$ is monotonically decreasing, and fixes at $(\ol{X} 
+
 
 
 
 \subsubsection{Notes}
 
 AGENDA
-write connection / extension to other results 
 write out stable allocation stuff 
+    figure out how chains work in this setting
+    is there a general result or just incorp in above algorithm?
+    what was the difference here again? 
+   
+
+
+
 references / reference based content
 nice figures
 
@@ -1519,6 +1564,7 @@ In the algorithm for finding all strict core allocations presented above, we rel
 
 Here, we show that this Euclidean structure is not necessary and attempt to clarify the mathematical and economic aspects of the problem.
 
+Following the discussion in section~\ref{section:general}, we show how to define isotonic operators $\Phi_i$ on sublattices $\lattice_i \sub \lattice$ that satisfy the required fixed point guarantee. 
 
 
 
