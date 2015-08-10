@@ -1311,7 +1311,7 @@ Lemmas 3 and 4 of Echenique show that the guarantee $\fix(\oper) \cap S_r \sub \
 \section{Finding All Stable Matchings} 
 In this section, we illustrate the technique in the classical Hatfield and Milgrom model -- literature, etc... 
 \subsection{Model and Notation} 
-In this section, we restrict our attention to two-sided bilateral matching with contracts, and we may think of the contract language as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
+In this section, we restrict our attention to two-sided many-to-many matching with contracts, and we may think of the contract language as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
 
 We define choice functions in the usual way for $Y\in 2^{X_a}$ as 
 \[
@@ -1344,7 +1344,8 @@ Therefore, by Tarski's Theorem, $\fix(\Phi)$ is a non-empty lattice.
 
 The following characterization of stable matchings is due to Hatfield and Kominers
 \begin{lemma}[Hatfield and Kominers, Lemma 1]
-For any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
+Assume that agents' preferences are substitutable and satisfy irrelevance of rejected contracts.
+Then for any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
 Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
 \end{lemma}
 
@@ -1354,16 +1355,46 @@ Similarly, iterating $\Phi^k(\emptyset, X)$ eventually fixes at a $(\botx, \boty
 Note then that any $(Z,W) \in \fix(\Phi)$ (corresponding to stable allocation $Z \cap W$) satisfies $\botx \sub Z \sub \topx$ and $\topy \sub W \sub \boty$.
 
 This observation motivates our definition of operators on sublattices of $\lattice$.
-Specifically, for a fixed element $(X_i, Y_i) \suq (\botx, \boty)$, where $i$ is some index, we let $\lattice_i \equiv \{(Z,W): (Z,W) \peq (X_i, Y_i) \}$ and note that this is a complete sublattice.
-Define $\Phi_i: \lattice_i \to \lattice_i$ by setting $\Phi_i(Z,W) = (\Phi^D_i(W), \Phi^H_i(Z))$, where $\Phi^D_i(W) = \{z \in X_i \setminus \botx: z \in C_H(\{z\} \cup Z)\}) \cup \botx$ and $\Phi^H_i(Z) = \{z \in \topy \setminus Y_i: z \in C_D( \{z \} \cup W \}) \cup Y_i$.
+Specifically, for a fixed element $(\topx, \topy) \suq (X_i, Y_i) \suq (\botx, \boty)$, where $i$ is an index, we let $\lattice_i \equiv \{(Z,W): (Z,W) \peq (X_i, Y_i) \}$ and note that this is a complete sublattice.
+Define $\Phi_i: \lattice \to \lattice$ by setting $\Phi_i(Z,W) = (\Phi^D_i(W), \Phi^H_i(Z))$, where $\Phi^D_i(W) = \{z \in X_i \setminus \botx: z \in C_H(\{z\} \cup W) \} \cup \botx$ and $\Phi^H_i(Z) = \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z ) \} \cup Y_i$.
 
-The following result shows that this family of suboperators satisfies the conditions required in our discussion of information sharing on general complete lattices.
+The following result shows that the family of operators introduced above satisfies the conditions required for an information sharing algorithm on the lattice $\lattice = 2^X \times 2^X$. 
 
 \begin{lemma} \label{lemma:phigar}
-Let $\lattice_i$ and $\Phi_i$ as defined above for some $(X_i, Y_i) \suq (\botx, \boty)$. 
-Then $\Phi_i$ is isotone on the sublattice $\lattice_i$.
+Suppose that agents preferences are substitutable over $X$.
+Let $\lattice_i$ and $\Phi_i: \lattice \to \lattice$ be defined as above for some $(X_i, Y_i) \suq (\botx, \boty)$. 
+Then the following statements are true
+\begin{enumerate}
+\item $\Phi_i: \lattice_i \to \lattice_i$ and is isotone. 
+\item$\fix(\Phi) \cap \lattice_i \sub \fix(\Phi_i)$.
+\end{enumerate}
 \end{lemma}
 \prf 
+First we show (1). 
+Since $\botx \sub X_i$, and the hospitals are only allowsed to choose from $X_i$, clearly $\Phi^D_i(W) \sub X_i$ for any $W \in 2^X$.
+By definition, $\Phi^H_i(Z) \supseteq Y_i$, so apparently $\Phi_i(Z,W) \peq (X_i, Y_i)$ for any $(Z,W) \in \lattice$. 
+In particular, $\Phi_i: \lattice_i \to \lattice_i$.
+Suppose that $(Z,W) \peq (Z',W')$ are elements of $\lattice_i$, so that $Z \sub Z'$ and $W' \sub W$.
+By Proposition 4 of Hatfield and Kominers xxxx, substitutability is preserved under a coarsening of the contract language to $X' \sub X$.
+Thus, hospitals' preferences are substitutable over $X_i \setminus \botx \sub X$, and, similarly, doctors' preferences are substitutable over $\boty \setminus Y_i \sub X$.
+In particular, by substitutability for doctors, $\{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z') \} \sub \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z) \}$. 
+Then $\Phi_i^H(Z') \sub \Phi_i^H(Z)$ by taking the union with $Y_i$ on both sides.
+A similar argument shows that $W' \sub W \implies \Phi^D_i(W) \sub \Phi^D_i(W')$.
+Then apparently $\Phi_i(Z,W) \peq \Phi_i(Z',W')$, which finishes (1).
+
+For (2), let $(Z,W) \in \fix(\Phi)$ such that $(Z,W) \peq (X_i,Y_i)$; that is, $Z \sub X_i$ and $Y_i \sub W$.
+Note that, from the discussion above, $\botx \sub Z$ and $W \sub \boty$.
+Let $z \in Z \setminus \botx \sub X_i \setminus \botx$.
+Then the fixed point assumption shows $z \in \Phi^D(W) = \{z \in X: z \in C_H( \{z \} \cup W) \}$. 
+In particular, we have $z \in \{z \in X_i \setminus \botx: z \in C_H( \{z \} \cup W) \}$. 
+Then $Z = \lft Z \setminus \botx \rt \cup \botx \sub \Phi_i^D(W)$. 
+Clearly, $\{z \in X_i \setminus \botx: z \in C_H( \{z \} \cup W) \} \sub \Phi^D(W)$, so taking the union with $\botx$ on both sides gives $\Phi_i^D(W) \sub \Phi^D(W)$. 
+Then $\Phi_i^D(W) = Z$.
+Similarly, let $w \in W \setminus Y_i \sub \boty \setminus Y_i$. 
+Then $w \in \Phi^H(Z) \implies w \in \{z \in \boty \setminus Y_i: z \in C_H( \{z \} \cup Z) \}$. 
+This shows $W = \lft W \setminus Y_i \rt \cup Y_i \sub \Phi^D_i(Z)$.
+Clearly $\{z \in \boty \setminus Y_i: z \in C_H( \{z \} \cup Z) \} \sub \Phi^H(Z)$, so taking unions on both sides with $Y_i$, noting that $Y_i \sub W$ by assumption, gives $\Phi^H_i(Z) \sub W$, so, in fac, $\Phi^H_i(Z) = W$.
+Then we have shown $(Z,W) \sub \fix(\Phi_i)$, completing the proof.
 \eprf
 
 
