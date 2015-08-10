@@ -22,6 +22,7 @@
 \newtheorem{lemma}[thm]{Lemma}
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{cor}[thm]{Corollary}
+\newtheorem{alg}[thm]{Algorithm}
 \theoremstyle{definition}
 \newtheorem{defn}[thm]{Definition}
 \newtheorem{examp}[thm]{Example}
@@ -781,7 +782,7 @@ This completes the proof of the lemma.
 Before proving our key result, we show an auxillary lemma about the relationship between $\forest$ and the problem sets returned from each subroutine 
 
 \begin{lemma} \label{lemma:roots}
-Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once.
+Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once in subroutine 1.
 Moreover, the following statements are true: 
 \begin{enumerate}
 \item If $\forest$ is a problem forest when subroutine~\ref{infac} is initialized, then the set $\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
@@ -955,7 +956,7 @@ In particular, $\fix(\pre_i) \peq \pre_k$ for all $k \in K_j$.
 Then $\fix(\pre_i) \peq \pre = \min_{k \in K_j} \pre_k$, so that $\fix(\pre_i) \sub \fix(\pre)$, and we are done. 
 This is the only new parent-child relation added to $\forest_n$, so, using the inductive hypothesis, $\forest_{n+1}$ satisfies defining condition~(\ref{def:forest3}) of a problem forest. 
 
-For condition~(\ref{convlemma:coll}) of the lemma about collision indices, it suffices to consider $w_{\ell}$ with $r(w_{\ell}) = w(\pre)$, because otherwise the statement follows directly from the inductive hypothesis, since $w(\pre)$ is the only root added to $\forest_n$.
+For condition~(\ref{convlemma:coll}) regarding collision indices, it suffices to consider $w_{\ell}$ with $r(w_{\ell}) = w(\pre)$, because otherwise the statement follows directly from the inductive hypothesis, since $w(\pre)$ is the only root added to $\forest_n$.
 Let $k' \in \coll(\ell)$ and suppose $r(w_{\ell}) = w(\pre)$. 
 Let $w_j$ the root of $w_{\ell}$ in $\forest_n$
 Then it must be that $p(w_j) = w(\pre)$; for instance, by lemma~\ref{lemma:forest}, since otherwise the reachable set of some $w' \in \forest_n$ would have changed as $\forest_n \to \forest_{n+1}$. 
@@ -980,7 +981,7 @@ FindStrictCore terminates in finite time
 For any set $E \sub \prealloc$, define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|$ is the standard 1-norm .}.
 Similarly, let $\distt(E) = \sum_{\pre \in E} \|\pre\|_1$.
 Note that by finiteness, both $\disto(\cdot)$ and $\distt(\cdot)$ take finitely many values on subsets of $\prealloc$.
-First, we show that, for any problem collection $\acto$, InformationAcquire (subroutine 1) \ref{infac} terminates in finitely many iterations.
+First, we show that, for any problem collection $\acto$, InformationAcquire (subroutine~\ref{infac}) terminates in finitely many iterations.
 
 Consider the sequence $\actak$ formed by distinct states of $\acta$ during subroutine~\ref{infac}.
 Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some problem $\pre$, then clearly $\disto(\acta^{k+1}) \leq \disto(\actak)$.
@@ -1015,7 +1016,7 @@ Lemma~\ref{lemma:key} shows that $\forest$ is a problem forest at any time durin
 By iterating, we have $\pre_{\ell} \peq \pre_i$ for the root also.
 Then apparently $p(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
 
-Using the map $p$ above, we can express $\actok$ as a disjoint union of the form $\actok = \cup_{\pre \in \actt} p\inv(\pre)$.
+Using the map $p$ above, we can express $\actok$ as a disjoint union of the form $\actok = \bigcup_{\pre \in \actt} p\inv(\pre)$.
 Since $p$ is a surjection, we may calculate $\disto(\actt) = \max_{\pre_i \in \actt} \|\pre_i\|_1 \leq \max_{\pre_i \in \actt} \disto(p\inv(\pre_i)) = \disto(\actok)$. 
 Similarly, since $\distt(\cdot)$ is an additive set function, we can compute $\distt(\actt) = \sum_{\pre \in \actt} \distt(\{\pre\}) \leq \sum_{\pre \in \actt} \distt(p\inv(\pre)) = \distt(\actok)$ by surjection and the discussion above.
 Since $\actt$ is returned from the subroutine as $\acto^{k + 1}$, we have shown $\disto(\acto^{k+1}) \leq \disto(\actok)$ and $\distt(\acto^{k+1}) \leq \distt(\actok)$ for any $k$. 
@@ -1046,7 +1047,7 @@ Then apparently $0 = \disto(\acto^{k+1}) = \disto(\actc) < \dist(\actok)$.
 \emph{Case 2}: Suppose $\actc \not = \emptyset$ and consider $\pre_i \in \actc$.
 Since $\pre_i$ was added to $\actc$, there must exist $k \geq 0$ such that $(T_i^2)^k \pre_i \not = (T_i^2)^{k+1} \pre_i$ (line~\ref{alg1:coll}).  
 In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we must have $\pre_i^f \pe \pre_i$ \emph{strictly}.
-Note that, for all such $\pre_i \in \actc$, we add $w(\pre_i^f) = p(w_i)$ (line~\ref{alg1:tree2}), so that $r(p(w_i)) = r(w(\pre_i^f))$, which we denote by $w_k$.
+Note that, for all such $\pre_i \in \actc$, we add $w(\pre_i^f) = p(w_i)$ (line~\ref{alg1:tree2}), so that $r(p(w_i)) = r(w(\pre_i^f))$.
 Then $r(w_i) = r(w(\pre_i^f))$, which we denote by $r(w_i) = w_k$.
 
 The algorithm returns $\acto' \equiv \actc$ which is an input for subroutine~\ref{infcomb}.
@@ -1079,6 +1080,7 @@ Suppose the algorithm continues, and we set $\acto = \bigcup_{i = 1}^m \{\toppre
 Since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, the inductive hypothesis is clearly satisfied. 
 Then suppose by induction that (i) and (ii) above are satisfied up to $k = n$.
 We show that these statements still hold for $k = n +1$.
+
 Throughout, for a set $E$, we let $E'$ denote the state of $E$ at algorithm initialization, and $E''$ its state at algorithm return.
 There are two main cases, corresponding to each subroutine.
 
@@ -1359,13 +1361,13 @@ This observation motivates our definition of operators on sublattices of $\latti
 Specifically, for a fixed element $(\topx, \topy) \suq (X_i, Y_i) \suq (\botx, \boty)$, where $i$ is an index, we let $\lattice_i \equiv \{(Z,W): (Z,W) \peq (X_i, Y_i) \}$ and note that this is a complete sublattice.
 Define $\Phi_i: \lattice \to \lattice$ by setting $\Phi_i(Z,W) = (\Phi^D_i(W), \Phi^H_i(Z))$, where $\Phi^D_i(W) = \{z \in X_i \setminus \botx: z \in C_H(\{z\} \cup W) \} \cup \botx$ and $\Phi^H_i(Z) = \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z ) \} \cup Y_i$.
 
-\subsubsection{Fixed Point Guarantee and Initializing Subproblems}
+\subsubsection{Fixed Point Guarantees and Initializing Subproblems}
 
 The following result shows that the family of operators introduced above satisfies the conditions required for an information sharing algorithm on the lattice $\lattice = 2^X \times 2^X$. 
 
 \begin{lemma} \label{lemma:phigar}
-Suppose that agents preferences are substitutable over $X$.
-Let $\lattice_i$ and $\Phi_i: \lattice \to \lattice$ be defined as above for some $(X_i, Y_i) \suq (\botx, \boty)$. 
+Suppose that agents' preferences are substitutable over $X$.
+Let the sublattice $\lattice_i$ and $\Phi_i: \lattice \to \lattice$ be defined as above for some $(X_i, Y_i) \suq (\botx, \boty)$. 
 Then the following statements are true
 \begin{enumerate}
 \item $\Phi_i: \lattice_i \to \lattice_i$ and is isotone. 
@@ -1378,7 +1380,7 @@ Since $\botx \sub X_i$, and the hospitals are only allowsed to choose from $X_i$
 By definition, $\Phi^H_i(Z) \supseteq Y_i$, so apparently $\Phi_i(Z,W) \peq (X_i, Y_i)$ for any $(Z,W) \in \lattice$. 
 In particular, $\Phi_i: \lattice_i \to \lattice_i$.
 Suppose that $(Z,W) \peq (Z',W')$ are elements of $\lattice_i$, so that $Z \sub Z'$ and $W' \sub W$.
-By Proposition 4 of Hatfield and Kominers xxxx, substitutability is preserved under a coarsening of the contract language to $X' \sub X$.
+By Proposition 4 of Hatfield and Kominers, substitutability is preserved under a coarsening of the contract language to any $X' \sub X$.
 Thus, hospitals' preferences are substitutable over $X_i \setminus \botx \sub X$, and, similarly, doctors' preferences are substitutable over $\boty \setminus Y_i \sub X$.
 In particular, by substitutability for doctors, $\{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z') \} \sub \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z) \}$. 
 Then $\Phi_i^H(Z') \sub \Phi_i^H(Z)$ by taking the union with $Y_i$ on both sides.
@@ -1403,28 +1405,82 @@ Then we have shown $(Z,W) \in \fix(\Phi_i)$, so $\fix(\Phi) \cap \lattice_i \sub
 \emph{Initialization of Subproblems}: 
 As in section~\ref{section:strcore}, for $i \in \mathcal{I}$ some index set we let $\lag (X_i, Y_i) \rag$ denote the problem of finding $\fix(\Phi_i) \sub \lattice_i = \{(X,Y) \peq (X_i, Y_i) \}$.
 Recall that we form the Tarski sequence $\Phi_i^k(X_i,Y_i)$, which, unless another stopping condition is triggered, converges to $\max \fix(\Phi_i) \suq \fix(\Phi) \cap \lattice_i$.
-After this we need to initialize new problems to find elements of $\fix(\Phi)$ below $\max \fix(\Phi_i)$.
+After the Tarski sequence fixes, we need to initialize new problems to find elements of $\fix(\Phi)$ below $\max \fix(\Phi_i)$.
 For the strict core algorithm, the Euclidean structure gave a natural way to do this, by forming problems $\toppre - e_i$ for $1 \leq i \leq m$, where we identified $\prealloc$ with a subset of $\mr^m$. 
 
-Here the lattice is not so regular; however, we can show that there is still a simple way to initialize subproblems without missing any points of $\fix(\Phi)$.
+Here, the lattice has a less regular structure; however, we can show that there is still a simple way to initialize subproblems without missing any points of $\fix(\Phi)$.
 Suppose that a Tarski sequence converges to $(X',Y') = \max \fix(\Phi_i)$.
-If $(Z,W) \in \fix(\Phi)$ and $(Z,W) \pe (X',Y')$ then, by the lattice order, either there exists $x \in X' \setminus \botx$ with $Z \sub X' \setminus \{x\}$ or there is $y \in \boty \setminus Y'$ with $Y' \cup \{y\} \sub Y'$.
-Then to ensure that we find the fixed point $(Z,W)$, we initialize $|X' \setminus \botx| + |\boty \setminus Y'|$ new problems of the form $\lag (X' \setminus \{x\},Y') \rag$ or $\lag (X',Y' \cup \{y\}) \rag$, with $x$ and $y$ as above.
+If $(Z,W) \in \fix(\Phi)$ and $(Z,W) \pe (X',Y')$ then, by the lattice order, either there exists $x \in X' \setminus \botx$ with $Z \sub X' \setminus \{x\}$ or there is $y \in \boty \setminus Y'$ with $Y' \cup \{y\} \sub W$.
+Thus, to ensure that we find the fixed point $(Z,W)$, we initialize $|X' \setminus \botx| + |\boty \setminus Y'|$ new problems of the form $\lag (X' \setminus \{x\},Y') \rag$ and $\lag (X',Y' \cup \{y\}) \rag$, with $x$ and $y$ as above.
 
-\subsection{Full Algorithm for Finding all Stable Matchings} \label{section:algostable}
-In this section, we give the full algorithm for finding all stable allocations in many-to-many two-sided matchings, assume substitutability and irrelevance of rejected contracts.
+\subsection{Algorithm for Finding all Stable Matchings} \label{section:algostable}
+
+In this section, we describe the full information sharing algorithm for finding all stable allocations in two-sided many-to-many matching with contracts, assuming substitutability of agents preferences.
+
+As above, we let $\act$ denote a collection of problems, which we think of previously solved problems that still contain information useful for finding $\fix(\Phi)$. 
+During the algorithm, for a problem $\lag (X_i, Y_i) \rag $, we compute Tarski sequences of the form $\Phi_i^k(X_i,Y_i)$. 
+We define the following stopping conditions for an element $ \Phi_i^k(X_i,Y_i) \equiv (X', Y')$ of this sequence.
+
+\emph{Stopping Conditions}
+\begin{enumerate}
+\item $(X',Y') \pe (\botx, \boty)$ \label{cond:bottom}
+\item $\Phi_i(X',Y') = (X',Y')$ \label{cond:fix}
+\item There exists $(X_j,Y_j) \in \act$ with $(X',Y') \peq (X_j,Y_j)$ and $(X',Y') \not \peq (X_i,Y_i)$ \label{cond:collide}
+\end{enumerate}
+
+
+
+
+
+
+
+
+
+In this section, we give the full algorithm for finding all stable allocations in many-to-many two-sided matching, assume substitutability and irrelevance of rejected contracts.
 The algorithm is a straightforward extension of algorithm~\ref{mainalg}, incorporating elements of the discussion above.
+
+Set xxxxx
+Remove all problems s.t. xxxxxx from sets xxxxx 
+While Qa not empty, for prob in qa do
+    compute the Tarski sequence until one of the stopping conditions (1) - (4) is reached 
+    remove from Qa and add to graph
+    do the following thing
+        (2) add to found set 
+        (3) spawn new problems and check for redundancies, add to graph 
+        (4) build collision indices 
+
+this is much better - enumerate and reference enumeration in proof 
+
+
 
 
 
 \subsubsection{Notes}
 
 AGENDA
+
+write out pseduo alg structure 
+write out full algorithm for a general lattice
+consult with Scott on changing everything to general
+figure out how to prove guarantee on Q 
+    how to insert this in other work / which lemma
+
+
 write out stable allocation stuff 
+    need to show that we can actually track all problems in Q
     figure out how chains work in this setting
-    is there a general result or just incorp in above algorithm?
-    what was the difference here again? 
-   
+        is there a relevant result e.g. about exp decrease?
+    write out algorithm with Echenique style / more concise 
+
+modifications of lemmas and props for correctness of stable allocation proofs
+    change all mins to meets
+    need a way to value elements of a lattice to prove convergence 
+    use the function on $2^x \times 2^X$ def by $\|(A,B) \| = |A| + |X \setminus B|$, has all required properties, and things work as before
+
+
+for scott 
+    thoughts on rewriting in terms of a general lattice
+    thoughts on presenting modified proof versions that are just different in a couple of lines
 
 
 
@@ -1433,6 +1489,7 @@ nice figures
 
 
 TODO
+can we track problems Q such that nothing is ever initialized twice? 
 look in the Echenique and Oviedo paper to find some core equivalences
 what does substituability have to do with $\strcore = \core$?
     possible note above, since I use non-sub prefs for bilateral matching
