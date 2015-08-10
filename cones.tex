@@ -635,9 +635,8 @@ Subroutine details are given below.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}
+\begin{algorithm} \label{mainalg}
 \caption{FindStrictCore} 
-\label{mainalg}
 \begin{algorithmic}[1]
 \REQUIRE $\acto$
 \ENSURE $\fix(T^2)$
@@ -1309,7 +1308,9 @@ For a sublattice $S_r = \bigtimes_{i = 1}^n \{s' \in S_i: s' \peq s^r_i\}$, we c
 Lemmas 3 and 4 of Echenique show that the guarantee $\fix(\oper) \cap S_r \sub \fix (F_r)$ of the form (E) above holds for this family of operators $\oper_r$ on sublattices $S_r \sub S$, showing that the information sharing algorithm above may be applied.
 
 \section{Finding All Stable Matchings} 
-In this section, we illustrate the technique in the classical Hatfield and Milgrom model -- literature, etc... 
+In this section, we extend the information sharing technique developed above to an algorithm for finding all stable allocations in the setting of two-sided many-to-many matching with contracts under the assumption of substitutable preferences.
+This relates to previous literature xxxx median matchings xxxx.
+
 \subsection{Model and Notation} 
 In this section, we restrict our attention to two-sided many-to-many matching with contracts, and we may think of the contract language as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
 
@@ -1399,11 +1400,21 @@ Clearly $\{z \in \boty \setminus Y_i: z \in C_H( \{z \} \cup Z) \} \sub \Phi^H(Z
 Then we have shown $(Z,W) \in \fix(\Phi_i)$, so $\fix(\Phi) \cap \lattice_i \sub \fix(\Phi_i)$, completing the proof.
 \eprf
 
-Before giving the full algorithm, we need to discuss the initialization of subproblems. 
-As in section~\
-For the algorithm to find $\fix(T) \sub \prealloc$, we could 
+\emph{Initialization of Subproblems}: 
+As in section~\ref{section:strcore}, for $i \in \mathcal{I}$ some index set we let $\lag (X_i, Y_i) \rag$ denote the problem of finding $\fix(\Phi_i) \sub \lattice_i = \{(X,Y) \peq (X_i, Y_i) \}$.
+Recall that we form the Tarski sequence $\Phi_i^k(X_i,Y_i)$, which, unless another stopping condition is triggered, converges to $\max \fix(\Phi_i) \suq \fix(\Phi) \cap \lattice_i$.
+After this we need to initialize new problems to find elements of $\fix(\Phi)$ below $\max \fix(\Phi_i)$.
+For the strict core algorithm, the Euclidean structure gave a natural way to do this, by forming problems $\toppre - e_i$ for $1 \leq i \leq m$, where we identified $\prealloc$ with a subset of $\mr^m$. 
 
-\subsubsection{Algorithm for Finding all Stable Matchings}
+Here the lattice is not so regular; however, we can show that there is still a simple way to initialize subproblems without missing any points of $\fix(\Phi)$.
+Suppose that a Tarski sequence converges to $(X',Y') = \max \fix(\Phi_i)$.
+If $(Z,W) \in \fix(\Phi)$ and $(Z,W) \pe (X',Y')$ then, by the lattice order, either there exists $x \in X' \setminus \botx$ with $Z \sub X' \setminus \{x\}$ or there is $y \in \boty \setminus Y'$ with $Y' \cup \{y\} \sub Y'$.
+Then to ensure that we find the fixed point $(Z,W)$, we initialize $|X' \setminus \botx| + |\boty \setminus Y'|$ new problems of the form $\lag (X' \setminus \{x\},Y') \rag$ or $\lag (X',Y' \cup \{y\}) \rag$, with $x$ and $y$ as above.
+
+\subsection{Full Algorithm for Finding all Stable Matchings} \label{section:algostable}
+In this section, we give the full algorithm for finding all stable allocations in many-to-many two-sided matchings, assume substitutability and irrelevance of rejected contracts.
+The algorithm is a straightforward extension of algorithm~\ref{mainalg}, incorporating elements of the discussion above.
+
 
 
 \subsubsection{Notes}
