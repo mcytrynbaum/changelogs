@@ -148,7 +148,7 @@ Let $\su_a$ denote the strict preference relation induced by these utility funct
 
 Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
 
-\section{Finding All Strict Core Matchings}
+\section{Finding All Strict Core Matchings} \label{section:strcore}
 Talk about Echenique's contribution and what we are going to do, strict core is equivalent to...
 Note how incredibly general our construction is - multilateral discrete matching in networks, essentially no structure, fully manipulates lattice structure of strict core matchings.   
 \subsection{Model and Notation}
@@ -1330,7 +1330,7 @@ We say that an agent $a \in A$ has \emph{substitutable preferences} if for any $
 Similarly, a choice function $C_a$ is said to satisfy \emph{irrelevance of rejected contracts} if for any $Y \sub X$ and $z \not \in Y$, if $z \in C_a(Y \cup \{ z \})$ then $C_a(Y \cup \{z\}) = C_a(Y)$.
 In this setting, for a set $Y \sub X$, we let $C_D(Y) = \bigcup_{d \in D} C_d(Y)$ and similarly let $C_H(Y) = \bigcup_{h \in H} C_h(Y)$ denote the set of contracts chosen out of $Y$ by the hospitals.
 
-\subsubsection{Lattice Definition and Fixed Point Guarantee}
+\subsubsection{Lattice Definition and Sublattice Operators}
 
 Consider $\lattice = 2^X \times 2^X$, pairs of subsets of $X$, where we define a partial order by $(Z,W) \peq (Z',W')$ if and only if $Z \sub Z'$ and $W' \sub W$. 
 It is easy to check that this partial order defines a complete lattice.
@@ -1357,6 +1357,8 @@ Note then that any $(Z,W) \in \fix(\Phi)$ (corresponding to stable allocation $Z
 This observation motivates our definition of operators on sublattices of $\lattice$.
 Specifically, for a fixed element $(\topx, \topy) \suq (X_i, Y_i) \suq (\botx, \boty)$, where $i$ is an index, we let $\lattice_i \equiv \{(Z,W): (Z,W) \peq (X_i, Y_i) \}$ and note that this is a complete sublattice.
 Define $\Phi_i: \lattice \to \lattice$ by setting $\Phi_i(Z,W) = (\Phi^D_i(W), \Phi^H_i(Z))$, where $\Phi^D_i(W) = \{z \in X_i \setminus \botx: z \in C_H(\{z\} \cup W) \} \cup \botx$ and $\Phi^H_i(Z) = \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z ) \} \cup Y_i$.
+
+\subsubsection{Fixed Point Guarantee and Initializing Subproblems}
 
 The following result shows that the family of operators introduced above satisfies the conditions required for an information sharing algorithm on the lattice $\lattice = 2^X \times 2^X$. 
 
@@ -1386,18 +1388,22 @@ For (2), let $(Z,W) \in \fix(\Phi)$ such that $(Z,W) \peq (X_i,Y_i)$; that is, $
 Note that, from the discussion above, $\botx \sub Z$ and $W \sub \boty$.
 Let $z \in Z \setminus \botx \sub X_i \setminus \botx$.
 Then the fixed point assumption shows $z \in \Phi^D(W) = \{z \in X: z \in C_H( \{z \} \cup W) \}$. 
-In particular, we have $z \in \{z \in X_i \setminus \botx: z \in C_H( \{z \} \cup W) \}$. 
+In particular, $z$ is also chosen by the hospitals out of $X_i \setminus \topx$, so $z \in \{z \in X_i \setminus \botx: z \in C_H( \{z \} \cup W) \}$. 
 Then $Z = \lft Z \setminus \botx \rt \cup \botx \sub \Phi_i^D(W)$. 
-Clearly, $\{z \in X_i \setminus \botx: z \in C_H( \{z \} \cup W) \} \sub \Phi^D(W)$, so taking the union with $\botx$ on both sides gives $\Phi_i^D(W) \sub \Phi^D(W)$. 
+Clearly, $\{z \in X_i \setminus \botx: z \in C_H( \{z \} \cup W) \} \sub \Phi^D(W)$, so taking the union with $\botx$ on both sides gives $\Phi_i^D(W) \sub \Phi^D(W)$, noting that $\botx \sub \Phi^D(W) = Z$. 
 Then $\Phi_i^D(W) = Z$.
 Similarly, let $w \in W \setminus Y_i \sub \boty \setminus Y_i$. 
 Then $w \in \Phi^H(Z) \implies w \in \{z \in \boty \setminus Y_i: z \in C_H( \{z \} \cup Z) \}$. 
 This shows $W = \lft W \setminus Y_i \rt \cup Y_i \sub \Phi^D_i(Z)$.
-Clearly $\{z \in \boty \setminus Y_i: z \in C_H( \{z \} \cup Z) \} \sub \Phi^H(Z)$, so taking unions on both sides with $Y_i$, noting that $Y_i \sub W$ by assumption, gives $\Phi^H_i(Z) \sub W$, so, in fac, $\Phi^H_i(Z) = W$.
-Then we have shown $(Z,W) \sub \fix(\Phi_i)$, completing the proof.
+Clearly $\{z \in \boty \setminus Y_i: z \in C_H( \{z \} \cup Z) \} \sub \Phi^H(Z)$, so taking unions on both sides with $Y_i$, noting that $Y_i \sub W$ by assumption, gives $\Phi^H_i(Z) \sub W$, so, in fact, $\Phi^H_i(Z) = W$.
+Then we have shown $(Z,W) \in \fix(\Phi_i)$, so $\fix(\Phi) \cap \lattice_i \sub \fix(\Phi_i)$, completing the proof.
 \eprf
 
+Before giving the full algorithm, we need to discuss the initialization of subproblems. 
+As in section~\
+For the algorithm to find $\fix(T) \sub \prealloc$, we could 
 
+\subsubsection{Algorithm for Finding all Stable Matchings}
 
 
 \subsubsection{Notes}
