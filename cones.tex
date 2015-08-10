@@ -130,6 +130,10 @@
 \newcommand{\topy}{\ol{Y}}
 \newcommand{\botx}{\ul{X}}
 \newcommand{\boty}{\ul{Y}}
+\newcommand{\pairi}{(X_i,Y_i)}
+\newcommand{\pairj}{(X_j,Y_j)}
+\newcommand{\pairp}{(X',Y')}
+\newcommand{\pairpp}{(X'',Y'')}
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -640,7 +644,6 @@ Subroutine details are given below.
 \caption{FindStrictCore} 
 \begin{algorithmic}[1]
 \REQUIRE $\acto$
-\ENSURE $\fix(T^2)$
     \STATE Initialize as above
     \STATE Set $\fixfind = \emptyset$
     \WHILE{$\acto \not = \emptyset$} \label{alg3:while1}
@@ -1430,18 +1433,37 @@ Define the following stopping conditions for an element $ \Phi_i^k(X_i,Y_i) \equ
 
 Condition~(\ref{cond:bottom}) corresponds to the problem exiting the lattice $\fix(\Phi)$. 
 For Condition~(\ref{cond:fix}), the Tarski sequence fixes, and we need to initialize new problems.
-For Condition~(\ref{cond:collide}), the problem $\lag (X_i, Y_i) \rag$ collides with a problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
+For Condition~(\ref{cond:collide}), the problem $\lag (X_i, Y_i) \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
 
 \emph{Initialization}: To initialize the algorithm, set $\act = \acto = \fixfind = \emptyset$, and create an empty forest $\forest = (\emptyset,\emptyset)$.
 Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in finite iterations to $(\topx, \topy)$ and $(\botx,\boty)$, the largest and smallest elements of $\fix(\Phi)$, respectively.
 Add each of these to the fixed point collection $\fixfind$.
 For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$ and add $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
 Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$ and add $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
-Then run algorithm~\ref{mainalg}, where we make the following modifications to each subroutine.
+Then run algorithm~\ref{mainalg}, where we make the following modifications to the InformationAcquire (subroutine 1) and InformationCombine (subroutine 2).
 
+\begin{alg}[InformationAcquire]
+Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
 
+If $(X_i,Y_i) \in \acto$ has either (i) $(X_i, Y_i) \peq (\botx,\boty)$ or (ii) there exists $(X_j, Y_j) \in \acto$ s.t. $(X_i,Y_i) \pe (X_j,Y_j)$, then remove $(X_i,Y_i)$ from $\acta, \acto$, and $\act$.
 
+While $\acta \not = \emptyset$, do the following:
 
+For $\pairi \in \acta$, compute the Tarski sequence $\Phi_i^k \pairi$ until a stopping condition (as above) is triggered for some $k = \ell$. 
+Then, do the following:
+\begin{itemize}
+\item[(a)] Set $\pairp = \Phi^{\ell}\pairi$ and add $w(\pairp)f$ to $\forest$ with $c(w(\pairp)) = w(\pairi)$ and 
+\item[(b)] Remove $\pairi$ from $\acta$. 
+\end{itemize}
+For stopping conditions\footnote{If both stopping conditions (\ref{cond:bottom}) and (\ref{cond:collide}) both occur, use condition (\ref{cond:bottom}): the problem has left the lattice $\fix(\Phi)$, so there is no reason to seek further information.} (\ref{cond:fix}) and (\ref{cond:collide}), do the following:
+\begin{enumerate}
+\item[(\ref{cond:fix})] (i) If $\Phi \pairp = \pairp$, then add $\pairp$ to $\fixtemp$. 
+Then, (ii) for each $x \in X' \setminus \botx$ and $y \in \boty \setminus Y'$, add $(X' \setminus \{x\}, Y')$ and $(X', Y' \cup \{y \})$ to $\acto, \acta$, and $\act$.
+Finally, (iii) for each problem $(X'',Y'')$ just added, add $w(X'',Y'')$ to $\forest$ as an isolated root.
+\item[(\ref{cond:collide})] By assumption, the stopping condition was triggered by a ``collision'' with some $(X_j,Y_j) \in \act$.
+Then (i) add $\pairi$ to $\actc$ and (ii) add $j$ to collision index set $\coll(i)$. 
+\end{enumerate}
+\end{alg}
 
 
 
