@@ -1417,16 +1417,30 @@ Thus, to ensure that we find the fixed point $(Z,W)$, we initialize $|X' \setmin
 
 In this section, we describe the full information sharing algorithm for finding all stable allocations in two-sided many-to-many matching with contracts, assuming substitutability of agents preferences.
 
-As above, we let $\act$ denote a collection of problems, which we think of previously solved problems that still contain information useful for finding $\fix(\Phi)$. 
-During the algorithm, for a problem $\lag (X_i, Y_i) \rag $, we compute Tarski sequences of the form $\Phi_i^k(X_i,Y_i)$. 
-We define the following stopping conditions for an element $ \Phi_i^k(X_i,Y_i) \equiv (X', Y')$ of this sequence.
 
-\emph{Stopping Conditions}
+\emph{Stopping Conditions}:
+As above, we let $\act$ denote a collection of problems, which we think of previously solved problems that still contain information useful for finding $\fix(\Phi)$. 
+During the algorithm, for a problem $\lag (X_i, Y_i) \rag $, we compute a Tarski sequence of the form $\Phi_i^k(X_i,Y_i)$, $k \geq 0$. 
+Define the following stopping conditions for an element $ \Phi_i^k(X_i,Y_i) \equiv (X', Y')$ of this sequence.
 \begin{enumerate}
-\item $(X',Y') \pe (\botx, \boty)$ \label{cond:bottom}
+\item $(X',Y') \peq (\botx, \boty)$ \label{cond:bottom}
 \item $\Phi_i(X',Y') = (X',Y')$ \label{cond:fix}
-\item There exists $(X_j,Y_j) \in \act$ with $(X',Y') \peq (X_j,Y_j)$ and $(X',Y') \not \peq (X_i,Y_i)$ \label{cond:collide}
+\item There exists $(X_j,Y_j) \in \act$ with $(X',Y') \peq (X_j,Y_j)$ and $(X_i,Y_i) \not \peq (X_j,Y_j)$ \label{cond:collide}
 \end{enumerate}
+
+Condition~(\ref{cond:bottom}) corresponds to the problem exiting the lattice $\fix(\Phi)$. 
+For Condition~(\ref{cond:fix}), the Tarski sequence fixes, and we need to initialize new problems.
+For Condition~(\ref{cond:collide}), the problem $\lag (X_i, Y_i) \rag$ collides with a problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
+
+\emph{Initialization}: To initialize the algorithm, set $\act = \acto = \fixfind = \emptyset$, and create an empty forest $\forest = (\emptyset,\emptyset)$.
+Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in finite iterations to $(\topx, \topy)$ and $(\botx,\boty)$, the largest and smallest elements of $\fix(\Phi)$, respectively.
+Add each of these to the fixed point collection $\fixfind$.
+For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$ and add $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
+Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$ and add $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
+Then run algorithm~\ref{mainalg}, where we make the following modifications to each subroutine.
+
+
+
 
 
 
