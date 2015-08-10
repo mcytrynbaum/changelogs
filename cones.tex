@@ -127,8 +127,8 @@
 \newcommand{\lattice}{L}
 \newcommand{\topx}{\ol{X}}
 \newcommand{\topy}{\ol{Y}}
-\newcommand{\box}{\ol{X}}
-\newcommand{\boy}{\ol{X}}
+\newcommand{\botx}{\ul{X}}
+\newcommand{\boty}{\ul{Y}}
 
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -1337,9 +1337,10 @@ It is easy to check that this partial order defines a complete lattice.
 For instance, given a collection of $(Z_i, W_i) \in \lattice$, the greatest lower bound is $\bigwedge_i (Z_i, W_i) = \lft \bigcap_i Z_i, \bigcup_i W_i \rt \in 2^X \times 2^X$.
 The least upper bound is attained similarly by swapping unions and intersections. 
 
-As in Hatfield and Kominers, we may define an operator $\Phi: \lattice \to \lattice$ by $\Phi(Z,W) = (\Phi_D(W), \Phi_H(Z))$, where $\Phi_D(Z) = \{z \in X: z \in C_D(\{z \} \cup Z) \}$ and $\Phi_H(W) = \{z \in X: z \in C_H(\{z \} \cup W) \}$.
-It is easy to see from the definition of substitutability that this operator is isotone on $\lattice$.
+As in Hatfield and Kominers, we may define an operator $\Phi: \lattice \to \lattice$ by $\Phi(Z,W) = (\Phi_D(W), \Phi_H(Z))$, where $\Phi^D(Z) = \{z \in X: z \in C_D(\{z \} \cup Z) \}$ and $\Phi^H(W) = \{z \in X: z \in C_H(\{z \} \cup W) \}$.
 As usual, we define the fixed point set $\fix(\Phi) \equiv \{(Z,W) \in 2^X \times 2^X: \Phi(Z,W) = (Z,W) \}$.
+It is easy to see from the definition of substitutability that this operator is isotone on $\lattice$.
+Therefore, by Tarski's Theorem, $\fix(\Phi)$ is a non-empty lattice.
 
 The following characterization of stable matchings is due to Hatfield and Kominers
 \begin{lemma}[Hatfield and Kominers, Lemma 1]
@@ -1347,8 +1348,23 @@ For any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
 Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
 \end{lemma}
 
-This lemma shows that finding all stable matchings $\stable$ is equivalent to finding all fixed points of the operator $\fix(\Phi)$.
-By isotonicity of $\Phi$, the standard Tarski argument from previous sections shows that the sequence formed by $\Phi^k(X, \emptyset)$ is monotonically decreasing, and fixes at $(\ol{X} 
+\emph{Definition of Sublattice Operators} - This lemma shows that finding all stable matchings $\stable$ is equivalent to finding all fixed points of the operator $\fix(\Phi)$.
+By isotonicity of $\Phi$, the standard Tarski argument from previous sections shows that the sequence formed by $\Phi^k(X, \emptyset)$ is monotonically decreasing, and fixes at $(\topx, \topy) = \max \fix(\Phi)$.
+Similarly, iterating $\Phi^k(\emptyset, X)$ eventually fixes at a $(\botx, \boty) = \min \fix( \Phi)$.
+Note then that any $(Z,W) \in \fix(\Phi)$ (corresponding to stable allocation $Z \cap W$) satisfies $\botx \sub Z \sub \topx$ and $\topy \sub W \sub \boty$.
+
+This observation motivates our definition of operators on sublattices of $\lattice$.
+Specifically, for a fixed element $(X_i, Y_i) \suq (\botx, \boty)$, where $i$ is some index, we let $\lattice_i \equiv \{(Z,W): (Z,W) \peq (X_i, Y_i) \}$ and note that this is a complete sublattice.
+Define $\Phi_i: \lattice_i \to \lattice_i$ by setting $\Phi_i(Z,W) = (\Phi^D_i(W), \Phi^H_i(Z))$, where $\Phi^D_i(W) = \{z \in X_i \setminus \botx: z \in C_H(\{z\} \cup Z)\}) \cup \botx$ and $\Phi^H_i(Z) = \{z \in \topy \setminus Y_i: z \in C_D( \{z \} \cup W \}) \cup Y_i$.
+
+The following result shows that this family of suboperators satisfies the conditions required in our discussion of information sharing on general complete lattices.
+
+\begin{lemma} \label{lemma:phigar}
+Let $\lattice_i$ and $\Phi_i$ as defined above for some $(X_i, Y_i) \suq (\botx, \boty)$. 
+Then $\Phi_i$ is isotone on the sublattice $\lattice_i$.
+\end{lemma}
+\prf 
+\eprf
 
 
 
