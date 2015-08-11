@@ -1071,10 +1071,11 @@ We are now ready to prove correctness of FindStrictCore.
 We will make heavy use of the collision digraph and problem forest structure results proved above.
 
 \begin{thm} \label{thm:correct}
-FindStrictCore finds all fixed points $\fix(T)$. 
+FindStrictCore returns with $ \fixfind = \fix(T)$.
+In particular, the algorithm finds all strict core outcomes $\strcore = \{Y: \pre_Y \in \fixfind \}$ 
 \end{thm}
 \prf
-We will show that at any point during the execution of FindStrictCore, a fixed point $\pre \in \fix(T)$ satisfies either (i) $\pre \in \fixfind$, the fixed points already found by the algorithm, or (ii) there exists a $\pre' \in \acto$ such that $\pre' \peq \pre$. 
+We will show that at any point during the execution of FindStrictCore, a fixed point $\pre \in \fix(T)$ satisfies either (i) $\pre \in \fixfind$, the fixed points already found by the algorithm, or (ii) there exists a $\pre' \in \acto$ such that $\pre \peq \pre'$. 
 We work by induction on $k$, the number of distinct states $\actok$ of the set of active problems $\acto$ during the main loop of FindStrictCore\footnote{Note that $\fixfind$ changes only if $\acto$ changes, so it suffices to consider distinct states of $\acto$}. 
 For any set of problems $W$, we denote $\fix(W) \equiv \bigcup_{\pre \in W} \fix(\pre)$.
 
@@ -1084,11 +1085,11 @@ Since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, th
 Then suppose by induction that (i) and (ii) above are satisfied up to $k = n$.
 We show that these statements still hold for $k = n +1$.
 
-Throughout, for a set $E$, we let $E'$ denote the state of $E$ at algorithm initialization, and $E''$ its state at algorithm return.
+Throughout, for a set $E$, we let $E'$ denote the state of $E$ at subroutine initialization, and $E''$ its state at algorithm return.
 There are two main cases, corresponding to each subroutine.
 
 \emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ and $\fixfindk \to \fixfindkk$ when InformationAcquire (subroutine 1) returns.
-InformationAcquire returns a set $\actc$ of problems, the information from which will be combined during subroutine 2.
+InformationAcquire returns a set $\actc$ of ``collided'' problems, which will be combined during subroutine 2.
 In the above notation, $\actc'' = \acto^{k+1}$ is the set of problems and $\fixtemp''$ is the set of fixed points returned by the subroutine.
 By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
 Then, to show that no fixed points are ``lost'' during the subroutine, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \fix(\actc'')$.
@@ -1120,7 +1121,7 @@ By the argument above, it suffices to consider changes to $\acta$ after redundan
 There are several cases.
 
 \emph{Subcase 1}: There is a state change $\actak \to \actakk$ when stopping condition (1) or (2) is triggered for a problem $\pre_i \in \actak$, which is then removed $\actakk \leftarrow \actak \setminus \{\pre_i\}$.
-Let $\pren \in \acto$ and $\pre \in \fix(\pren)$ and suppose that $\pre \not \in \fixtempkk$, the set of fixed points found by $\ell = k + 1$.
+Let $\pren \in \actok$ and $\pre \in \fix(\pren)$ and suppose that $\pre \not \in \fixtempkk$, the set of fixed points found by $\ell = k + 1$.
 We show that the guarantee (GAR) on $\pre$ cannot be afforded by $\pre_i$, so it is safe to remove $\pre_i$ from $\actak \cup \actck$.
 Suppose that $\pre \peq \pre_i$.
 We have $\pre' = (T_i^2)^k \pre_i$ for some $k \geq 0$, and $\pre' \peq \bopre$ or $T \pre' = \pre'$.
@@ -1178,14 +1179,18 @@ We have exhausted both cases, so this completes the induction.
 By our termination analysis in lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
 Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, so clearly $\fixfind \sub \fix(T)$.
 Then $\fixfind = \fix(T)$. 
-That is, by lemma~\ref{lemma:strictcore} above, the algorithm finds all strict core allocations.
+That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations. 
 \eprf
 
-\emph{Discussion}: talk about main algorithmic advantages, how this is incommensurable with E and Y and depends on the structure of the lattice (but there may be a prob. type result to be had). xxxxxxxxxx
+\emph{Discussion}: Note that, given $\pre = \pre_Y \in \fixfind$, we have $Y = \bigcup_{a \in A} Y_a = \bigcup_{a \in A} \pre(a)$, so the allocation corresponding to $\pre$ can be found by taking a union.
+The performance of the algorithm for a given problem instance depends on the exact structure of the lattice $\fix(T^2)$.
+For instance, it could be that by stopping a Tarski sequence $(T^2)^k \pre$ before it converges and running InformationCombine, we miss some $\pre'$ in the sequence for which $T^2 \pre' \pe \bopre$, showing that $\fix(\pre) = \emptyset$. 
+In particular, our algorithm and the original Echenique and Yenmez algorithm are incommensurable. 
+Our algorithm uses the heuristic that evaluation of the $T$ operator is very costly, and we prefer to make progress through the lattice by using fast graph algorithms to share information between problems whenever this is possible. 
 
-\subsubsection{Extension to True Core Allocations} It is tempting to attempt to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to class of true core allocations $\core \supseteq \strcore$ in the general mathcing with contracts setting considered above. 
+\subsubsection{Extension to True Core Allocations} It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of true core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
 Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
-For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered in the original paper by Echenique and Yenmez\footnote{something about other examples of this}.
+For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered in the original paper by Echenique and Yenmez\footnote{something about other examples of this xxxx}.
 
 At first glance, it appears that such a generalization will be forthcoming. 
 Similarly to the strict core case, for $a \in A$ we define a set 
@@ -1198,7 +1203,7 @@ which can be thought of as the collection of allocations $Z \in 2^{X_a}$ with $Y
 Define a new operator $\optwo: \prealloc \to \prealloc$ by $\optwo (\pre) (a) = \max\limits_{\suq_a} W(\pre,a)$.
 Note that in this case, the inequalities in the definition of $W(\pre,a)$ are \emph{strict}, and we are also forced to include $\pre(a) \in W(\pre,a)$, which is not necessary for strict core.
 Define the fixed allocation set $\fecon(\optwo) = \{Y \in 2^X: \optwo(\pre_Y) = \pre_Y\}$ as above.
-With these modifications, we get a similar fixed point characterization.
+With these modifications, we get a similar characterization of $\core$ as the (coordinated) fixed points of an operator defined on the lattice $\prealloc$.
 \begin{lemma} \label{lemma:core}
 $\core = \fecon(\optwo)$
 \end{lemma}
@@ -1219,8 +1224,6 @@ In particular, $\optwo(\pre)(a) \su_a \pre(a)$, so that $\pre \not \in \fecon(\o
 This completes the proof.
 \eprf
 
-We have thus characterized the core allocations $\core$ as the fixed points of an operator defined on the preallocation lattice $\prealloc$.
-
 \emph{Remark}: Note that, by definition of the set $W(\pre,a)$, we must have $\optwo \pre \suq \pre$ for \emph{any} $\pre \in \prealloc$.
 For the original operator $T$ with $\fecon(T) = \strcore$, this relationship only holds when $\pre \in \coordpre$; that is, $\pre = \pre_Y$ for some allocation $Y \sub X$.
 Because of this, $\optwo$ may also fix \emph{uncoordinated} preallocations, as we demonstrate shortly.
@@ -1234,7 +1237,7 @@ The squared operator $\optwo^2$ may not be isotone.
 $\optwo$ may fix uncoordinated preallocations; that is, $\fix(\optwo) \not \sub \coordpre$.
 \end{prop}
 \prf 
-Consider an embryonic trading network with two sellers and a buyer $A = \{s_1,s_2,b\}$. 
+Consider an embryonic trading network with two sellers and a buyer, so that $A = \{s_1,s_2,b\}$. 
 We let $(i,j)^k$ denote the contract where $i$ sells $k$ units to $j$.
 Suppose that agents have preferences as follows:
 \begin{align*}
@@ -1249,7 +1252,7 @@ The contract space is $X = \{(s_1,b), (s_2,b)^2, (s_2,b), \emptyset_{s_1}, \empt
 Now define preallocations $\pre$ and $\pre'$ by setting $\pre'(a) = \emptyset_a$ for all $a \in A$ and $\pre(b) = \{(s_2,b)^2\}$, $\pre(s_1) = \emptyset_{s_1}$, $\pre(s_2) = \{(s_2,b)^2\}$.
 Note that $\pre = \pre_Y$, where $Y \in \core$ is the core allocation consisting of a single contract $\{(s_2,b)^2\}$. 
 Then by lemma~\ref{lemma:core} above $\optwo(\pre) = \pre$.
-Since $\pre'(a) = \emptyset_a$ for all $a$, so that any trade is a strict improvement for each agent involved, so every agent can propose its most preferred network structure.
+Since $\pre'(a) = \emptyset_a$ for all $a$, any trade listed above is a strict improvement for each agent involved, so every agent can propose its most preferred network structure.
 Thus, we get $\pre'' = \optwo(\pre')$ defined by $\pre''(b) = \{(s_1,b),(s_2,b)\}$ and $\pre''(s_1) = \{(s_1,b)\}$ and $\pre''(s_2) = \{(s_2,b)^2\}$.
 $\pre''$ is the unanimously most preferred preallocation, so, by the remarks above, $\optwo(\pre'') = \pre''$.
 
@@ -1535,16 +1538,6 @@ No such analysis is necessary for finding stable outcomes, because this stopping
 
 
 
-
-
-
-
-
-
-
-
-
-
 \subsubsection{Notes}
 
 AGENDA
@@ -1567,6 +1560,7 @@ modifications of lemmas and props for correctness of stable allocation proofs
 for scott 
     thoughts on rewriting in terms of a general lattice
     thoughts on presenting modified proof versions that are just different in a couple of lines
+    sub preferences and core equivalences - a remark on our maximal domain result
 
 
 
