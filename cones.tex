@@ -22,7 +22,7 @@
 \newtheorem{lemma}[thm]{Lemma}
 \newtheorem{prop}[thm]{Proposition}
 \newtheorem{cor}[thm]{Corollary}
-\newtheorem{alg}[thm]{Algorithm}
+\newtheorem{subroutine}[thm]{Subroutine}
 \theoremstyle{definition}
 \newtheorem{defn}[thm]{Definition}
 \newtheorem{examp}[thm]{Example}
@@ -1440,9 +1440,27 @@ Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in fini
 Add each of these to the fixed point collection $\fixfind$.
 For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$ and add $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
 Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$ and add $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
-Then run algorithm~\ref{mainalg}, where we make the following modifications to the InformationAcquire (subroutine 1) and InformationCombine (subroutine 2).
+Then run algorithm~\ref{mainalg}, where we modify the subroutines InformationAcquire (subroutine 1) and InformationCombine (subroutine 2) as shown below.
+For convenience, we reproduce the main algorithm here.
 
-\begin{alg}[InformationAcquire]
+\begin{algorithm}[H] \label{mainalg2} 
+\caption{FindStable} 
+\begin{algorithmic}[1]
+\REQUIRE $\acto$
+    \STATE Initialize as above
+    \STATE Set $\fixfind = \emptyset$
+    \WHILE{$\acto \not = \emptyset$} \label{alg32:while1}
+        \STATE $(\acto, \coll, \fixtemp) \leftarrow InformationAcquire(\acto)$ 
+        \STATE $\fixfind = \fixfind \cup \fixtemp$
+        \WHILE{$\coll \not = \emptyset$} \label{alg32:while2}
+            \STATE $(\acto,\coll) \leftarrow InformationCombine(\acto,\coll)$ 
+        \ENDWHILE
+    \ENDWHILE
+\RETURN $\fixfind$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{subroutine}[InformationAcquire]
 Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
 
 If $(X_i,Y_i) \in \acto$ has either (i) $(X_i, Y_i) \peq (\botx,\boty)$ or (ii) there exists $(X_j, Y_j) \in \acto$ s.t. $(X_i,Y_i) \pe (X_j,Y_j)$, then remove $(X_i,Y_i)$ from $\acta, \acto$, and $\act$.
@@ -1452,7 +1470,7 @@ While $\acta \not = \emptyset$, do the following:
 For $\pairi \in \acta$, compute the Tarski sequence $\Phi_i^k \pairi$ until a stopping condition (as above) is triggered for some $k = \ell$. 
 Then, do the following:
 \begin{itemize}
-\item[(a)] Set $\pairp = \Phi^{\ell}\pairi$ and add $w(\pairp)f$ to $\forest$ with $c(w(\pairp)) = w(\pairi)$ and 
+\item[(a)] Set $\pairp = \Phi^{\ell}\pairi$ and add $w\pairp$ to $\forest$ with $c(w\pairp) = w\pairi$ and 
 \item[(b)] Remove $\pairi$ from $\acta$. 
 \end{itemize}
 For stopping conditions\footnote{If both stopping conditions (\ref{cond:bottom}) and (\ref{cond:collide}) both occur, use condition (\ref{cond:bottom}): the problem has left the lattice $\fix(\Phi)$, so there is no reason to seek further information.} (\ref{cond:fix}) and (\ref{cond:collide}), do the following:
@@ -1463,7 +1481,45 @@ Finally, (iii) for each problem $(X'',Y'')$ just added, add $w(X'',Y'')$ to $\fo
 \item[(\ref{cond:collide})] By assumption, the stopping condition was triggered by a ``collision'' with some $(X_j,Y_j) \in \act$.
 Then (i) add $\pairi$ to $\actc$ and (ii) add $j$ to collision index set $\coll(i)$. 
 \end{enumerate}
-\end{alg}
+
+Return $(\actc, \coll, \fixtemp)$.
+\end{subroutine}
+
+\begin{subroutine}[InformationCombine]
+To initialize, form an empty digraph $G = (V,E)$ with $V = E = \emptyset$, set $\actt = \emptyset$, and add $i$ to $\coll(i)$ for each $\pairi \in \acto$.
+Next, build the collision digraph as follows: 
+
+For each $\pairi \in \acto$, (i) add $v_i$ to $V$, and for all collision indices $j \in \coll(i)$, (ii) compute $w_k = r(w_j)$ and (iii) add  $v_k$ to $V$ and $(v_i,v_k)$ to $E$. 
+Next, do the following computations with $G$:
+\begin{enumerate}
+\item Compute the strong components $\strongc$ of $G$.
+\item Remove $\{v_k \} \in \strongc$ if $(X_k,Y_k) \not \in \acto$, leaving trimmed components $\{S_j\}_{j \in \mathcal{J}}$
+\item For $j \in \mathcal{J}$, compute reachable set $\reach_j$ 
+\end{enumerate}
+
+For $j \in \mathcal{J}$, do the following to form new problems:
+
+\begin{itemize}
+\item[(a)] Add $\pairp = \lft \bigcap\limits_{v_k \in \reach_j} X_k, \bigcup\limits_{v_k \in \reach_j} Y_k \rt$ to $\actt$. 
+\item[(b)] Add $w\pairp$ to $\forest$ with $c(w\pairp) = \{r(w_k): v_k \in \strongcomp_j\}$.
+\end{itemize}
+
+Set $\coll(i) = \emptyset$ for $i \in \mathcal{I}$. 
+To check for new collisions, do the following:
+
+For each $\pairp \in \actt$, if $\exists (X_k, Y_k) \in \act$ and $w_j \in c(w_i)$ such that $\pairp \peq (X_k, Y_k)$ and $(X_j, Y_j) \not \peq (X_k, Y_k)$, then add collision index $j$ to $\coll(i)$.
+
+Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
+
+Return $(\acto, \coll)$.
+\end{subroutine}
+
+\emph{Discussion}: We briefly note differences from algorithm~\ref{mainalg} above for finding all strict core outcomes.
+As discussed in section~\ref{section:general}, when forming new problems during InformationCombine, we replace the pointwise minima of algorithm~\ref{mainalg} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
+For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second.
+Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is point-dependent.
+This is necessary because $2^X \times 2^X$ has a less regular structure than the Euclidean lattice $\prealloc$ of section~\ref{section:strcore}
+Finally, for the case of stable allocations, there is no equivalent of lemma~\ref{lemma:
 
 
 
@@ -1472,20 +1528,8 @@ Then (i) add $\pairi$ to $\actc$ and (ii) add $j$ to collision index set $\coll(
 
 
 
-In this section, we give the full algorithm for finding all stable allocations in many-to-many two-sided matching, assume substitutability and irrelevance of rejected contracts.
-The algorithm is a straightforward extension of algorithm~\ref{mainalg}, incorporating elements of the discussion above.
 
-Set xxxxx
-Remove all problems s.t. xxxxxx from sets xxxxx 
-While Qa not empty, for prob in qa do
-    compute the Tarski sequence until one of the stopping conditions (1) - (4) is reached 
-    remove from Qa and add to graph
-    do the following thing
-        (2) add to found set 
-        (3) spawn new problems and check for redundancies, add to graph 
-        (4) build collision indices 
 
-this is much better - enumerate and reference enumeration in proof 
 
 
 
@@ -1494,9 +1538,11 @@ this is much better - enumerate and reference enumeration in proof
 \subsubsection{Notes}
 
 AGENDA
+Write out similar version of informationcombine
+Write out theorem 
+Figure out inductive proof of guarantee
 
-write out pseduo alg structure 
-write out full algorithm for a general lattice
+
 consult with Scott on changing everything to general
 figure out how to prove guarantee on Q 
     how to insert this in other work / which lemma
@@ -1535,6 +1581,7 @@ appendix note about calculation down a chain and inclusions?
 appendix note about generalization to arbitrary complete lattices
 add line / language above about how general our approach is
 link this with coarsening results
+keep full pseudocode for appendix
 
 
 
