@@ -1070,7 +1070,7 @@ Therefore, the outer while loop of FindStrictCore executes only finitely many ti
 We are now ready to prove correctness of FindStrictCore.
 We will make heavy use of the collision digraph and problem forest structure results proved above.
 
-\begin{thm}
+\begin{thm} \label{thm:correct}
 FindStrictCore finds all fixed points $\fix(T)$. 
 \end{thm}
 \prf
@@ -1460,7 +1460,7 @@ For convenience, we reproduce the main algorithm here.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{subroutine}[InformationAcquire]
+\begin{subroutine}[InformationAcquire] \label{sub:infac2}
 Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
 
 If $(X_i,Y_i) \in \acto$ has either (i) $(X_i, Y_i) \peq (\botx,\boty)$ or (ii) there exists $(X_j, Y_j) \in \acto$ s.t. $(X_i,Y_i) \pe (X_j,Y_j)$, then remove $(X_i,Y_i)$ from $\acta, \acto$, and $\act$.
@@ -1485,7 +1485,7 @@ Then (i) add $\pairi$ to $\actc$ and (ii) add $j$ to collision index set $\coll(
 Return $(\actc, \coll, \fixtemp)$.
 \end{subroutine}
 
-\begin{subroutine}[InformationCombine]
+\begin{subroutine}[InformationCombine] \label{sub:infcomb2}
 To initialize, form an empty digraph $G = (V,E)$ with $V = E = \emptyset$, set $\actt = \emptyset$, and add $i$ to $\coll(i)$ for each $\pairi \in \acto$.
 Next, build the collision digraph as follows: 
 
@@ -1514,14 +1514,29 @@ Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
 Return $(\acto, \coll)$.
 \end{subroutine}
 
-\emph{Discussion}: We briefly note differences from algorithm~\ref{mainalg} above for finding all strict core outcomes.
-As discussed in section~\ref{section:general}, when forming new problems during InformationCombine, we replace the pointwise minima of algorithm~\ref{mainalg} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
-For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second.
-Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is point-dependent.
-This is necessary because $2^X \times 2^X$ has a less regular structure than the Euclidean lattice $\prealloc$ of section~\ref{section:strcore}
-Finally, for the case of stable allocations, there is no equivalent of lemma~\ref{lemma:
+\emph{Discussion}: We briefly note the substantive differences from algorithm~\ref{mainalg} for finding all strict core outcomes.
+Here, when forming new problems during InformationCombine, we replace the pointwise minima used in algorithm~\ref{mainalg} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
+For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second, as shown above.
+Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is \emph{not constant}.
+This is necessary because $2^X \times 2^X$ has a less regular structure than the Euclidean lattice $\prealloc$ used in section~\ref{section:strcore}.
+Finally, for stable allocations, there is no equivalent of lemma~\ref{lemma:order}, since $\fix(\Phi)$ are fixed points of an isotone (not antitone) operator. 
+Thus, after finding $(Z,W) \in \fix(\Phi)$, we still have to search the lattice $\{\pairp \pe (Z,W) \}$ strictly below $(Z,W)$, whereas, for algorithm~\ref{mainalg}, lemma~\ref{lemma:order} shows that we can stop immediately.
+Because of this, subroutine~\ref{sub:infac2} has one fewer distinct stopping condition.
+Aside from these modifications, the algorithm is structurally identical, with slightly different notation.
+
+The following result is an easy extension of lemma~\ref{lemma:termination} and theorem~\ref{thm:correct}, the termination and correctness results for FindStrictCore.
+
+\begin{thm}
+When FindStable returns, $\fixfind = \fix(\Phi)$. 
+In particular, $\stable = \{Z \cap W: (Z,W) \in \fixfind\}$, so the algorithm finds all stable allocations.
+\end{thm}
+
+\prf
+The proof is a straightforward extension of the auxillary lemmas and termination and correctness proofs provided above, replacing pointwise minima with the lattice meet for $2^X \times 2^X$.
+Here, we content ourselves with noting the substantive differences.
 
 
+\eprf
 
 
 
