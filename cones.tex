@@ -1441,24 +1441,6 @@ Add each of these to the fixed point collection $\fixfind$.
 For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$ and add $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
 Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$ and add $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
 Then run algorithm~\ref{mainalg}, where we modify the subroutines InformationAcquire (subroutine 1) and InformationCombine (subroutine 2) as shown below.
-For convenience, we reproduce the main algorithm here.
-
-\begin{algorithm}[H] \label{mainalg2} 
-\caption{FindStable} 
-\begin{algorithmic}[1]
-\REQUIRE $\acto$
-    \STATE Initialize as above
-    \STATE Set $\fixfind = \emptyset$
-    \WHILE{$\acto \not = \emptyset$} \label{alg32:while1}
-        \STATE $(\acto, \coll, \fixtemp) \leftarrow InformationAcquire(\acto)$ 
-        \STATE $\fixfind = \fixfind \cup \fixtemp$
-        \WHILE{$\coll \not = \emptyset$} \label{alg32:while2}
-            \STATE $(\acto,\coll) \leftarrow InformationCombine(\acto,\coll)$ 
-        \ENDWHILE
-    \ENDWHILE
-\RETURN $\fixfind$
-\end{algorithmic}
-\end{algorithm}
 
 \begin{subroutine}[InformationAcquire] \label{sub:infac2}
 Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
@@ -1522,20 +1504,33 @@ This is necessary because $2^X \times 2^X$ has a less regular structure than the
 Finally, for stable allocations, there is no equivalent of lemma~\ref{lemma:order}, since $\fix(\Phi)$ are fixed points of an isotone (not antitone) operator. 
 Thus, after finding $(Z,W) \in \fix(\Phi)$, we still have to search the lattice $\{\pairp \pe (Z,W) \}$ strictly below $(Z,W)$, whereas, for algorithm~\ref{mainalg}, lemma~\ref{lemma:order} shows that we can stop immediately.
 Because of this, subroutine~\ref{sub:infac2} has one fewer distinct stopping condition.
-Aside from these modifications, the algorithm is structurally identical, with slightly different notation.
+Otherwise, the algorithm is structurally identical, with slightly different notation.
 
-The following result is an easy extension of lemma~\ref{lemma:termination} and theorem~\ref{thm:correct}, the termination and correctness results for FindStrictCore.
+The following result is an easy extension of lemma~\ref{lemma:termination} and theorem~\ref{thm:correct}.
 
 \begin{thm}
-When FindStable returns, $\fixfind = \fix(\Phi)$. 
-In particular, $\stable = \{Z \cap W: (Z,W) \in \fixfind\}$, so the algorithm finds all stable allocations.
+FindStable returns $\fixfind = \fix(\Phi)$. 
+In particular, $\{Z \cap W: (Z,W) \in \fixfind\} = \stable$, so the algorithm finds all stable allocations.
 \end{thm}
 
 \prf
-The proof is a straightforward extension of the auxillary lemmas and termination and correctness proofs provided above, replacing pointwise minima with the lattice meet for $2^X \times 2^X$.
-Here, we content ourselves with noting the substantive differences.
+This is a straightforward extension of the auxillary lemmas and correctness proof provided above. 
+Here, we just note the substantive differences.
 
+In the analysis for algorithm~\ref{mainalg}, we use the lattice meet for $\prealloc$, which we think of as a sublattice of $\mr^m$.
+Thus, meet for this lattice is a pointwise minimum.
+For instance, we form new problems by setting $\pre = \min_{v_k \in \reach_j} \pre_k$.
+For finding stable matchings, every such minimum must be replaced by the lattice meet for $\lattice = 2^X \times 2^X$.
+Given a collection $\{(Z_i,W_i)\}_{i \in I} \sub 2^X \times 2^X$, the meet or greatest lower bound takes the form $\bigwedge_{i \in I} (Z_i,W_i) = \lft \bigcap_{i \in I} Z_i, \bigcup_{i \in I} W_i \rt $. 
 
+Our termination analysis in lemma~\ref{lemma:termination} needs to be slightly modified. 
+For a set $E \sub 2^X \times 2^X$, define $\disto(E) = \max\limits_{(Z,W) \in E} \lft |Z| + |X \setminus W| \rt $ and $\distt(E) = \sum\limits_{(Z,W) \in E} \lft |Z| + |X \setminus W | \rt$.
+These functions are positive and take finitely many values on the lattice $2^X \times 2^X$.
+The rest of the analysis follows as before.
+
+Finally, as noted in the discussion above, there is an extra stopping condition in algorithm~\ref{mainalg} corresponding to the guarantee from lemma~\ref{lemma:order} that no two points $\pre, \pre' \in \fix(T^2)$ can be compared under $\peq$.
+In the analysis, we use this lemma to argue that $\fix(T) \cap \{\pre'' : \pre'' \pe \pre\} = \emptyset$ whenever $\pre \in \fix(T)$.
+No such analysis is necessary for finding stable outcomes, because this stopping condition is not used.
 \eprf
 
 
@@ -1553,14 +1548,13 @@ Here, we content ourselves with noting the substantive differences.
 \subsubsection{Notes}
 
 AGENDA
-Write out similar version of informationcombine
-Write out theorem 
 Figure out inductive proof of guarantee
 
 
 consult with Scott on changing everything to general
 figure out how to prove guarantee on Q 
     how to insert this in other work / which lemma
+p
 
 
 write out stable allocation stuff 
@@ -1568,6 +1562,7 @@ write out stable allocation stuff
     figure out how chains work in this setting
         is there a relevant result e.g. about exp decrease?
     write out algorithm with Echenique style / more concise 
+    possibly add a guarantee on doing better than greedy search
 
 modifications of lemmas and props for correctness of stable allocation proofs
     change all mins to meets
