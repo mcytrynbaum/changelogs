@@ -630,7 +630,7 @@ Subroutine details are given below.
     \FOR{$\pre_i \in \actt$} 
         \FOR{$\pre_k \in Q$}
             \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre_k$ \AND $\pre_j \not \peq \pre_k$} \label{alg2:collide}
-                \STATE Add $j$ to $\coll(i)$ \label{alg2:coll2} 
+                \STATE Add $k$ to $\coll(i)$ \label{alg2:coll2} 
             \ENDIF
         \ENDFOR
     \ENDFOR
@@ -1181,14 +1181,14 @@ Then $\fixfind = \fix(T)$.
 That is, by lemma~\ref{lemma:strictcore} above, the algorithm finds all strict core allocations.
 \eprf
 
-\emph{Discussion}: talk about main algorithmic advantages, how this is incommensurable with E and Y and depends on the structure of the lattice (but there may be a prob. type result to be had).
+\emph{Discussion}: talk about main algorithmic advantages, how this is incommensurable with E and Y and depends on the structure of the lattice (but there may be a prob. type result to be had). xxxxxxxxxx
 
 \subsubsection{Extension to True Core Allocations} It is tempting to attempt to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to class of true core allocations $\core \supseteq \strcore$ in the general mathcing with contracts setting considered above. 
 Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
 For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered in the original paper by Echenique and Yenmez\footnote{something about other examples of this}.
 
 At first glance, it appears that such a generalization will be forthcoming. 
-As in the case of strict core, for $a \in A$ we define a set 
+Similarly to the strict core case, for $a \in A$ we define a set 
 
 \[
 W(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \} \cup \{\pre(a)\}
@@ -1349,7 +1349,7 @@ It is easy to see from the definition of substitutability that this operator is 
 Therefore, by Tarski's Theorem, $\fix(\Phi)$ is a non-empty lattice.
 
 The following characterization of stable matchings is due to Hatfield and Kominers
-\begin{lemma}[Hatfield and Kominers, Lemma 1]
+\begin{lemma}[Hatfield and Kominers, Lemma 1] \label{lemma:hk}
 Assume that agents' preferences are substitutable and satisfy irrelevance of rejected contracts.
 Then for any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
 Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
@@ -1416,14 +1416,13 @@ Suppose that a Tarski sequence converges to $(X',Y') = \max \fix(\Phi_i)$.
 If $(Z,W) \in \fix(\Phi)$ and $(Z,W) \pe (X',Y')$ then, by the lattice order, either there exists $x \in X' \setminus \botx$ with $Z \sub X' \setminus \{x\}$ or there is $y \in \boty \setminus Y'$ with $Y' \cup \{y\} \sub W$.
 Thus, to ensure that we find the fixed point $(Z,W)$, we initialize $|X' \setminus \botx| + |\boty \setminus Y'|$ new problems of the form $\lag (X' \setminus \{x\},Y') \rag$ and $\lag (X',Y' \cup \{y\}) \rag$, with $x$ and $y$ as above.
 
-\subsection{Algorithm for Finding all Stable Matchings} \label{section:algostable}
+\subsection{Algorithm for Finding all Stable Allocations} \label{section:algostable}
 
-In this section, we describe the full information sharing algorithm for finding all stable allocations in two-sided many-to-many matching with contracts, assuming substitutability of agents preferences.
-
+In this section, we describe the full information sharing algorithm for finding all stable allocations in two-sided many-to-many matching with contracts assuming that agents' preferences are substitutable.
 
 \emph{Stopping Conditions}:
-As above, we let $\act$ denote a collection of problems, which we think of previously solved problems that still contain information useful for finding $\fix(\Phi)$. 
-During the algorithm, for a problem $\lag (X_i, Y_i) \rag $, we compute a Tarski sequence of the form $\Phi_i^k(X_i,Y_i)$, $k \geq 0$. 
+As above, we let $\act$ be a collection of problems, which we think of as previously solved problems that still contain information useful for finding $\fix(\Phi)$. 
+During the algorithm, for a problem $\lag (X_i, Y_i) \rag $, we compute the Tarski sequence $\Phi_i^k(X_i,Y_i)$, $k \geq 0$. 
 Define the following stopping conditions for an element $ \Phi_i^k(X_i,Y_i) \equiv (X', Y')$ of this sequence.
 \begin{enumerate}
 \item $(X',Y') \peq (\botx, \boty)$ \label{cond:bottom}
@@ -1432,14 +1431,14 @@ Define the following stopping conditions for an element $ \Phi_i^k(X_i,Y_i) \equ
 \end{enumerate}
 
 Condition~(\ref{cond:bottom}) corresponds to the problem exiting the lattice $\fix(\Phi)$. 
-For Condition~(\ref{cond:fix}), the Tarski sequence fixes, and we need to initialize new problems.
+For Condition~(\ref{cond:fix}), the Tarski sequence fixes, and we are forced to initialize new problems.
 For Condition~(\ref{cond:collide}), the problem $\lag (X_i, Y_i) \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
 
 \emph{Initialization}: To initialize the algorithm, set $\act = \acto = \fixfind = \emptyset$, and create an empty forest $\forest = (\emptyset,\emptyset)$.
-Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in finite iterations to $(\topx, \topy)$ and $(\botx,\boty)$, the largest and smallest elements of $\fix(\Phi)$, respectively.
+Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in finitely many iterations to $(\topx, \topy)$ and $(\botx,\boty)$, the largest and smallest elements of $\fix(\Phi)$, respectively.
 Add each of these to the fixed point collection $\fixfind$.
-For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$ and add $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
-Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$ and add $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
+For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$, and add the vertex $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
+Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$, and add the vertex $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
 Then run algorithm~\ref{mainalg}, where we modify the subroutines InformationAcquire (subroutine 1) and InformationCombine (subroutine 2) as shown below.
 
 \begin{subroutine}[InformationAcquire] \label{sub:infac2}
@@ -1449,16 +1448,16 @@ If $(X_i,Y_i) \in \acto$ has either (i) $(X_i, Y_i) \peq (\botx,\boty)$ or (ii) 
 
 While $\acta \not = \emptyset$, do the following:
 
-For $\pairi \in \acta$, compute the Tarski sequence $\Phi_i^k \pairi$ until a stopping condition (as above) is triggered for some $k = \ell$. 
-Then, do the following:
+For each $\pairi \in \acta$, compute the Tarski sequence $\Phi_i^k \pairi$ until a stopping condition (as above) is triggered for some $k = \ell$. 
+Set $\pairp = \Phi^{\ell}\pairi$, and do the following:
 \begin{itemize}
-\item[(a)] Set $\pairp = \Phi^{\ell}\pairi$ and add $w\pairp$ to $\forest$ with $c(w\pairp) = w\pairi$ and 
+\item[(a)] Add $w\pairp$ to $\forest$ with $c(w\pairp) = w\pairi$ and 
 \item[(b)] Remove $\pairi$ from $\acta$. 
 \end{itemize}
 For stopping conditions\footnote{If both stopping conditions (\ref{cond:bottom}) and (\ref{cond:collide}) both occur, use condition (\ref{cond:bottom}): the problem has left the lattice $\fix(\Phi)$, so there is no reason to seek further information.} (\ref{cond:fix}) and (\ref{cond:collide}), do the following:
 \begin{enumerate}
 \item[(\ref{cond:fix})] (i) If $\Phi \pairp = \pairp$, then add $\pairp$ to $\fixtemp$. 
-Then, (ii) for each $x \in X' \setminus \botx$ and $y \in \boty \setminus Y'$, add $(X' \setminus \{x\}, Y')$ and $(X', Y' \cup \{y \})$ to $\acto, \acta$, and $\act$.
+Also, (ii) for each $x \in X' \setminus \botx$ and $y \in \boty \setminus Y'$, add $(X' \setminus \{x\}, Y')$ and $(X', Y' \cup \{y \})$ to $\acto, \acta$, and $\act$.
 Finally, (iii) for each problem $(X'',Y'')$ just added, add $w(X'',Y'')$ to $\forest$ as an isolated root.
 \item[(\ref{cond:collide})] By assumption, the stopping condition was triggered by a ``collision'' with some $(X_j,Y_j) \in \act$.
 Then (i) add $\pairi$ to $\actc$ and (ii) add $j$ to collision index set $\coll(i)$. 
@@ -1476,27 +1475,27 @@ Next, do the following computations with $G$:
 \begin{enumerate}
 \item Compute the strong components $\strongc$ of $G$.
 \item Remove $\{v_k \} \in \strongc$ if $(X_k,Y_k) \not \in \acto$, leaving trimmed components $\{S_j\}_{j \in \mathcal{J}}$
-\item For $j \in \mathcal{J}$, compute reachable set $\reach_j$ 
+\item Compute the reachable set $\reach_j$ for each $\strongcomp_j$ with $j \in \mathcal{J}$.
 \end{enumerate}
 
-For $j \in \mathcal{J}$, do the following to form new problems:
+For each $j \in \mathcal{J}$, combine information to form new problems:
 
 \begin{itemize}
 \item[(a)] Add $\pairp = \lft \bigcap\limits_{v_k \in \reach_j} X_k, \bigcup\limits_{v_k \in \reach_j} Y_k \rt$ to $\actt$. 
-\item[(b)] Add $w\pairp$ to $\forest$ with $c(w\pairp) = \{r(w_k): v_k \in \strongcomp_j\}$.
+\item[(b)] Add the vertex $w\pairp$ to $\forest$ with $c(w\pairp) = \{r(w_k): v_k \in \strongcomp_j\}$.
 \end{itemize}
 
 Set $\coll(i) = \emptyset$ for $i \in \mathcal{I}$. 
 To check for new collisions, do the following:
 
-For each $\pairp \in \actt$, if $\exists (X_k, Y_k) \in \act$ and $w_j \in c(w_i)$ such that $\pairp \peq (X_k, Y_k)$ and $(X_j, Y_j) \not \peq (X_k, Y_k)$, then add collision index $j$ to $\coll(i)$.
+For each $\pairi \in \actt$, if $\exists (X_k, Y_k) \in \act$ and $w_j \in c(w_i)$ such that $\pairp \peq (X_k, Y_k)$ and $(X_j, Y_j) \not \peq (X_k, Y_k)$, then add collision index $k$ to $\coll(i)$.
 
 Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
 
 Return $(\acto, \coll)$.
 \end{subroutine}
 
-\emph{Discussion}: We briefly note the substantive differences from algorithm~\ref{mainalg} for finding all strict core outcomes.
+\emph{Discussion}: We briefly note the substantive differences between this algorithm and algorithm~\ref{mainalg} for finding all strict core outcomes.
 Here, when forming new problems during InformationCombine, we replace the pointwise minima used in algorithm~\ref{mainalg} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
 For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second, as shown above.
 Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is \emph{not constant}.
@@ -1514,19 +1513,20 @@ In particular, $\{Z \cap W: (Z,W) \in \fixfind\} = \stable$, so the algorithm fi
 \end{thm}
 
 \prf
-This is a straightforward extension of the auxillary lemmas and correctness proof provided above. 
-Here, we just note the substantive differences.
+This is a straightforward extension of the auxillary lemmas and correctness proof provided above, using lemma~\ref{lemma:hk} from Hatfield and Kominers to get all of $\stable$ from the fixed point set $\fix(\Phi)$.
+Here, we just note the substantive differences between the proofs.
 
-In the analysis for algorithm~\ref{mainalg}, we use the lattice meet for $\prealloc$, which we think of as a sublattice of $\mr^m$.
+In the analysis for algorithm~\ref{mainalg}, we think of $\prealloc$ as a sublattice of $\mr^m$.
 Thus, meet for this lattice is a pointwise minimum.
 For instance, we form new problems by setting $\pre = \min_{v_k \in \reach_j} \pre_k$.
-For finding stable matchings, every such minimum must be replaced by the lattice meet for $\lattice = 2^X \times 2^X$.
-Given a collection $\{(Z_i,W_i)\}_{i \in I} \sub 2^X \times 2^X$, the meet or greatest lower bound takes the form $\bigwedge_{i \in I} (Z_i,W_i) = \lft \bigcap_{i \in I} Z_i, \bigcup_{i \in I} W_i \rt $. 
+For finding all stable allocations, every such minimum must be replaced by the lattice meet for $\lattice = 2^X \times 2^X$.
+Given a collection $\{(Z_i,W_i)\}_{i \in I} \sub 2^X \times 2^X$, the meet, or greatest lower bound, takes the form $\bigwedge_{i \in I} (Z_i,W_i) = \lft \bigcap_{i \in I} Z_i, \bigcup_{i \in I} W_i \rt $. 
 
 Our termination analysis in lemma~\ref{lemma:termination} needs to be slightly modified. 
 For a set $E \sub 2^X \times 2^X$, define $\disto(E) = \max\limits_{(Z,W) \in E} \lft |Z| + |X \setminus W| \rt $ and $\distt(E) = \sum\limits_{(Z,W) \in E} \lft |Z| + |X \setminus W | \rt$.
 These functions are positive and take finitely many values on the lattice $2^X \times 2^X$.
-The rest of the analysis follows as before.
+Moreover, $\distt(\cdot)$ is additive on disjoint subsets of $2^X \times 2^X$.
+The rest of the termination analysis follows as before.
 
 Finally, as noted in the discussion above, there is an extra stopping condition in algorithm~\ref{mainalg} corresponding to the guarantee from lemma~\ref{lemma:order} that no two points $\pre, \pre' \in \fix(T^2)$ can be compared under $\peq$.
 In the analysis, we use this lemma to argue that $\fix(T) \cap \{\pre'' : \pre'' \pe \pre\} = \emptyset$ whenever $\pre \in \fix(T)$.
@@ -1549,13 +1549,7 @@ No such analysis is necessary for finding stable outcomes, because this stopping
 
 AGENDA
 Figure out inductive proof of guarantee
-
-
-consult with Scott on changing everything to general
-figure out how to prove guarantee on Q 
-    how to insert this in other work / which lemma
-p
-
+    which lemma to insert 
 
 write out stable allocation stuff 
     need to show that we can actually track all problems in Q
@@ -1664,25 +1658,7 @@ deal with this global tree and Q nonsense
 eff result that nothing is ever added twice
 maybe we should formally define a collision digraph 
 should I add rep Q to defn of a problem forest? 
-
 what additional eff gains do people care about? 
-
-AGENDA
-correctness is maintained - crucial 
-just prove that while loop terminates 
-look at internals of collision dynamics
-
-the reason is, we want consistency for redundant problems i.e. those problems that cannot have moved 
-
-\subsubsection{Discussion}
-As can be seen, the construction above is very general, requiring only that the fixed points we want to find are bounded by a lattice, and that we have a way to initialize new problems on sublattices whose solution sets bound the solution set of our original problem. 
-
-\section{Finding All Nash Equilibria in Games with Strategic Complements}
-\subsection{Model and Notation}
-
-
-
-
 
 \section{extra text} 
 
