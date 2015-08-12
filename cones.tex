@@ -1,10 +1,14 @@
 \documentclass[11pt,reqno]{amsart}
+
 \usepackage{amssymb,mathrsfs,color}
 \usepackage{pinlabel}
 \usepackage{graphicx}
 \usepackage{graphics} 
 \usepackage{algorithm}
 \usepackage{algorithmic}
+
+\usepackage{tikz}
+\usetikzlibrary{patterns}
 
 
 \graphicspath{ {c:/users/mcytrynbaum/documents/rfigures/} {c:/users/mcytrynbaum/Desktop/package/} }
@@ -411,10 +415,10 @@ For easy of visualization, consider the case $|A| = 2$. As noted previously, we 
 As above, we iterate $T^2$ to find $\toppre = \max \fix(T^2)$, which we identify, for instance, with the integer lattice point $(10,10) = \toppre$. 
 Using the notation above, there are isotone operators $S_1 = T_1^2$ and $S_2 = T_2^2$ corresponding to the subproblems $\lag \toppre - e_1 \rag$ and $\lag \toppre - e_2 \rag$, respectively. 
 
-Beginning with subproblem 1, suppose that $S_1 (9,10) = (8,10)$, $S_1^2 (9,10) = (7,10)$, and $S_1^3 (9,10) = (7,9)$.
+Beginning with subproblem 1, suppose that $S_1 (9,10) = (8,10)$, $S_1^2 (9,10) = (7,9)$, and $S_1^3 (9,10) = (7,9)$.
 By our arguments above, we now have a cone guarantee on the fixed points in the first subproblem; specifically, $\fix(T) \cap \{(x,y) \peq (9,10)\} \peq (7,9) \peq (10,9) = \toppre_2$.
 Therefore, $\fix(\toppre_1) = \fix(T) \cap \{(x,y) \peq (9,10)\} \sub \fix(T) \cap \{(x,y) \peq (10,9)\} = \fix(\toppre_2)$. 
-That is, the solutions to subproblem 1 - the fixed points of $T$ in $\{(x,y) \peq (9,10)\}$ - are \emph{contained} in the set of solutions to subproblem 2.  
+That is, the solutions to subproblem 1, the fixed points of $T$ in $\{(x,y) \peq (9,10)\}$, are \emph{contained} in the set of solutions to subproblem 2. 
 
 Now suppose that we stop working on subproblem 1 and begin iterating with $S_2$.
 Suppose that $S_2(10,9) = (10,6) = S_2^2(10,9)$, so the sequence stops.
@@ -423,12 +427,25 @@ However, by iterating $S_1$, we also learned that $\fix(\toppre_1) \peq (7,9)$.
 Then apparently $\fix(\toppre_1)$ is contained in the cone intersection $\{(x,y) \peq (7,9)\} \cap \{(x,y) \peq (10, 6)\} = \{(x,y) \peq (7,6) \}$. 
 That is, by \emph{combining the information} from subproblem 2 with subproblem 1, we have learned that $\fix(\toppre_1) \peq (7,6)$. 
 
-/
-
-////// INSERT FIGURE - standard 2-dim cone drawing  //////
-
-/
-
+\begin{tikzpicture}
+\draw[help lines] (0,0) grid (6,6);
+%\draw[fill] (5,6) circle [radius=0.05];
+%\draw[fill] (6,5) circle [radius=0.05];
+\draw[fill] (3,5) circle [radius=0.05];
+\draw[fill] (6,2) circle [radius=0.05];
+\draw[->, ultra thick] (5,6) to [out=180, in=70] (3,5);
+\draw[->, ultra thick] (6,5) to (6,2);
+\draw[darkgray, ultra thick] (0,6) -- (5,6) -- (5,0);
+\draw[darkgray, ultra thick] (0,5) -- (6,5) -- (6,0);
+\draw[blue] (0,5) -- (3,5) -- (3,0);
+\draw[blue] (0,2) -- (6,2) -- (6,0);
+\draw[pattern = dots, pattern color = blue] (0,5) rectangle (3,0);
+\draw[pattern = dots, pattern color = blue] (0,0) rectangle (6,2);
+\draw[pattern = north west lines, pattern color = green] (0,0) rectangle (3,2);
+\node[right] at (6,6) {(10,10)};
+\node[below right] at (3,5) {$S_1^2 \toppre_1$};
+\node[below right] at (6,2) {$S_2^2 \toppre_2$};
+\end{tikzpicture}
 Note that, even if we learn $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
 If, for instance, the outcome for subbproblem 2 was instead that $S_2(10,9) =  = (9,6) = S_2^2(10,9)$, then we would also know that $\fix(\toppre_2) \sub \fix(\toppre_1)$, so that $\fix(\toppre_2) \peq \min((9,6),(7,9)) = (7,6)$ and, in fact, $\fix(\toppre_1) = \fix(\toppre_2)$.
 The idea of equivalent subproblems is explored further in the next example. 
@@ -1674,6 +1691,7 @@ No such analysis is necessary for finding stable outcomes, because this stopping
 \emph{Remark}: Consider the worst case scenario where $\Phi_i: \lattice_i \to \lattice_i$ fixes at $\pairi = \max \lattice_i$ for every $(\botx, \boty) \peq \pairi \peq (\topx, \topy)$.
 If we were to initialize \emph{every} subproblem of the form $(X_i \setminus \{x\}, Y_i)$ and $(X_i, Y_i \cup \{y \})$, we would create $\lft |\topx| - |\botx| + |\boty|- |\topy|\rt !$ problems in total, whereas greedy search only needs to check $2^{|\topx| - |\botx| + |\boty|- |\topy|} $ points.
 However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
+
 
 
 
