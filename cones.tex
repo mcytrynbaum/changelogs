@@ -148,6 +148,24 @@
 \newcommand{\pairp}{(X',Y')}
 \newcommand{\pairpp}{(X'',Y'')}
 
+%%%% ALGORITHM CONTROLS
+\newcommand{infcombiniti}{(i)}
+\newcommand{infcombinitii}{(ii)}
+\newcommand{infcombinitiii}{(iii)}
+\newcommand{infcombgraph1}{(1)}
+\newcommand{infcombgraph2}{(2)}
+\newcommand{infcombgraph3}{(3)}
+\newcommand{infcombcomba}{(a)}
+
+\newcommand{infacred1}{(i)}
+\newcommand{infacred2}{(ii)}
+\newcommand{infacbstopa}{(a)}
+\newcommand{infacbstopb}{(b)}
+\newcommand{infacstop2i}{(i)}
+\newcommand{infacstop2ii}{(ii)}
+\newcommand{infacstop2iii}{(iii)}
+\newcommand{infacstop3a}{(a)}
+%%%%
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum and Scott Duke Kominers}
@@ -482,7 +500,7 @@ Since, in particular, the digraph has a directed edge $(v_i,v_j)$ only if $\fix(
 %\draw[help lines] (0,0) grid (6,6);
 \node[vertex] (a) at (0,1) {1};
 \node[vertex] (b) at (3,1){2};
-\node[vertex] (c) at (1,4){3};
+\node[vertex] (c) at (1.5,4){3};
 \node[vertex] (d) at (4,4){4};
 
 \draw[edge] (a) to[bend right] (b);
@@ -1652,7 +1670,7 @@ While $\acta \not = \emptyset$, do the following:
 For each $\pairi \in \acta$, compute the Tarski sequence $\Phi_i^k \pairi$ until a stopping condition (as above) is triggered for some $k = \ell$. 
 Set $\pairp = \Phi^{\ell}\pairi$, and do the following:
 \begin{itemize}
-\item[(a)] Add $w\pairp$ to $\forest$ with $c(w\pairp) = w\pairi$ and 
+\item[(a)] Add $w\pairp$ to $\forest$ with $c(w\pairp) = w\pairi$ 
 \item[(b)] Remove $\pairi$ from $\acta$. 
 \end{itemize}
 For stopping conditions\footnote{If both stopping conditions (\ref{cond:bottom}) and (\ref{cond:collide}) both occur, use condition (\ref{cond:bottom}): the problem has left the lattice $\fix(\Phi)$, so there is no reason to seek further information.} (\ref{cond:fix}) and (\ref{cond:collide}), do the following:
@@ -1738,8 +1756,109 @@ No such analysis is necessary for finding stable outcomes, because this stopping
 If we were to initialize \emph{every} subproblem of the form $(X_i \setminus \{x\}, Y_i)$ and $(X_i, Y_i \cup \{y \})$, we would create $\lft |\topx| - |\botx| + |\boty|- |\topy|\rt !$ problems in total, whereas greedy search only needs to check $2^{|\topx| - |\botx| + |\boty|- |\topy|} $ points.
 However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
 
+---------------
+---------------
+--------------
 
 
+\emph{Stopping Conditions}:
+As above, we let $\act$ be a collection of problems, which we think of as previously solved problems that still contain information useful for finding $\fix(T)$. 
+During the algorithm, for a problem $\lag \pre_i \rag $, we compute the Tarski sequence $(T_i^2)^k \pre_i$, $k \geq 0$. 
+Define the following stopping conditions for an element $ (T_i^2)^k \pre_i \equiv \pre'$ of this sequence.
+\begin{enumerate}
+\item $\pre' \peq \bopre$ \label{cond:bottom1}
+\item $T_i^2 \pre'= \pre'$ \label{cond:fix1}
+\item There exists $\pre_j\in \act$ with $\pre' \peq \pre_j$ and $\pre_i \not \peq \pre_j$ \label{cond:collide1}
+\end{enumerate}
+
+Condition~(\ref{cond:bottom1}) corresponds to the problem exiting the lattice $\fix(\Phi)$. 
+For Condition~(\ref{cond:fix1}), the Tarski sequence fixes, and we are forced to initialize new problems.
+For Condition~(\ref{cond:collide1}), the problem $\lag \pre_i \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
+
+\emph{Initialization} To initialize the algorithm, set $\fixfind = \emptyset$ and $F = (\emptyset,\emptyset)$. 
+Apply $T^2$ iteratively to each of $\pre^*$ and $\pre_*$, the maximal and minimal allocations in $\prealloc$, to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
+If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
+Similarly, if $T\bopre = \bopre$, then set $\fixfind = \{\bopre}\}$ and terminate. 
+Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, add $w(\pre - e_i)$ to $F$ as an isolated root, and run FindStrictCore. 
+
+\clearpage
+
+%%%%%%% CONTROLS
+%\newcommand{infacred1}{(i)}
+%\newcommand{infacred2}{(ii)}
+%\newcommand{infacbstopa}{(a)}
+%\newcommand{infacbstopb}{(b)}
+%\newcommand{infacstop2i}{(i)}
+%\newcommand{infacstop2ii}{(ii)}
+%\newcommand{infacstop2iii}{(iii)}
+%\newcommand{infacstop3a}{(a)}
+%\newcommand{infacstop3b}{(b)}
+%%%%%%%
+
+\begin{subroutine}[InformationAcquire] \label{sub:infac1}
+Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
+
+If $\pre_i \in \acto$ has either (i) $\pre_i \peq \bopre$ or (ii) there exists $\pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$, then remove $\pre_i$ from $\acta, \acto$, and $\act$.
+
+While $\acta \not = \emptyset$, do the following:
+
+For each $\pre_i \in \acta$, compute the Tarski sequence $(T_i^2)^k \pre_i$ until a stopping condition (as above) is triggered for some $k = \ell$. 
+Set $\pre' = (T_i^2)^{\ell}\pre_i$, and do the following:
+\begin{itemize}
+\item[(a)] Add $w(\pre')$ to $\forest$ with $c(w(\pre')) = w(\pre_i)$ 
+\item[(b)] Remove $\pre_i$ from $\acta$. 
+\end{itemize}
+For stopping conditions\footnote{If both stopping conditions (\ref{cond:bottom1}) and (\ref{cond:collide1}) both occur, use condition (\ref{cond:bottom1}): the problem has left the lattice $\fix(T^2)$, so there is no reason to seek further information.} (\ref{cond:fix1}) and (\ref{cond:collide1}), do the following:
+\begin{enumerate}
+\item[(\ref{cond:fix1})] (i) If $T \pre' = \pre'$ then add $\pre'$ to $\fixtemp$. 
+Else, (ii) for $1 \leq i \leq m$, add $\pre' - e_i$ to $\acto, \acta$, and $\act$ if $\pre' - e_i$ is not already in $\act$.
+Finally, (iii) for each problem $\pre''$ just added to $\acto$, add $w(\pre'')$ to $\forest$ as an isolated root.
+\item[(\ref{cond:collide1})] By assumption, condition~(\ref{cond:collide1}) was triggered by a ``collision'' with at least one problem $\pre_j \in \act$.
+For all such $j$, (a) add $\pre_i$ to $\actc$ and (b) add $j$ to the collision index set $\coll(i)$. 
+\end{enumerate}
+
+Return $(\actc, \coll, \fixtemp)$.
+\end{subroutine}
+
+%%%%%% CONTROLS
+%\newcommand{infcombiniti}{(i)}
+%\newcommand{infcombinitii}{(ii)}
+%\newcommand{infcombinitiii}{(iii)}
+%\newcommand{infcombgraph1}{(1)}
+%\newcommand{infcombgraph2}{(2)}
+%\newcommand{infcombgraph3}{(3)}
+%\newcommand{infcombcomba}{(a)}
+%\newcommand{infcombcombb}{(b)}
+%%%%%%
+
+\begin{subroutine}[InformationCombine] \label{sub:infcomb1}
+To initialize, form an empty digraph $G = (V,E)$ with $V = E = \emptyset$, set $\actt = \emptyset$, and add $i$ to $\coll(i)$ for each $\pre_i \in \acto$.
+Next, build the collision digraph as follows: 
+
+For each $\pre_i \in \acto$, (i) add $v_i$ to $V$, and for all collision indices $j \in \coll(i)$, (ii) compute $w_k = r(w_j)$ and (iii) add  $v_k$ to $V$ and $(v_i,v_k)$ to $E$. 
+Next, do the following computations with $G$:
+\begin{enumerate}
+\item Compute the strong components $\strongc$ of $G$.
+\item Remove $\{v_k \} \in \strongc$ if $\pre_k \not \in \acto$, leaving trimmed components $\{S_j\}_{j \in \mathcal{J}}$
+\item Compute the reachable set $\reach_j$ for each $\strongcomp_j$ with $j \in \mathcal{J}$.
+\end{enumerate}
+
+For each $j \in \mathcal{J}$, combine information to form new problems:
+
+\begin{itemize}
+\item[(a)] Add $\pre' = \min\limits_{v_k \in \reach_j} \pre_k$ to $\actt$. 
+\item[(b)] Add the vertex $w(\pre')$ to $\forest$ with $c(w(\pre')) = \{r(w_k): v_k \in \strongcomp_j\}$.
+\end{itemize}
+
+Reset $\coll(i) = \emptyset$ for $i \in \mathcal{I}$. 
+To check for new collisions, do the following:
+
+For each $\pre' \in \actt$, if $\exists \pre_k \in \act$ and $w_j \in c(w_i)$ such that $\pre' \peq \pre_k$ and $\pre_j \not \peq \pre_k$, then add collision index $k$ to $\coll(i)$.
+
+Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
+
+Return $(\acto, \coll)$.
+\end{subroutine}
 
 
 \subsubsection{Notes}
@@ -1747,8 +1866,6 @@ However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant proble
 AGENDA
 deal with some discussion / tune
 rewrite main algorithms / proofs and try to slim
-
-
 
 TODO-------
 add discussion sections, minus related literature
@@ -1762,18 +1879,12 @@ write bib
 (content)
 prove something about non-redundance to identify problems with lattice elements in a 1-1 way
 
-
 -------------
-
-
-
-
 
 modifications of lemmas and props for correctness of stable allocation proofs
     change all mins to meets
     need a way to value elements of a lattice to prove convergence 
     use the function on $2^x \times 2^X$ def by $\|(A,B) \| = |A| + |X \setminus B|$, has all required properties, and things work as before
-
 
 for scott 
     thoughts on rewriting in terms of a general lattice
@@ -1801,174 +1912,7 @@ link this with coarsening results
 keep full pseudocode for appendix
 
 
-
-
-for the induction - suffices to consider distinct states of $\acta$, because other state change indices are a subset // modulo changes that happen within for loop i.e. we look for changes up to for loop - this suffices
-    should be - each is contained in some active problem, below, weakly, so that set is not empty and not just equal to $\pre$ for $\pre - e$
-
-ok so 2 potential strats
-    only if you actually are an old cone 
-    if you cross an old cone 
-        note: dont want to track all union relations - try to still get single processing condition
-        that is - if your father is not in the cone but you are - this should also work, but does single processing? 
-        the issue is that removing if it touches a top point is less efficient / arb given our strategy above, but let's see if it works first 
-
-change setminus on $\acto$ - important 
-change root proof to root before processed? 
-can we stick with the single index thing? 
-rather than doing that, we just add problems $\pre_i$, where we may have $\pre_j = \pre_i$ for $j \not = i$, seems bad...
-add new statement to key tree lemma
-break decreasing cone statement off into definition of problem tree? 
-this gives a levels type of argument 
-formalize acto root statement
-prove a single-processing lemma 
-break digraph construction off into a visual lemma? 
-formalize acto root statement 
-first prove, then go correct disjointness assumption
-add note about roots after subroutine 1 
-look for errors based on assuming that sub2 runs directly after sub1
-add tree lemma references
-solve the tree issue
-ugh, we're not actually adding to root set in subroutine 2 
-Let's show that all modifications are of form
-    adding an element and joining root set elements to this as children 
-    clear by edge and connectedness criterion that this gives a forest of the required form 
-how do we know that active points are roots? - this also needs to be shown
-proof of problem forest
-make sure to prove this actually comes out as a tree - disjointness is the key part
-what is the full ind hyp I will need to prove construction 
-what form does the induction take / indices
-need to include indices in induction
-is there something super-formally wrong with doing induction like this? 
-add indices statement to proof tagline
-use equivalent condition for a tree that it is connected with n-1 vertices
-adding children who have no parents - should be fine 
-cut out some ugly things by resolving graph on the parents? 
-
-if j = r(i), then prej <  prek for k in I(i) [holds for any index set, always, and any referenced points 
-then correct construction from algorithm 1 states implies correct chain 
-can we do induction on states separately? 
-by inspection, clear that all of Q is represented on F
-
-add technical lemma about how each problem is only executed once - easy enough from removal arguments****
-add a formal rooted tree definition to forest 
-check rooted tree lemma 
-add a reference - graph theory and its applications gross, yellen
-maybe global vars help us with induction e.g. make qo global 
-see if we can build collision indices all in algo 1 
-note that some for loops can be reduced, still arbitrary
-show that pinv is an extension of child function 
-Explain why this infcomb stage is iterative 
-can you cross a new cone on collation iteration? 
-define intersection set properly
-prealloc notation is not exactly correct
-add something above about how the algorithm makes use of 4 geometric facts 
-add a note about complexity 
-add a note about novel things from above
-put in a max based removal step for Q
-add a note about how pref is well-defined 
-deal with this global tree and Q nonsense
-eff result that nothing is ever added twice
-maybe we should formally define a collision digraph 
-should I add rep Q to defn of a problem forest? 
-what additional eff gains do people care about? 
-
 \section{extra text} 
-
----------------trying to prove w(pref) has no up-edges in sub1 
-Since any such $\pre$ is processed at most once by the first statement of the lemma, by inspection the only possible addition of an edge to $\forest$ naming $\pre$ is of the form $(w(\pre^f),\pre)$ with $c(w(\pre^f)) = w(\pre)$.  
-We claim that no directed edge of the form $(w', w(\pre^f))$ is ever added to $\forest$ during the subroutine. 
-A directed edge $(w',w_j)$ is added only if $w_j \in \acto$ at some point during the algorithm. 
-Let $\pre \in \acto$ and $\pre_j = \pre^f$. 
-Then, by the monotonicity of the Tarski sequence for $\lag \pre \rag$, $\pre^f = \pre_j \peq \pre$.
-
-Specifically, we show that our algorithm also gives a faster method of finding all Nash equilibria in games with strategic complementarities (GSC), extending the original work in Echenqiue xxxxx.  
-We also show how a version of the cone geometry approach can be used to find all \emph{stable} matchings in the contracts model of Hatfield and Milgrom xxxx.  
-
-Note that the set of preallocations $\prealloc$ is a finite product set endowed with a product order.
-Thus, we can identify $\prealloc$ with a grid in Euclidena space, where, for instance, $\pre \in \prealloc$ corresponds to a point in $|A|$ dimensional Euclidean space with components given by the rank of $\pre(a)$ under the order $\su_a$. 
-
-Our approach is very general, relying only on the lattice structure of the problem and the ability to define subproblems whose solutions contain the original points of interest.  
-
-Therefore, by isotonicity of $T^2$, we have $T^4 \pre^* \pe \T^2 \pre^*$ and so on, so, by iterating $T^2$, we obtain a monotonically decreasing sequence, which, by finiteness of $\prealloc$ converges to a fixed point, which we call $\toppre$.
-By a standard argument \footnote{insert standard argument}, $\toppre$ is the largest fixed point 
-
-Fix $\acto^{0} = \acto$ at the beginning of 
-Since we only add points to $\acto$ in line~\ref{alg1:addq}, we have $\actacum = \actocum$. 
-By the proof above, $\acta = \emptyset$ when the subroutine terminates, so every $\pre \in \actacum$ is removed from $\acta$ at some point before termination.
-
-
-
-Finally, we show that the outer while loop at line~\ref{alg3:while1} terminates.
-Set $\acto^r \leftarrow InformationAcquire(\acto)$. 
-We claim that if $\acto \not = \emptyset$, then $d(\acto^r) < d(\acto)$. 
-Consider subroutine~\ref{infac} with input $\acto$. 
-Let $\actacum$ be the collection of points ever added to $\acta$ and similarly for $\actocum$, which includes the initial value of $\acto$. 
-We claim that no preallocation is ever added to $\acta$ more than once. 
-Equivalently, since $\acta = \emptyset$ when the algorithm terminates, every point in $\actacum$ is removed from $\acta$ exactly once. 
-Suppose not, and $\pre$ is added more than once. 
-Consider the first time $\pre$ is added. 
-If this is at line~\ref{alg1:add1}, then $\pre \in \acto \sub \act$.
-Otherwise, this is at line~\ref{alg1:addq}, so we also add $\pre$ to $\act$.
-Now consider the second time $\pre$ is added 
-Then $\pre$ is added at line~\ref{alg1:addq}, $\pre = \pre' - e_i$ for some $1 \leq i \leq m$.
-
-
-By work above, subroutine~\ref{infac} terminates.
-Note that the operations in the for loop at line~\ref{alg1:for2} is deterministic and the removal code at lines~\ref{alg1:stop1} and~\ref{alg1:stop2} is mutually exclusive. 
-
-\item For all $\pre_i \in \acto$, $w_i$ is a root of some tree in the forest.
-
-\item If $k \in \coll(i)$ for some $i \in \mathcal{I}$ and $w_j = r(w_i)$, then $\pre_j \peq \pre_k$ \label{lemma:coll}
-
-We show that $r(w_i) = w_i$. 
-To do this, we show a result about the structure of $\forest'$, which will also be useful for case 4. 
-
-Note first that, for any $\pre_{\ell} \in \actt$, we have $c(w_{\ell}) = \{r(w_k): v_k \in \strongcomp_j\}$ for some strong component $\strongcomp_j$. 
-By disjointness of $\{\strongcomp_j\}_{j \in \mathcal{J}}$, the sets of children $c(w_{\ell})$ above are disjoint for all indices $\ell$. %not totally correct
-Let $\forest'$ be the problem forest at the beginning of the for loop at line~\ref{alg2:for2}
-Then, during this loop, each $w_{\ell}$ is added as a root joining a collection of disjoint trees in $\forest'$. 
-Thus, $w_{\ell} \in \roott(F_n)$ for all $\pre_{\ell} \in \actt$, so this holdsfor $\ell = i$ in particular, and $r(w_i) = w_i$. 
-We have, by the case assumption, $\pre_i \peq \pre_j \in \act$ for some $j$, so  condition~(\ref{convlemma:coll}) holds for $j \in \coll(i)$. 
-Since the problem forest is unchanged, the conclusion for all other indices holds by the inductive hypothesis. 
-
-deal with case where w(pre) is already in 
-adding new? 
-how do we know we are actually adding a vertex not yet in the forest....
-same problem as above
-
-Moreover, by disjointness, adding $w(\pre_j)$ to $\forest$ does not change any of the other root sets $\{r(w_k): v_k \in \strongcomp_{j'}\}$ associated with components $\strongcomp_{j'} \not = \strongcomp_j$. 
-If an edge of the form $(w',w(\pre))$ is added during this process, then it must be that $w(\pre) \in \{r(w_k): v_k \in \strongcomp_{j'}\}$. 
-
-This is impossible, since the root set $\{r(w_k): v_k \in \strongcomp_{j'}\}$ is unchanged until 
-
-Fix $j' \not = j_1$, then, by disjointness of root sets $\{r(w_k): v_k \in \strongcomp_j\}$, adding $w(\pre_1)$ to $\forest'$ does not change any of the other root sets. 
-Assume inductively 
-
-$\{r(w_k): v_k \in \strongcomp_j\}$
-
-By construction, $w(\pre)$ is added as a root, since its children are all roots (as in lemma~\ref{lemma:forest}). 
-If $w(\pre) \not \in \roott(\forest'')$, then an edge of the form $(w',w(\pre))$ must have been added later during this for loop.  
-
-
-------- proof about well definition 
-We show that line~\ref{alg1:addq} above is well defined. 
-That is, if we add a problem $\pre_j = \pre - e_i$, it must \emph{not} be part of the forest already. 
-Suppose that this is not the case and $w_j \in \forest$ when we try to add it.
-Then we condition on when $w_j$ was added. 
-If $w_j$ was added during subroutine~\ref{infcomb}
-
-
------- need to figure out how to do this
-
-
-
-In the algorithm for finding all strict core allocations presented above, we relied on an embedding of preallocations $\prealloc$ into a lattice in $\mr^m$, say, where $m = |A|$.
-
-Here, we show that this Euclidean structure is not necessary and attempt to clarify the mathematical and economic aspects of the problem.
-
-Following the discussion in section~\ref{section:general}, we show how to define isotonic operators $\Phi_i$ on sublattices $\lattice_i \sub \lattice$ that satisfy the required fixed point guarantee. 
-
 
 
 \end{document}
