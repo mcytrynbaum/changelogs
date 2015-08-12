@@ -453,7 +453,7 @@ That is, by \emph{combining the information} from subproblem 2 with subproblem 1
 \draw[fill] (3,5) circle [radius=0.07];
 \draw[fill] (6,2) circle [radius=0.07];
 \end{tikzpicture}
-\caption{Combining Subproblem Information}
+\caption{Combining Subproblem Guarantees}
 \end{figure}
 
 Note that, even if we learn $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
@@ -474,10 +474,10 @@ Consider a digraph that tracks these collisions.
 Then this digraph has the form shown below, where subproblems correspond to vertices, and there is an edge $v_i \to v_j$ only if problem $i$ ``collides'' with problem $j$ (made precise below). 
 Since, in particular, the digraph has a directed edge $(v_i,v_j)$ only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
 
-\begin{figure}
+\begin{figure} \label{fig:digraph}
 \begin{tikzpicture}
 
-\tikzset{vertex/.style = {circle, fill =blue!25}}
+\tikzset{vertex/.style = {circle, fill =blue!20}}
 \tikzset{edge/.style = {->, thick}}
 %\draw[help lines] (0,0) grid (6,6);
 \node[vertex] (a) at (0,1) {1};
@@ -491,29 +491,6 @@ Since, in particular, the digraph has a directed edge $(v_i,v_j)$ only if $\fix(
 \draw[edge] (d) to (c);
 \end{tikzpicture}
 \caption{A Collision Digraph}
-\end{figure}
-
-\begin{figure}
-\begin{tikzpicture}
-\tikzset{vertex2/.style = {circle, fill =orange!30}}
-\tikzset{edge/.style = {->, thick}}
-
-\node[vertex2] (e) at (3,1);
-\node[vertex2] (f) at (2,3);
-\node[vertex2] (g) at (3,3);
-\node[vertex2] (h) at (4,3);
-
-\draw[edge] (e) to (f);
-\draw[edge] (e) to (g);
-\draw[edge] (e) to (h);
-
-\node[above = .12cm] at (f) {$w_1$};
-\node[above = .12cm] at (g) {$w_2$};
-\node[above = .12cm] at (h) {$w_3$};
-\node[below = .12cm] at (e) {$w(\pre')$};
-
-\end{tikzpicture}
-\caption{A Problem Forest}
 \end{figure}
 
 Suppose now that $\toppre$ is found at some intermediate step in the algorithm, and consider a distinct subproblem near $\toppre$ started at $\pre_4 = (11,11,11)$ with associated isotone operator $S$.
@@ -534,11 +511,28 @@ Then if at some step of the algorithm we obtain a guarantee that $\fix(\pre_j) \
 This dynamic gives our algorithm a ``Chutes and Ladders'' effect. 
 In particular, we make efficient use of both the geometric information shared between active problems and the information gained during previous steps of the algorithm. 
 
-/
+\begin{figure} \label{fig:forest} 
+\begin{tikzpicture}
+\tikzset{vertex2/.style = {circle, fill =orange!40}}
+\tikzset{edge/.style = {->, thick}}
 
-////// INSERT FIGURE - problem tree //////
+\node[vertex2] (e) at (3,1);
+\node[vertex2] (f) at (2,3);
+\node[vertex2] (g) at (3,3);
+\node[vertex2] (h) at (4,3);
 
-/
+\draw[edge] (e) to (f);
+\draw[edge] (e) to (g);
+\draw[edge] (e) to (h);
+
+\node[above = .12cm] at (f) {$w_1$};
+\node[above = .12cm] at (g) {$w_2$};
+\node[above = .12cm] at (h) {$w_3$};
+\node[below = .12cm] at (e) {$w(\pre')$};
+
+\end{tikzpicture}
+\caption{A Problem Forest}
+\end{figure}
 
 \subsubsection{Algorithm - Informal Description} 
 
@@ -1751,11 +1745,10 @@ However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant proble
 
 AGENDA
 add discussion sections, minus related literature
-get references
-draw figures 
 look up all related literature
+write bib
 rewrite algo and proofs using new index
-write in picture text after consulting with Scott
+prove something about non-redundance to identify problems with lattice elements in a 1-1 way
 
 modifications of lemmas and props for correctness of stable allocation proofs
     change all mins to meets
