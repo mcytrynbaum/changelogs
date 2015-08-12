@@ -8,6 +8,7 @@
 \usepackage{algorithmic}
 \usepackage{caption}
 \usepackage{tikz}
+\usepackage{xspace}
 
 
 \usetikzlibrary{patterns}
@@ -139,6 +140,7 @@
 \newcommand{\oper}{F}
 \newcommand{\point}{P}
 \newcommand{\lattice}{L}
+
 \newcommand{\topx}{\ol{X}}
 \newcommand{\topy}{\ol{Y}}
 \newcommand{\botx}{\ul{X}}
@@ -149,22 +151,22 @@
 \newcommand{\pairpp}{(X'',Y'')}
 
 %%%% ALGORITHM CONTROLS
-\newcommand{infcombiniti}{(i)}
-\newcommand{infcombinitii}{(ii)}
-\newcommand{infcombinitiii}{(iii)}
-\newcommand{infcombgraph1}{(1)}
-\newcommand{infcombgraph2}{(2)}
-\newcommand{infcombgraph3}{(3)}
-\newcommand{infcombcomba}{(a)}
+\newcommand{\infcombiniti}{(i)\xspace}
+\newcommand{\infcombinitii}{(ii)\xspace}
+\newcommand{\infcombinitiii}{(iii)\xspace}
+\newcommand{\infcombgraphi}{(1)\xspace}
+\newcommand{\infcombgraphii}{(2)\xspace}
+\newcommand{\infcombgraphiii}{(3)\xspace}
+\newcommand{\infcombcomba}{(a)\xspace}
 
-\newcommand{infacred1}{(i)}
-\newcommand{infacred2}{(ii)}
-\newcommand{infacbstopa}{(a)}
-\newcommand{infacbstopb}{(b)}
-\newcommand{infacstop2i}{(i)}
-\newcommand{infacstop2ii}{(ii)}
-\newcommand{infacstop2iii}{(iii)}
-\newcommand{infacstop3a}{(a)}
+\newcommand{\infacredi}{(i)\xspace}
+\newcommand{\infacredii}{(ii)\xspace}
+\newcommand{\infacbstopa}{(a)\xspace}
+\newcommand{\infacbstopb}{(b)\xspace}
+\newcommand{\infacstoptwi}{(i)\xspace}
+\newcommand{\infacstoptwii}{(ii)\xspace}
+\newcommand{\infacstoptwiii}{(iii)\xspace}
+\newcommand{\infacstoptha}{(a)\xspace}
 %%%%
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -628,104 +630,107 @@ After termination, we return to stage 1 with a new collection of active problems
 
 In general, we would like to spend as much time as possible in the information combination stage, since this stage improves the progress of the search for $\fix(T)$ by using fast\footnote{Tarjan's algorithm for finding strong components of a graph $G = (V,E)$ runs in $\mathcal{O}(|V| + |E|)$, for instance.} digraph algorithms, as opposed to the often costly process of computing the operator $T$, which is equivalent to checking whether a given allocation is strict core.  
 
-\subsubsection{Full Algorithm and Correctness} \label{fullalgo}
-In this section, we state the full algorithm and provide correctness proofs.
-First we define the main subroutines, which implement each of the stages discussed above.
-Throughout, we maintain global variables $\forest$, a rooted forest, and $\act$, a collection of preallocations corresponding to both active and inactive problem cones.
+\subsubsection{Full Algorithm} \label{fullalgo}
+In this section, we state the full algorithm to find all strict core allocations $\strcore$. 
+First, we need define some stopping conditions.
 
-To initialize the algorithm, set $\fixfind = \emptyset$ and $F = (\emptyset,\emptyset)$. 
+\emph{Stopping Conditions}:
+During the algorithm, for a problem $\lag \pre_i \rag $, we compute the Tarski sequence $(T_i^2)^k \pre_i$, $k \geq 0$. 
+Define the following stopping conditions for an element $ (T_i^2)^k \pre_i \equiv \pre'$ of this sequence.
+\begin{enumerate}
+\item $\pre' \peq \bopre$ \label{cond:bottom1}
+\item $T_i^2 \pre'= \pre'$ \label{cond:fix1}
+\item There exists $\pre_j\in \act$ with $\pre' \peq \pre_j$ and $\pre_i \not \peq \pre_j$ \label{cond:collide1}
+\end{enumerate}
+
+Condition~(\ref{cond:bottom1}) corresponds to the problem exiting the lattice $\fix(T^2)$. 
+For Condition~(\ref{cond:fix1}), the Tarski sequence fixes, and we are forced to initialize new problems.
+For Condition~(\ref{cond:collide1}), the problem $\lag \pre_i \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
+Throughout what follows, we maintain global variables $\forest$, a rooted forest, and $\act$, a collection of active and previously solved problems.
+
+\emph{Initialization} To initialize the algorithm, set $\fixfind = \emptyset$ and create an empty forest $F = (\emptyset,\emptyset)$. 
 Apply $T^2$ iteratively to each of $\pre^*$ and $\pre_*$, the maximal and minimal allocations in $\prealloc$, to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
 If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
-Similarly, if $T\ul{\pre} = \ul{\pre}$, then set $\fixfind = \{\ul{\pre}\}$ and terminate. 
-Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, add $w(\pre - e_i)$ to $F$ as an isolated root, and run FindStrictCore. 
-
+Similarly, if $T\bopre = \bopre$, then set $\fixfind = \{\bopre}\}$ and terminate. 
+Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, and add $w(\pre - e_i)$ to $F$ as an isolated root. Then, run FindStrictCore. 
 Subroutine details are given below.
- 
-\begin{algorithm}
-\caption{InformationAcquire - Subroutine for Stage 1}     
-\label{infac}
-\begin{algorithmic}[1]
-\REQUIRE $\acto$
-    \STATE Set $\acta \leftarrow \acto$ \label{alg1:add1}
-    \STATE Set $\fixtemp \leftarrow \emptyset$ and $\actc \leftarrow \emptyset$ and $\coll \leftarrow \emptyset$
-    \FOR{$\pre_i \in \acto$} \label{alg1:for1} 
-        \IF[Remove redundant problems]{$\exists \pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$ \OR $\pre_i \peq \min \fix(T^2)$}
-            \STATE Remove $\pre_j$ from $\acta$, $\acto$, and $\act$ \label{alg1:stop0} \label{alg1:redundant}
-        \ENDIF
-    \ENDFOR
-    \WHILE{$\acta \not = \emptyset$} \label{alg1:while1}
-        \FOR{$\pre_i \in \acta$} \label{alg1:for2}
-        \STATE $\pre \leftarrow \pre_i$
-            \WHILE{$\pre_i \in \acta$} 
-                \STATE Compute $\pre' = T_i^2 \pre$
-                \IF[Stopping conditions 1 and 3]{$\pre' \peq \bopre$ \OR $\pre' = \pre$}
-                    \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop1}
-                    \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$ \label{alg1:tree1}
-                    \IF[Stopping condition 2]{$T\pre = \pre$} 
-                        \STATE Add $\pre$ to $\fixtemp$
-                    \ELSIF{$\pre' = \pre$}
-                        \FOR{$i = 1$ to $m$}
-                            \IF[Add non-redundant problems]{$\nexists \pre'' \in \act$ with $\pre - e_i = \pre''$ } \label{alg1:redundant}
-                                \STATE Add $\pre - e_i$ to $\acto$, $\acta$, and $\act$ \label{alg1:addq}
-                                \STATE Add $w(\pre - e_i)$ to $\forest$ as an isolated root 
-                            \ENDIF
-                        \ENDFOR
-                    \ENDIF
-                \ELSE
-                    \FOR{$\pre_j \in Q$}
-                        \IF[Stopping condition 4]{$\pre' \peq \pre_j$ \AND $\pre_i \not \peq \pre_j$} \label{alg1:impact}
-                            \STATE Remove $\pre_i$ from $\acta$ \label{alg1:stop2}
-                            \STATE Set $\pref_i \leftarrow \pre'$; Add $w(\pref_i)$ to $F$ with $c(w(\pref_i)) = w(\pre_i)$  \label{alg1:tree2}
-                            \STATE Add $\pre_i$ to $\actc$; Add $j$ to $\coll(i)$ \COMMENT{Build collision indices} \label{alg1:coll}
-                        \ENDIF
-                    \ENDFOR
-                \ENDWHILE
-            \ENDIF
-        \ENDFOR
-    \ENDWHILE
-    \RETURN{$(\actc, \coll, \fixtemp)$} 
-\end{algorithmic}
-\end{algorithm}
 
+%%%%%%% CONTROLS
+%\newcommand{infacredi}{(i)}
+%\newcommand{infacredii}{(ii)}
+%\newcommand{infacbstopa}{(a)}
+%\newcommand{infacbstopb}{(b)}
+%\newcommand{infacstop2i}{(i)}
+%\newcommand{infacstop2ii}{(ii)}
+%\newcommand{infacstop2iii}{(iii)}
+%\newcommand{infacstop3a}{(a)}
+%\newcommand{infacstop3b}{(b)}
+%%%%%%%
 
-\begin{algorithm}
-\caption{InformationCombine - Subroutine for Stage 2}  
-\label{infcomb}
-\begin{algorithmic}[1]
-\REQUIRE $\acto$, $\coll$
-    \STATE Set $V = E = \emptyset$
-    \STATE Set $\actt = \emptyset$
-    \FOR[Build collision digraph]{$\pre_i \in \acto$}
-        \STATE Add $i$ to $\coll(i)$ \label{alg2:self_int}
-        \STATE Add $v_i$ to $V$ \label{alg2:selfref}
-        \FOR{$j \in \coll(i)$}
-            \STATE Compute $w_k = r(w_j)$ \label{alg2:rootbuild}
-            \STATE Add $v_k$ to $V$
-            \STATE Add $(v_i,v_k)$ to $E$ %no multi-edges - only add once
-        \ENDFOR
-    \ENDFOR
-    \STATE Set  $G = (V,E)$
-    \STATE Compute strong components $\strongc$  of $G$
-    \STATE Remove $\{v_k\}\in \strongc$ for $\pre_k \not \in \acto$, leaving components $\{S_j\}_{j \in \mathcal{J}}$ \label{alg2:cstrong}
-    \FOR[Use $G$ to combine information]{$j \in \mathcal{J}$} \label{alg2:for2}
-        \STATE Compute reachable component $\reach_j$ 
-        \STATE Compute indices $K_j = \{k \in \mathcal{I}: v_k \in \strongcomp_j\}$ \label{alg2:indices}
-        \STATE Set $\pre = \min_{k \in K_j} \pre_k$ and add to $\actt$
-        \STATE Add $w(\pre)$ to $F$ with $c(w(\pre)) = \{r(w_k): v_k \in \strongcomp_j\}$ \label{alg2:forest}
-    \ENDFOR
-    \STATE Set $\coll(i) = \emptyset$ for $i \in \mathcal{I}$
-    \FOR{$\pre_i \in \actt$} 
-        \FOR{$\pre_k \in Q$}
-            \IF{$\exists w_j \in c(w_i)$ s.t. $\pre_i \peq \pre_k$ \AND $\pre_j \not \peq \pre_k$} \label{alg2:collide}
-                \STATE Add $k$ to $\coll(i)$ \label{alg2:coll2} 
-            \ENDIF
-        \ENDFOR
-    \ENDFOR
-    \STATE Set $\acto \leftarrow \actt$ 
-    \STATE Set $\act \leftarrow \act \cup \actt$ \label{alg2:addq}
-\RETURN{$(\acto,\coll)$} 
-\end{algorithmic}
-\end{algorithm}
+\begin{subroutine}[InformationAcquire] \label{sub:infac}
+Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
+
+If $\pre_i \in \acto$ has either (i) $\pre_i \peq \bopre$ or (ii) there exists $\pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$, then remove $\pre_i$ from $\acta, \acto$, and $\act$.
+
+While $\acta \not = \emptyset$, do the following:
+
+For each $\pre_i \in \acta$, compute the Tarski sequence $(T_i^2)^k \pre_i$ until a stopping condition (as above) is triggered for some $k = \ell$. 
+Set $\pre' = (T_i^2)^{\ell}\pre_i$, and do the following:
+\begin{itemize}
+\item[(a)] Add $w(\pre')$ to $\forest$ with $c(w(\pre')) = w(\pre_i)$ 
+\item[(b)] Remove $\pre_i$ from $\acta$. 
+\end{itemize}
+For stopping conditions\footnote{If both stopping conditions (\ref{cond:bottom1}) and (\ref{cond:collide1}) both occur, use condition (\ref{cond:bottom1}): the problem has left the lattice $\fix(T^2)$, so there is no reason to seek further information.} (\ref{cond:fix1}) and (\ref{cond:collide1}), do the following:
+\begin{enumerate}
+\item[(\ref{cond:fix1})] (i) If $T \pre' = \pre'$ then add $\pre'$ to $\fixtemp$. 
+Else, (ii) for $1 \leq i \leq m$, add $\pre' - e_i$ to $\acto, \acta$, and $\act$ if $\pre' - e_i$ is not already in $\act$.
+Finally, (iii) for each problem $\pre''$ just added to $\acto$, add $w(\pre'')$ to $\forest$ as an isolated root.
+\item[(\ref{cond:collide1})] By assumption, condition~(\ref{cond:collide1}) was triggered by a ``collision'' with at least one problem $\pre_j \in \act$.
+For all such $j$, (a) add $\pre_i$ to $\actc$ and (b) add $j$ to the collision index set $\coll(i)$. 
+\end{enumerate}
+
+Return $(\actc, \coll, \fixtemp)$.
+\end{subroutine}
+
+%%%%%% CONTROLS
+%\newcommand{infcombiniti}{(i)}
+%\newcommand{infcombinitii}{(ii)}
+%\newcommand{infcombinitiii}{(iii)}
+%\newcommand{infcombgraphi}{(i)}
+%\newcommand{infcombgraphii}{(ii)}
+%\newcommand{infcombgraphiii}{(iii)}
+%\newcommand{infcombcomba}{(a)}
+%\newcommand{infcombcombb}{(b)}
+%%%%%%
+
+\begin{subroutine}[InformationCombine] \label{sub:infcomb}
+To initialize, form an empty digraph $G = (V,E)$ with $V = E = \emptyset$, set $\actt = \emptyset$, and add $i$ to $\coll(i)$ for each $\pre_i \in \acto$.
+Next, build the collision digraph as follows: 
+
+For each $\pre_i \in \acto$, (i) add $v_i$ to $V$, and for all collision indices $j \in \coll(i)$, (ii) compute $w_k = r(w_j)$ and (iii) add  $v_k$ to $V$ and $(v_i,v_k)$ to $E$. 
+Next, do the following computations with $G$:
+\begin{enumerate}
+\item Compute the strong components $\strongc$ of $G$.
+\item Remove $\{v_k \} \in \strongc$ if $\pre_k \not \in \acto$, leaving trimmed components $\{S_j\}_{j \in \mathcal{J}}$
+\item Compute the reachable set $\reach_j$ for each $\strongcomp_j$ with $j \in \mathcal{J}$.
+\end{enumerate}
+
+For each $j \in \mathcal{J}$, combine information to form new problems:
+
+\begin{itemize}
+\item[(a)] Add $\pre' = \min\limits_{v_k \in \reach_j} \pre_k$ to $\actt$. 
+\item[(b)] Add the vertex $w(\pre')$ to $\forest$ with $c(w(\pre')) = \{r(w_k): v_k \in \strongcomp_j\}$.
+\end{itemize}
+
+Reset $\coll(i) = \emptyset$ for $i \in \mathcal{I}$. 
+To check for new collisions, do the following:
+
+For each $\pre' \in \actt$, if $\exists \pre_k \in \act$ and $w_j \in c(w_i)$ such that $\pre' \peq \pre_k$ and $\pre_j \not \peq \pre_k$, then add collision index $k$ to $\coll(i)$.
+
+Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
+
+Return $(\acto, \coll)$.
+\end{subroutine}
 
 \begin{algorithm} 
 \caption{FindStrictCore} 
@@ -876,26 +881,26 @@ Before proving our key result, we show an auxillary lemma about the relationship
 Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once in subroutine 1.
 Moreover, the following statements are true: 
 \begin{enumerate}
-\item If $\forest$ is a problem forest when subroutine~\ref{infac} is initialized, then the set $\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
-\item If $\acto$ is returned from subroutine~\ref{infcomb}, then $w(\pre) \in \roott(\forest)$ for each $\pre \in \acto$. \label{lemma:roots:comb}
+\item If $\forest$ is a problem forest when subroutine~\ref{sub:infac} is initialized, then the set $\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
+\item If $\acto$ is returned from subroutine~\ref{sub:infcomb}, then $w(\pre) \in \roott(\forest)$ for each $\pre \in \acto$. \label{lemma:roots:comb}
 \end{enumerate}
 \end{lemma}
 \prf 
 
 The first statement is a simple observation.
 If $\pre_i$ is processed more than once, then $\pre_i$ is added to $\acta$ more than once during the algorithm . 
-Since $\acta \sub \acto$, and elements are \emph{only added} (never removed) to $\acto$ after processing begins at line~\ref{alg1:while1}, then $\pre_i \in \acto$ when it is added to $\acta$ the second time. 
+Since $\acta \sub \acto$, and elements are \emph{only added} (never removed) to $\acto$ after redundancy checks \infacredi and \infacredii, then $\pre_i \in \acto$ when it is added to $\acta$ the second time. 
 But we check for redundancy before we add a program in line~\ref{alg1:addq}, so this is impossible. 
 Then any distinct preallocation is processed at most once. 
 
-For the other lemma statements, we work by induction on $\ell$, the total number of evaluations of subroutines~\ref{infac} and \ref{infcomb}. 
+For the other lemma statements, we work by induction on $\ell$, the total number of evaluations of subroutines~\ref{sub:infac} and \ref{sub:infcomb}. 
 For $\ell = 0$ the statements are trivially true. 
 Then assume that (1) and (2) above hold up to $\ell = n \geq 0$. 
 There are several cases. 
 Throughout, let $(\acto',\forest')$ and $(\acto'',\forest'')$ denote the states of $(\acto,\forest)$ at initialization and return, respectively, of the subroutine that finishes at $\ell = n + 1$.  
 
 \emph{Case 1}: InformationAcquire (subroutine 1) returns at $\ell = n + 1$. 
-Note that subroutine~\ref{infac} is called either directly after initialization or after evaluation of subroutine~\ref{infcomb}. 
+Note that subroutine~\ref{sub:infac} is called either directly after initialization or after evaluation of subroutine~\ref{sub:infcomb}. 
 $\forest''$ is obtained from $\forest'$ by adding vertices and edges satisfying the conditions of lemma~\ref{lemma:forest}. 
 Then, by the lemma, $\forest''$ is also a rooted forest.
 If subroutine 1 directly follows initialization of FindStrictCore, clearly $w(\pre) \in \roott(\forest')$ for $\pre \in \acto'$ by construction.
@@ -928,7 +933,7 @@ By lemma~\ref{lemma:forest} again, $\depth(w_i, \forest) \geq \depth(w_i, \fores
 Then $\pre_i$ is never in $\acto$ during the algorithm, since we showed that, for any $\pre_i \in \acto$, $w_i \in \roott(\forest)$ at some point during the algorithm. 
 This completes the proof for this case.
 
-\emph{Case 2}: Subroutine~\ref{infcomb} returns at $\ell = n +1$ after subroutine~\ref{infac} returns at $\ell = n$. 
+\emph{Case 2}: Subroutine~\ref{sub:infcomb} returns at $\ell = n +1$ after subroutine~\ref{sub:infac} returns at $\ell = n$. 
 We will show that $w(\pre) \in \roott(\forest'')$ for all $\pre$ in the set of returned problems $\actt$.
 Let $G = (V,E)$ be the collision digraph formed during this subroutine.
 By definition, the strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$ of $G$ retained after removing irrelevant singletons (at line~\ref{alg2:cstrong}) are disjoint. 
@@ -950,8 +955,8 @@ In particular, for any $\pre \in \actt$, $w(\pre) \not \in \forest'$ at the begi
 Then no edge of the form $(w', w(\pre))$ is ever added during this procedure. 
 This shows that each added vertex $w(\pre)$ is \emph{still a root} in $\forest''$, when the subroutine returns, so we have shown (\ref{lemma:roots:comb}) above for this case. 
 
-\emph{Case 3}: Subroutine~\ref{infcomb} returns at $\ell = n +1$ after subroutine~\ref{infcomb} returns at $\ell = n$.
-By the inductive hypothesis for problems returned from subroutine~\ref{infcomb}, all inputs $\pre \in \acto'$ to subroutine~\ref{infcomb} at $\ell = n + 1$ have $w(\pre) \in \roott(\forest')$.
+\emph{Case 3}: Subroutine~\ref{sub:infcomb} returns at $\ell = n +1$ after subroutine~\ref{sub:infcomb} returns at $\ell = n$.
+By the inductive hypothesis for problems returned from subroutine~\ref{sub:infcomb}, all inputs $\pre \in \acto'$ to subroutine~\ref{sub:infcomb} at $\ell = n + 1$ have $w(\pre) \in \roott(\forest')$.
 Then $R(\forest',j) = \{r(w_k): v_k \in S_j\} = \{w_k: v_k \in S_j\}$. 
 Then the root sets are disjoint in this case as well, by disjointness of strong components.
 The inductive argument from case 2 then establishes~(\ref{lemma:roots:comb}) above for this case as well. 
@@ -970,7 +975,7 @@ Then assume by induction that the statements above hold for $\pair_k$ up to $k =
 By an abuse of notation, we will denote components of $\pair_k$ as $\forest_k$ and $\coll_k$ when the meaning is clear.
 We consider separately each case where the pair $\pair$ can change.
 
-\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{infac} when stopping condition (1) or (2) is triggered, and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree1}). 
+\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{sub:infac} when stopping condition (1) or (2) is triggered, and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree1}). 
 Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of InformationAcquire (subroutine 1).
 From lemma~\ref{lemma:roots}, we know that (i) for any distinct preallocation $\pre$, the problem $\lag \pre \rag$ is processed (the Tarski sequence evaluated) at most once.
 Moreover, the lemma also shows that (ii) any $\pre \in \acto'$ has $w(\pre) \in \roott(\forest')$ and, from the proof of this lemma, (iii) any $\pre$ added to $\acto$ during the subroutine has $w(\pre) \in \roott(\forest)$ before $\pre$ is processed. 
@@ -998,7 +1003,7 @@ But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$ in $\forest_n$.
 Case (1) of the proof of lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
 Then condition~(\ref{convlemma:coll}) holds as well, and we are done.
 
-\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{infac} during processing of $\pre_i$, where stopping condition (4) is triggered and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree2}). 
+\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, where stopping condition (4) is triggered and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree2}). 
 By the exact same arguments as in case 1, $F_{n + 1}$ remains a problem forest after this modification. 
 We need only check item~(\ref{convlemma:coll}) of the inductive hypothesis above.
 $\coll_n(i) = \emptyset$ because $I = \emptyset$ at initialization, and each preallocation is processed at most once by lemma~\ref{lemma:roots}.
@@ -1011,7 +1016,7 @@ If $\ell \not = i$, then we have $\coll_n(\ell) = \coll_{n + 1}(\ell)$.
 In this case, condition~(\ref{convlemma:coll}) holds by the argument at the end of case (1).
 Then we have shown that condition~(\ref{convlemma:coll}) holds for the pair $\pair_{n + 1}$, and we are done. 
 
-\emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{infac} during processing of $\pre_i$, when stopping condition (3) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root (line~\ref{alg1:addq}). 
+\emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, when stopping condition (3) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root (line~\ref{alg1:addq}). 
 We denote $\pre_i - e_j = \pre_k$.
 That $\forest_{n + 1}$ is still a rooted forest is immediate from lemma~\ref{lemma:forest}, since the new vertex is isolated.
 No edges are added, so no new parent or child relations are added. 
@@ -1021,13 +1026,13 @@ If $\ell \not = k$, then, because no edge is added to the graph, $r(w_{\ell})$ i
 If $\ell = k$, then $\coll(i) = \emptyset$, so the condition is trivially true. 
 We have shown (1) and (2) hold for $\pair_{n + 1}$, so we are done.
 
-\emph{Case 4} Before constructing the collision digraph in subroutine~\ref{infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
+\emph{Case 4} Before constructing the collision digraph in subroutine~\ref{sub:infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
 Then $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Let $r(w_i) = w_k$, so, by induction, $\fix(\pre_i) = \fix(\pre_k)$. 
 In particular, $\fix(\pre_k) \sub \fix(\pre_i)$ for the index $i \in \coll(i)$, so condition~(\ref{convlemma:coll}) holds automatically.
 Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:coll}) follows for other indices by the inductive hypothesis.
 
-\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{infcomb} (line~\ref{alg2:forest}).
+\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{sub:infcomb} (line~\ref{alg2:forest}).
 Note that $\coll_n = \coll_{n + 1}$. 
 By construction (on line~\ref{alg2:forest}), we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
 
@@ -1054,7 +1059,7 @@ Then it must be that $p(w_j) = w(\pre)$; for instance, by lemma~\ref{lemma:fores
 Then by lemma~\ref{lemma:forest2}, we have $\fix(\pre) = \fix(\pre_j) \sub \fix(\pre_{k'})$, where we use the inductive hypothesis in the subset relation, so condition~(\ref{convlemma:coll}) still holds for $\pair_{n+1}$. 
 This finishes the proof for this case.
 
-\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
+\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{sub:infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
 Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
 Let $r(w_i) = w_k$.
@@ -1072,9 +1077,9 @@ FindStrictCore terminates in finite time
 For any set $E \sub \prealloc$, define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|$ is the standard 1-norm .}.
 Similarly, let $\distt(E) = \sum_{\pre \in E} \|\pre\|_1$.
 Note that by finiteness, both $\disto(\cdot)$ and $\distt(\cdot)$ take finitely many values on subsets of $\prealloc$.
-First, we show that, for any problem collection $\acto$, InformationAcquire (subroutine~\ref{infac}) terminates in finitely many iterations.
+First, we show that, for any problem collection $\acto$, InformationAcquire (subroutine~\ref{sub:infac}) terminates in finitely many iterations.
 
-Consider the sequence $\actak$ formed by distinct states of $\acta$ during subroutine~\ref{infac}.
+Consider the sequence $\actak$ formed by distinct states of $\acta$ during subroutine~\ref{sub:infac}.
 Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some problem $\pre$, then clearly $\disto(\acta^{k+1}) \leq \disto(\actak)$.
 By inspection, all changes to $\acta$ are of this form, except when we add new problems after triggering stopping condition (3) (line~\ref{alg1:addq}).
 For this state change, note that $\|\pre\|_1 > \max\limits_{i = 1,\hdots,m} \|\pre - e_i\|$, so, in fact, if $\acta^{k+1} = \actak \setminus \{\pre\} \cup \lft \bigcup_{i =1}^m \{\pre - e_i \} \rt$ then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
@@ -1090,7 +1095,7 @@ For any $k$, consider $\actak$ at the top of the processing loop (line~\ref{alg1
 Then $\pre'' \in \actak$, so, for at least one iteration of the loop, $\disto(\actak)$ decreases strictly.
 Since $\disto(\actak)$ converges in finite iterations, the subroutine's while loop (line~\ref{alg1:while1}) is runs for finitely many iterations, so the subroutine terminates.
 
-Since all inputs are finite, subroutine~\ref{infcomb} clearly terminates in finite time.
+Since all inputs are finite, subroutine~\ref{sub:infcomb} clearly terminates in finite time.
 
 Next, we show that the information combination stage of FindStrictCore terminates.
 Consider distinct states of $\acto$ returned by InformationCombine, which form a sequence $\actok$, during the inner while loop of FindStrictCore (line~\ref{alg3:while2}).
@@ -1126,10 +1131,10 @@ Then, as noted above, we have $\{i\} = \{j: \pre_j \in p\inv(\pre_i)\} \supseteq
 This shows that the information combination stage of the algorithm terminates.
 That is, every sequence of executions of InformationCombine (subroutine 2) is finite.
 
-We have shown that the sequence $\disto(\actok)$ is monotonically decreasing during the information combination stage (the second while loop in FindStrictCore) as well as during a single evaluation of InformationAcquire (subroutine~\ref{infac}).
+We have shown that the sequence $\disto(\actok)$ is monotonically decreasing during the information combination stage (the second while loop in FindStrictCore) as well as during a single evaluation of InformationAcquire (subroutine~\ref{sub:infac}).
 Then the sequence $\disto(\actok)$ formed by distinct states of $\acto$ at \emph{any time} during FindStrictCore is monotonically decreasing.  
 We complete the termination proof by showing that $\disto(\acto)$ decreases strictly at \emph{least once} during a single iteration of the outer while loop of FindStrictCore.
-Consider evaluating subroutine~\ref{infac} with input $\acto$. 
+Consider evaluating subroutine~\ref{sub:infac} with input $\acto$. 
 
 \emph{Case 1}: The collection $\actc$ returned by the subroutine is empty.
 Note that, by inspection, $\acto \not = \emptyset$. 
@@ -1141,8 +1146,8 @@ In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we
 Note that, for all such $\pre_i \in \actc$, we add $w(\pre_i^f) = p(w_i)$ (line~\ref{alg1:tree2}), so that $r(p(w_i)) = r(w(\pre_i^f))$.
 Then $r(w_i) = r(w(\pre_i^f))$, which we denote by $r(w_i) = w_k$.
 
-The algorithm returns $\acto' \equiv \actc$ which is an input for subroutine~\ref{infcomb}.
-In subroutine~\ref{infcomb}, we form strong components of the collision digraph $G = (V,E)$. 
+The algorithm returns $\acto' \equiv \actc$ which is an input for subroutine~\ref{sub:infcomb}.
+In subroutine~\ref{sub:infcomb}, we form strong components of the collision digraph $G = (V,E)$. 
 Suppose that $W_j$ is the strong component containing $v_i$.
 We add $i$ to $\coll(i)$ before forming the edges of $G$, so $(v_i,v_k) \in E$.
 Then $v_k \in \reach_j$, the reachable set of strong component $\strongcomp_j$. 
@@ -1759,107 +1764,6 @@ However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant proble
 ---------------
 ---------------
 --------------
-
-
-\emph{Stopping Conditions}:
-As above, we let $\act$ be a collection of problems, which we think of as previously solved problems that still contain information useful for finding $\fix(T)$. 
-During the algorithm, for a problem $\lag \pre_i \rag $, we compute the Tarski sequence $(T_i^2)^k \pre_i$, $k \geq 0$. 
-Define the following stopping conditions for an element $ (T_i^2)^k \pre_i \equiv \pre'$ of this sequence.
-\begin{enumerate}
-\item $\pre' \peq \bopre$ \label{cond:bottom1}
-\item $T_i^2 \pre'= \pre'$ \label{cond:fix1}
-\item There exists $\pre_j\in \act$ with $\pre' \peq \pre_j$ and $\pre_i \not \peq \pre_j$ \label{cond:collide1}
-\end{enumerate}
-
-Condition~(\ref{cond:bottom1}) corresponds to the problem exiting the lattice $\fix(\Phi)$. 
-For Condition~(\ref{cond:fix1}), the Tarski sequence fixes, and we are forced to initialize new problems.
-For Condition~(\ref{cond:collide1}), the problem $\lag \pre_i \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
-
-\emph{Initialization} To initialize the algorithm, set $\fixfind = \emptyset$ and $F = (\emptyset,\emptyset)$. 
-Apply $T^2$ iteratively to each of $\pre^*$ and $\pre_*$, the maximal and minimal allocations in $\prealloc$, to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
-If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
-Similarly, if $T\bopre = \bopre$, then set $\fixfind = \{\bopre}\}$ and terminate. 
-Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, add $w(\pre - e_i)$ to $F$ as an isolated root, and run FindStrictCore. 
-
-\clearpage
-
-%%%%%%% CONTROLS
-%\newcommand{infacred1}{(i)}
-%\newcommand{infacred2}{(ii)}
-%\newcommand{infacbstopa}{(a)}
-%\newcommand{infacbstopb}{(b)}
-%\newcommand{infacstop2i}{(i)}
-%\newcommand{infacstop2ii}{(ii)}
-%\newcommand{infacstop2iii}{(iii)}
-%\newcommand{infacstop3a}{(a)}
-%\newcommand{infacstop3b}{(b)}
-%%%%%%%
-
-\begin{subroutine}[InformationAcquire] \label{sub:infac1}
-Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
-
-If $\pre_i \in \acto$ has either (i) $\pre_i \peq \bopre$ or (ii) there exists $\pre_j \in \acto$ s.t. $\pre_i \pe \pre_j$, then remove $\pre_i$ from $\acta, \acto$, and $\act$.
-
-While $\acta \not = \emptyset$, do the following:
-
-For each $\pre_i \in \acta$, compute the Tarski sequence $(T_i^2)^k \pre_i$ until a stopping condition (as above) is triggered for some $k = \ell$. 
-Set $\pre' = (T_i^2)^{\ell}\pre_i$, and do the following:
-\begin{itemize}
-\item[(a)] Add $w(\pre')$ to $\forest$ with $c(w(\pre')) = w(\pre_i)$ 
-\item[(b)] Remove $\pre_i$ from $\acta$. 
-\end{itemize}
-For stopping conditions\footnote{If both stopping conditions (\ref{cond:bottom1}) and (\ref{cond:collide1}) both occur, use condition (\ref{cond:bottom1}): the problem has left the lattice $\fix(T^2)$, so there is no reason to seek further information.} (\ref{cond:fix1}) and (\ref{cond:collide1}), do the following:
-\begin{enumerate}
-\item[(\ref{cond:fix1})] (i) If $T \pre' = \pre'$ then add $\pre'$ to $\fixtemp$. 
-Else, (ii) for $1 \leq i \leq m$, add $\pre' - e_i$ to $\acto, \acta$, and $\act$ if $\pre' - e_i$ is not already in $\act$.
-Finally, (iii) for each problem $\pre''$ just added to $\acto$, add $w(\pre'')$ to $\forest$ as an isolated root.
-\item[(\ref{cond:collide1})] By assumption, condition~(\ref{cond:collide1}) was triggered by a ``collision'' with at least one problem $\pre_j \in \act$.
-For all such $j$, (a) add $\pre_i$ to $\actc$ and (b) add $j$ to the collision index set $\coll(i)$. 
-\end{enumerate}
-
-Return $(\actc, \coll, \fixtemp)$.
-\end{subroutine}
-
-%%%%%% CONTROLS
-%\newcommand{infcombiniti}{(i)}
-%\newcommand{infcombinitii}{(ii)}
-%\newcommand{infcombinitiii}{(iii)}
-%\newcommand{infcombgraph1}{(1)}
-%\newcommand{infcombgraph2}{(2)}
-%\newcommand{infcombgraph3}{(3)}
-%\newcommand{infcombcomba}{(a)}
-%\newcommand{infcombcombb}{(b)}
-%%%%%%
-
-\begin{subroutine}[InformationCombine] \label{sub:infcomb1}
-To initialize, form an empty digraph $G = (V,E)$ with $V = E = \emptyset$, set $\actt = \emptyset$, and add $i$ to $\coll(i)$ for each $\pre_i \in \acto$.
-Next, build the collision digraph as follows: 
-
-For each $\pre_i \in \acto$, (i) add $v_i$ to $V$, and for all collision indices $j \in \coll(i)$, (ii) compute $w_k = r(w_j)$ and (iii) add  $v_k$ to $V$ and $(v_i,v_k)$ to $E$. 
-Next, do the following computations with $G$:
-\begin{enumerate}
-\item Compute the strong components $\strongc$ of $G$.
-\item Remove $\{v_k \} \in \strongc$ if $\pre_k \not \in \acto$, leaving trimmed components $\{S_j\}_{j \in \mathcal{J}}$
-\item Compute the reachable set $\reach_j$ for each $\strongcomp_j$ with $j \in \mathcal{J}$.
-\end{enumerate}
-
-For each $j \in \mathcal{J}$, combine information to form new problems:
-
-\begin{itemize}
-\item[(a)] Add $\pre' = \min\limits_{v_k \in \reach_j} \pre_k$ to $\actt$. 
-\item[(b)] Add the vertex $w(\pre')$ to $\forest$ with $c(w(\pre')) = \{r(w_k): v_k \in \strongcomp_j\}$.
-\end{itemize}
-
-Reset $\coll(i) = \emptyset$ for $i \in \mathcal{I}$. 
-To check for new collisions, do the following:
-
-For each $\pre' \in \actt$, if $\exists \pre_k \in \act$ and $w_j \in c(w_i)$ such that $\pre' \peq \pre_k$ and $\pre_j \not \peq \pre_k$, then add collision index $k$ to $\coll(i)$.
-
-Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
-
-Return $(\acto, \coll)$.
-\end{subroutine}
-
 
 \subsubsection{Notes}
 
