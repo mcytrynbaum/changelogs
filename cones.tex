@@ -453,7 +453,7 @@ That is, by \emph{combining the information} from subproblem 2 with subproblem 1
 \draw[fill] (3,5) circle [radius=0.07];
 \draw[fill] (6,2) circle [radius=0.07];
 \end{tikzpicture}
-\caption{Combining Subproblem Guarantees}
+\caption{Combining Guarantees on Subproblem Cones}
 \end{figure}
 
 Note that, even if we learn $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
@@ -709,8 +709,9 @@ Subroutine details are given below.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm} \label{mainalg}
+\begin{algorithm} 
 \caption{FindStrictCore} 
+\label{alg:main}
 \begin{algorithmic}[1]
 \REQUIRE $\acto$
     \STATE Initialize as above
@@ -1639,7 +1640,7 @@ Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in fini
 Add each of these to the fixed point collection $\fixfind$.
 For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$, and add the vertex $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
 Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$, and add the vertex $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
-Then run algorithm~\ref{mainalg}, where we modify the subroutines InformationAcquire (subroutine 1) and InformationCombine (subroutine 2) as shown below.
+Then run algorithm~\ref{alg:main}, where we modify the subroutines InformationAcquire (subroutine 1) and InformationCombine (subroutine 2) as shown below.
 
 \begin{subroutine}[InformationAcquire] \label{sub:infac2}
 Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
@@ -1695,13 +1696,13 @@ Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
 Return $(\acto, \coll)$.
 \end{subroutine}
 
-\emph{Discussion}: We briefly note the substantive differences between this algorithm and algorithm~\ref{mainalg} for finding all strict core outcomes.
-Here, when forming new problems during InformationCombine, we replace the pointwise minima used in algorithm~\ref{mainalg} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
+\emph{Discussion}: We briefly note the substantive differences between this algorithm and algorithm~\ref{alg:main} for finding all strict core outcomes.
+Here, when forming new problems during InformationCombine, we replace the pointwise minima used in algorithm~\ref{alg:main} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
 For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second, as shown above.
 Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is \emph{not constant}.
 This is necessary because $2^X \times 2^X$ has a less regular structure than the Euclidean lattice $\prealloc$ used in section~\ref{section:strcore}.
 Finally, for stable allocations, there is no equivalent of lemma~\ref{lemma:order}, since $\fix(\Phi)$ are fixed points of an isotone (not antitone) operator. 
-Thus, after finding $(Z,W) \in \fix(\Phi)$, we still have to search the lattice $\{\pairp \pe (Z,W) \}$ strictly below $(Z,W)$, whereas, for algorithm~\ref{mainalg}, lemma~\ref{lemma:order} shows that we can stop immediately.
+Thus, after finding $(Z,W) \in \fix(\Phi)$, we still have to search the lattice $\{\pairp \pe (Z,W) \}$ strictly below $(Z,W)$, whereas, for algorithm~\ref{alg:main}, lemma~\ref{lemma:order} shows that we can stop immediately.
 Because of this, subroutine~\ref{sub:infac2} has one fewer distinct stopping condition.
 Otherwise, the algorithm is structurally identical, with slightly different notation.
 
@@ -1716,7 +1717,7 @@ In particular, $\{Z \cap W: (Z,W) \in \fixfind\} = \stable$, so the algorithm fi
 This is a straightforward extension of the auxillary lemmas and correctness proof provided above, using lemma~\ref{lemma:hk} from Hatfield and Kominers to get all of $\stable$ from the fixed point set $\fix(\Phi)$.
 Here, we just note the substantive differences between the proofs.
 
-In the analysis for algorithm~\ref{mainalg}, we think of $\prealloc$ as a sublattice of $\mr^m$.
+In the analysis for algorithm~\ref{alg:main}, we think of $\prealloc$ as a sublattice of $\mr^m$.
 Thus, meet for this lattice is a pointwise minimum.
 For instance, we form new problems by setting $\pre = \min_{v_k \in \reach_j} \pre_k$.
 For finding all stable allocations, every such minimum must be replaced by the lattice meet for $\lattice = 2^X \times 2^X$.
@@ -1728,7 +1729,7 @@ These functions are positive and take finitely many values on the lattice $2^X \
 Moreover, $\distt(\cdot)$ is additive on disjoint subsets of $2^X \times 2^X$.
 The rest of the termination analysis follows as before.
 
-Finally, as noted in the discussion above, there is an extra stopping condition in algorithm~\ref{mainalg} corresponding to the guarantee from lemma~\ref{lemma:order} that no two points $\pre, \pre' \in \fix(T^2)$ can be compared under $\peq$.
+Finally, as noted in the discussion above, there is an extra stopping condition in algorithm~\ref{alg:main} corresponding to the guarantee from lemma~\ref{lemma:order} that no two points $\pre, \pre' \in \fix(T^2)$ can be compared under $\peq$.
 In the analysis, we use this lemma to argue that $\fix(T) \cap \{\pre'' : \pre'' \pe \pre\} = \emptyset$ whenever $\pre \in \fix(T)$.
 No such analysis is necessary for finding stable outcomes, because this stopping condition is not used.
 \eprf
@@ -1744,11 +1745,29 @@ However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant proble
 \subsubsection{Notes}
 
 AGENDA
+deal with some discussion / tune
+rewrite main algorithms / proofs and try to slim
+
+
+
+TODO-------
 add discussion sections, minus related literature
+    beginning of strcore
+    exploiting lattice geometry
+rewrite algo and proofs using new index
+
 look up all related literature
 write bib
-rewrite algo and proofs using new index
+
+(content)
 prove something about non-redundance to identify problems with lattice elements in a 1-1 way
+
+
+-------------
+
+
+
+
 
 modifications of lemmas and props for correctness of stable allocation proofs
     change all mins to meets
@@ -1760,6 +1779,7 @@ for scott
     thoughts on rewriting in terms of a general lattice
     thoughts on presenting modified proof versions that are just different in a couple of lines
     sub preferences and core equivalences - a remark on our maximal domain result
+    discussion of figures 
 
 
 
