@@ -6,8 +6,10 @@
 \usepackage{graphics} 
 \usepackage{algorithm}
 \usepackage{algorithmic}
-
+\usepackage{caption}
 \usepackage{tikz}
+
+
 \usetikzlibrary{patterns}
 
 
@@ -427,27 +429,35 @@ However, by iterating $S_1$, we also learned that $\fix(\toppre_1) \peq (7,9)$.
 Then apparently $\fix(\toppre_1)$ is contained in the cone intersection $\{(x,y) \peq (7,9)\} \cap \{(x,y) \peq (10, 6)\} = \{(x,y) \peq (7,6) \}$. 
 That is, by \emph{combining the information} from subproblem 2 with subproblem 1, we have learned that $\fix(\toppre_1) \peq (7,6)$. 
 
+\begin{figure} \label{fig:rectangles}
 \begin{tikzpicture}
 \draw[help lines] (0,0) grid (6,6);
 %\draw[fill] (5,6) circle [radius=0.05];
 %\draw[fill] (6,5) circle [radius=0.05];
-\draw[fill] (3,5) circle [radius=0.05];
-\draw[fill] (6,2) circle [radius=0.05];
-\draw[->, ultra thick] (5,6) to [out=180, in=70] (3,5);
-\draw[->, ultra thick] (6,5) to (6,2);
+\draw[purple,->, ultra thick] (5,6) to [out=180, in=70] (3,5);
+\draw[purple,->, ultra thick, bend left] (6,5) to (6,2);
 \draw[darkgray, ultra thick] (0,6) -- (5,6) -- (5,0);
 \draw[darkgray, ultra thick] (0,5) -- (6,5) -- (6,0);
 \draw[blue] (0,5) -- (3,5) -- (3,0);
 \draw[blue] (0,2) -- (6,2) -- (6,0);
-\draw[pattern = dots, pattern color = blue] (0,5) rectangle (3,0);
-\draw[pattern = dots, pattern color = blue] (0,0) rectangle (6,2);
+\draw[pattern = dots, pattern color = blue] (0,5) rectangle (3,2);
+\draw[pattern = dots, pattern color = blue] (3,0) rectangle (6,2);
 \draw[pattern = north west lines, pattern color = green] (0,0) rectangle (3,2);
-\node[right] at (6,6) {(10,10)};
+\node[above right] at (6,6) {(10,10)};
+\node[above right] at (3,2) {(7,6)};
+\node[above] at (5,6) {$\toppre_1$};
+\node[right] at (6,5) {$\toppre_2$};
 \node[below right] at (3,5) {$S_1^2 \toppre_1$};
 \node[below right] at (6,2) {$S_2^2 \toppre_2$};
+\draw[fill] (3,2) circle [radius=0.07];
+\draw[fill] (3,5) circle [radius=0.07];
+\draw[fill] (6,2) circle [radius=0.07];
 \end{tikzpicture}
+\caption{Combining Subproblem Information}
+\end{figure}
+
 Note that, even if we learn $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
-If, for instance, the outcome for subbproblem 2 was instead that $S_2(10,9) =  = (9,6) = S_2^2(10,9)$, then we would also know that $\fix(\toppre_2) \sub \fix(\toppre_1)$, so that $\fix(\toppre_2) \peq \min((9,6),(7,9)) = (7,6)$ and, in fact, $\fix(\toppre_1) = \fix(\toppre_2)$.
+If, for instance, the outcome for subbproblem 2 was instead that $S_2(10,9) =  (9,6) = S_2^2(10,9)$, then we would also know that $\fix(\toppre_2) \sub \fix(\toppre_1)$, so that $\fix(\toppre_2) \peq \min((9,6),(7,9)) = (7,6)$ and, in fact, $\fix(\toppre_1) = \fix(\toppre_2)$.
 The idea of equivalent subproblems is explored further in the next example. 
 
 \subsubsection{Example 2 - Chutes and Ladders}
@@ -457,37 +467,78 @@ After initializing subproblems at $(9,10,10)$, $(10,9,10)$ and $(10,10,9)$, supp
 As argued above, this shows that $\fix(\toppre_1) \peq (9,8,10) \peq (10,9,10) = \toppre_2$, so that $\fix(\toppre_1) \sub \fix(\toppre_2)$. 
 Similarly, our calculations with $S_2$ and $S_3$ show that $\fix(\toppre_2) \sub \fix(\toppre_3)$ and $\fix(\toppre_3) \sub \fix(\toppre_1)$. 
 Combining all these relations, apparently $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq (9,8,7)$, so the subproblems are equivalent.  
-Thus, we can collapse all of these subproblems to a new subproblem started at $\pre_4 = (9,8,7)$ \emph{without losing any fixed points} of the original operator $T$. 
+Thus, we can collapse all of these subproblems to a new subproblem started at $\pre' = (9,8,7)$ \emph{without losing any fixed points} of the original operator $T$. 
 
 We have seen that collisions between subproblem cones give information relations of the form $\fix(\toppre_i) \sub \fix(\toppre_j)$ regarding the fixed points of $T$.
 Consider a digraph that tracks these collisions.
 Then this digraph has the form shown below, where subproblems correspond to vertices, and there is an edge $v_i \to v_j$ only if problem $i$ ``collides'' with problem $j$ (made precise below). 
 Since, in particular, the digraph has a directed edge $(v_i,v_j)$ only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
 
-/
+\begin{figure}
+\begin{tikzpicture}
 
-////// INSERT FIGURE - collision digraph and problem tree //////
+\tikzset{vertex/.style = {circle, fill =blue!25}}
+\tikzset{edge/.style = {->, thick}}
+%\draw[help lines] (0,0) grid (6,6);
+\node[vertex] (a) at (0,1) {1};
+\node[vertex] (b) at (3,1){2};
+\node[vertex] (c) at (1,4){3};
+\node[vertex] (d) at (4,4){4};
 
-/
+\draw[edge] (a) to[bend right] (b);
+\draw[edge] (b) to (c);
+\draw[edge] (c) to (a);
+\draw[edge] (d) to (c);
+\end{tikzpicture}
+\caption{A Collision Digraph}
+\end{figure}
 
+\begin{figure}
+\begin{tikzpicture}
+\tikzset{vertex2/.style = {circle, fill =orange!30}}
+\tikzset{edge/.style = {->, thick}}
 
-Suppose now that $\toppre$ is found at some intermediate step in the algorithm, and consider a distinct subproblem near $\toppre$ started at $\pre = (11,11,11)$ with associated isotone operator $S$.
-We begin iterating and find that $S \pre = (10,10,8)$, which shows $\fix(\pre) \sub \fix(\toppre_3)$ 
-Then a \emph{single iteration} of $S$ has shown us that $\fix(\pre) \sub \fix(\toppre_3) \peq (9,8,7)$, using the relations above. 
-Of course, the same conclusion would hold if we found that  $S \pre \peq \toppre_i$ for any $i$. 
+\node[vertex2] (e) at (3,1);
+\node[vertex2] (f) at (2,3);
+\node[vertex2] (g) at (3,3);
+\node[vertex2] (h) at (4,3);
 
-We know that $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq \pre_4$. 
-We can track these subproblem relations efficiently with a collection of rooted trees as follows: let $1,2,3$ be children of $4$, which we denote by $c(4) = \{1,2,3\}$.
-Using the notation in the previous section, we have the root-vertex relation $r(i) = 4$ for $i = 1,2,3$. 
-By an abuse of notation, we will similarly write e.g. $r(\toppre_1) = \pre_4$. 
-By our construction, we have $\fix(\toppre_i) \sub \fix(r(\toppre_i))$ for all $i$. 
+\draw[edge] (e) to (f);
+\draw[edge] (e) to (g);
+\draw[edge] (e) to (h);
+
+\node[above = .12cm] at (f) {$w_1$};
+\node[above = .12cm] at (g) {$w_2$};
+\node[above = .12cm] at (h) {$w_3$};
+\node[below = .12cm] at (e) {$w(\pre')$};
+
+\end{tikzpicture}
+\caption{A Problem Forest}
+\end{figure}
+
+Suppose now that $\toppre$ is found at some intermediate step in the algorithm, and consider a distinct subproblem near $\toppre$ started at $\pre_4 = (11,11,11)$ with associated isotone operator $S$.
+We begin iterating and find that $S(\pre_4) = (10,10,8)$, which shows $\fix(\pre_4) \sub \fix(\toppre_3)$ 
+Then a \emph{single iteration} of $S$ has shown us that $\fix(\pre_4) \sub \fix(\toppre_3) \peq (9,8,7) = \pre'$, using the relations above. 
+Of course, the same conclusion would hold if we found that  $S(\pre_4) \peq \toppre_i$ for any $i$. 
+
+We know that $\fix(\toppre_1) = \fix(\toppre_2) = \fix(\toppre_3) \peq \pre'$. 
+We can track these subproblem relations efficiently with a collection of rooted trees as follows: let vertices $w_1,w_2,w_3$ be children of $w(\pre')$, a vertex representing $\pre' = (9,8,7)$. 
+We denote this relationship by $c(w(\pre')) = \{w_1,w_2,w_3\}$.
+Using the notation in the previous section, we have the root-vertex relation $r(w_i) = w(\pre')$ for $i = 1,2,3$. 
+Note that, by our work above, we have $\fix(\pre') = \fix(\toppre_i)$ for all $w_i \in c(w(\pre'))$. 
 Also, $\fix(\toppre_i) = \fix(\toppre_j)$ for all $i,j$ children of the same node. 
 
-Suppose we maintain a collection of trees for which nodes, roots, and children are all related in this way. 
-Consider a solved subproblem $\lag \pre_i \rag$ with $r(\pre_i) = \pre_k$; that is, $k$ is the root of $i$ in our problem tree.
+Suppose we maintain a collection of trees for which parent nodes and child nodes are all related in this way. 
+Consider a solved subproblem $\lag \pre_i \rag$ with $r(w_i) = w_k$.
 Then if at some step of the algorithm we obtain a guarantee that $\fix(\pre_j) \sub \fix(\pre_i)$ for an active subproblem $\lag \pre_j \rag$, the relations built into our problem tree imply that, in fact, $\fix(\pre_j) \sub \fix(\pre_k)$, potentially \emph{skipping a large region of lattice space} that we would otherwise have to search for elements of $\fix(T)$. 
 This dynamic gives our algorithm a ``Chutes and Ladders'' effect. 
-In particular, we make efficient use of both the geometric information shared between active problems as well as the information gained during previous steps of the algorithm. 
+In particular, we make efficient use of both the geometric information shared between active problems and the information gained during previous steps of the algorithm. 
+
+/
+
+////// INSERT FIGURE - problem tree //////
+
+/
 
 \subsubsection{Algorithm - Informal Description} 
 
@@ -1704,17 +1755,7 @@ get references
 draw figures 
 look up all related literature
 rewrite algo and proofs using new index
-
-
-Figure out inductive proof of guarantee
-    which lemma to insert 
-
-write out stable allocation stuff 
-    need to show that we can actually track all problems in Q
-    figure out how chains work in this setting
-        is there a relevant result e.g. about exp decrease?
-    write out algorithm with Echenique style / more concise 
-    possibly add a guarantee on doing better than greedy search
+write in picture text after consulting with Scott
 
 modifications of lemmas and props for correctness of stable allocation proofs
     change all mins to meets
