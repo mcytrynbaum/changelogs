@@ -176,6 +176,15 @@
 \begin{document}
 \maketitle
 
+\section{Introduction}
+
+In this paper, we extend the algorithm pioneered in Echenique and Yenmez to find \emph{all} strict core allocations in a highly general model of multilateral many-to-many matching with contracts.
+We show that, as in the case of matching with preferences over colleagues, strict core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
+Our main contribution is to show that the original algorithm does not take full advantage of the geometric relationships implied by the problem's lattice structure.
+We develop a notion of ``information sharing'' in lattices, construct and prove correctness for an algorithm that implements this idea, and show how this approach may be extended to a wider class of economic problems for which there is a complete lattice structure. 
+To conclude, we restrict our attention to two-sided many-to-many matching with contracts with substitutable preferences, showing how information sharing may be used to find \emph{all} stable allocations.
+
+\subsection{Notation}
 We consider a finite set of contracts $X$, each of which is associated with at least one agent $a\in A$. 
 We call a subset $Y\sub X$ an \emph{allocation}, and let $2^X$ denote the set of all allocations. 
 Let $d(x)$ be the set agents associated with a contract $x\in X$, and extend this definition to allocations by writing $d(Y) \equiv \bigcup_{y\in Y} d(y)$.
@@ -187,10 +196,10 @@ Let $\su_a$ denote the strict preference relation induced by these utility funct
 
 Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
 
-\section{Finding All Strict Core Matchings} \label{section:strcore}
-Talk about Echenique's contribution and what we are going to do, strict core is equivalent to...
-Note how incredibly general our construction is - multilateral discrete matching in networks, essentially no structure, fully manipulates lattice structure of strict core matchings.   
-\subsection{Model and Notation}
+\section{Characterizing Strict Core Allocations} \label{section:strcore}
+In this section, we show how strict core allocations can be characterized as the fixed points of an antitone operator on a certain complete lattice.
+
+\subsection{Model}
 We construct an appropriate framework in which to generalize the fixed point construction in Echenique and Yenmez. 
 We start by generalizing the classical notion of a \emph{prematching}. 
 
@@ -316,7 +325,8 @@ Combining these lemmas, we see that searching for strict core allocations in a v
 Our algorithm depends heavily on this result, which shows, critically, that the fixed points $\fix(T)$ are only as dense in $\prealloc$ as the strict core outcomes.
 
 Our maximal domain results will show that this is not the case for the natural extension of this method to \emph{true} core outcomes $\core$.
-For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations. 
+For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations (see lemma~\ref{lemma:core}). 
+
 \subsection{The Lattice of Fixed Preallocations}
 In this section, we generalize constructions from Echenqiue and Yenmez showing the the fixed points of the squared operator $T^2$ form a lattice. 
 First, we define a natural partial order on the set of preallocations $\prealloc$.
@@ -348,21 +358,17 @@ No two preallocations $\pre$ and $\pre'$ can be compared under the partial order
 There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \suq \pre \suq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
 \end{lemma}
 
-\subsection{Exploiting Lattice Geometry to Find All Strict Core Allocations}
-\subsubsection{Introduction}
+\section{Sharing Information to Find All Strict Core Allocations}
+\subsection{Introduction}
 In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
 Our algorithm builds upon the original approach in Echenique and Yenmez xxxxx.
-Modifying this paper's original algorithm, we show how to fully exploit the geometric structure of the problem to efficiently find the full set of strict core matchings. 
+In particular, we show how to fully exploit the problem's complete lattice structure to more efficiently find the full set of strict core matchings. 
 
 At a basic level, the algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
-Our contribution is to realize that many of the subproblems created while searching the lattice $\fix(T^2)$ share geometric information with other subproblems.
-Using cone geometry, we show how to efficiently combine this shared information to more quickly identify the full set of strict core matchings. 
+Our main contribution is to realize that many of the subproblems created while searching the lattice $\fix(T^2)$ share geometric information with other subproblems.
+We show how fast digraph algorithms may be used to combine shared information and more quickly identify the full set of strict core matchings. 
 
-From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether or not a specific allocation $Y$ is in the strict core.
-This operation can be very costly even in classical matching models\footnote{add some concrete complexity reference}.
-Our algorithm attempts to minimize the number of evaluations of $T^2$ by using lattice geometry to combine the information from related subproblems. 
-
-\subsubsection{Notation and Intuition} \label{section:description1}
+\subsection{Notation and Intuition} \label{section:description1}
 Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
 That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for each $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
@@ -455,8 +461,8 @@ That is, by \emph{combining the information} from subproblem 2 with subproblem 1
 \draw[help lines] (0,0) grid (6,6);
 %\draw[fill] (5,6) circle [radius=0.05];
 %\draw[fill] (6,5) circle [radius=0.05];
-\draw[purple,->, ultra thick] (5,6) to [out=180, in=70] (3,5);
-\draw[purple,->, ultra thick, bend left] (6,5) to (6,2);
+\draw[orange,->, ultra thick] (5,6) to [out=180, in=70] (3,5);
+\draw[orange,->, ultra thick, bend left] (6,5) to (6,2);
 \draw[darkgray, ultra thick] (0,6) -- (5,6) -- (5,0);
 \draw[darkgray, ultra thick] (0,5) -- (6,5) -- (6,0);
 \draw[blue] (0,5) -- (3,5) -- (3,0);
@@ -555,7 +561,7 @@ In particular, we make efficient use of both the geometric information shared be
 \caption{A Problem Forest}
 \end{figure}
 
-\subsubsection{Algorithm - Informal Description} 
+\subsection{Informal Algorithm Description} 
 
 In this section, we introduce notation and give a brief, intuitive explanation of the full algorithm, building on the examples above.
 Pseudocode and correctness proofs for the full algorithm follow. 
@@ -631,9 +637,9 @@ After termination, we return to stage 1 with a new collection of active problems
 
 In general, we would like to spend as much time as possible in the information combination stage, since this stage improves the progress of the search for $\fix(T)$ by using fast\footnote{Tarjan's algorithm for finding strong components of a graph $G = (V,E)$ runs in $\mathcal{O}(|V| + |E|)$, for instance.} digraph algorithms, as opposed to the often costly process of computing the operator $T$, which is equivalent to checking whether a given allocation is strict core.  
 
-\subsubsection{Full Algorithm} \label{fullalgo}
+\subsection{Full Algorithm} \label{fullalgo}
 In this section, we state the full algorithm to find all strict core allocations $\strcore$. 
-First, we need define some stopping conditions.
+First, we need to define some stopping conditions.
 
 \emph{Stopping Conditions}:
 During the algorithm, for a problem $\lag \pre_i \rag $, we compute the Tarski sequence $(T_i^2)^k \pre_i$, $k \geq 0$. 
@@ -645,7 +651,7 @@ Define the following stopping conditions for an element $ (T_i^2)^k \pre_i \equi
 \end{enumerate}
 
 Condition~(\ref{cond:bottom1}) corresponds to the problem exiting the lattice $\fix(T^2)$. 
-For Condition~(\ref{cond:fix1}), the Tarski sequence fixes, and we are forced to initialize new problems.
+For Condition~(\ref{cond:fix1}), the Tarski sequence fixes.
 For Condition~(\ref{cond:collide1}), the problem $\lag \pre_i \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
 Throughout what follows, we maintain global variables $\forest$, a rooted forest, and $\act$, a collection of active and previously solved problems.
 
@@ -656,8 +662,23 @@ Similarly, if $T\bopre = \bopre$, then set $\fixfind = \{\bopre}\}$ and terminat
 Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, and add $w(\pre - e_i)$ to $F$ as an isolated root. Then, run FindStrictCore. 
 Subroutine details are given below.
 
-\clearpage
-
+\begin{algorithm} 
+\caption{FindStrictCore} 
+\label{alg:main}
+\begin{algorithmic}[1]
+\REQUIRE $\acto$
+    \STATE Initialize as above
+    \STATE Set $\fixfind = \emptyset$
+    \WHILE{$\acto \not = \emptyset$} \label{alg3:while1}
+        \STATE $(\acto, \coll, \fixtemp) \leftarrow InformationAcquire(\acto)$ 
+        \STATE $\fixfind = \fixfind \cup \fixtemp$
+        \WHILE{$\coll \not = \emptyset$} \label{alg3:while2}
+            \STATE $(\acto,\coll) \leftarrow InformationCombine(\acto,\coll)$ 
+        \ENDWHILE
+    \ENDWHILE
+\RETURN $\fixfind$
+\end{algorithmic}
+\end{algorithm}
 
 %%%%%%% CONTROLS
 %\newcommand{infacredi}{(i)}
@@ -736,25 +757,7 @@ Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
 Return $(\acto, \coll)$.
 \end{subroutine}
 
-\begin{algorithm} 
-\caption{FindStrictCore} 
-\label{alg:main}
-\begin{algorithmic}[1]
-\REQUIRE $\acto$
-    \STATE Initialize as above
-    \STATE Set $\fixfind = \emptyset$
-    \WHILE{$\acto \not = \emptyset$} \label{alg3:while1}
-        \STATE $(\acto, \coll, \fixtemp) \leftarrow InformationAcquire(\acto)$ 
-        \STATE $\fixfind = \fixfind \cup \fixtemp$
-        \WHILE{$\coll \not = \emptyset$} \label{alg3:while2}
-            \STATE $(\acto,\coll) \leftarrow InformationCombine(\acto,\coll)$ 
-        \ENDWHILE
-    \ENDWHILE
-\RETURN $\fixfind$
-\end{algorithmic}
-\end{algorithm}
-
-\subsubsection{Algorithm Analysis}
+\subsection{Algorithm Analysis}
 
 In this section, we show termination and correctness of FindStrictCore.
 Along the way, we prove structure theorems for the collision digraph and problem forest defined above.
@@ -769,7 +772,7 @@ At any point during the execution of FindStrictCore
 \end{enumerate}
 \end{lemma}
 
-Before proving lemma~\ref{lemma:key}, we give definitions, some needed auxillary lemmas, and a structure result for the collision digraph $G$. 
+Before proving lemma~\ref{lemma:key}, we give definitions, some needed auxiliary lemmas, and a structure result for the collision digraph $G$. 
 
 For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
@@ -1279,13 +1282,16 @@ Then $\fixfind = \fix(T)$.
 That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations. 
 \eprf
 
-\emph{Discussion}: Note that, given $\pre = \pre_Y \in \fixfind$, we have $Y = \bigcup_{a \in A} Y_a = \bigcup_{a \in A} \pre(a)$, so the allocation corresponding to $\pre$ can be found by taking a union.
+\subsubsection{Discussion} 
+Note that, given $\pre = \pre_Y \in \fixfind$, we have $Y = \bigcup_{a \in A} Y_a = \bigcup_{a \in A} \pre(a)$, so the allocation corresponding to $\pre$ can be found by taking a union.
 The performance of the algorithm for a given problem instance depends on the exact structure of the lattice $\fix(T^2)$.
 For instance, it could be that by stopping a Tarski sequence $(T^2)^k \pre$ before it converges and running InformationCombine, we miss some $\pre'$ in the sequence for which $T^2 \pre' \pe \bopre$, showing that $\fix(\pre) = \emptyset$. 
-In particular, our algorithm and the original Echenique and Yenmez algorithm are incommensurable. 
+In particular, FindStrictCore and the original Echenique and Yenmez algorithm are incommensurable. 
 Our algorithm uses the heuristic that evaluation of the $T$ operator is very costly, and we prefer to make progress through the lattice by using fast graph algorithms to share information between problems whenever this is possible. 
 
-\subsubsection{Extension to True Core Allocations} It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of true core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
+\section{Maximal Domain Results and Generalizations} 
+\subsection{True Core Allocations}
+It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of true core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
 Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
 For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered in the original paper by Echenique and Yenmez\footnote{something about other examples of this xxxx}.
 
@@ -1328,7 +1334,7 @@ Even more problematically, this fact shows that the monotonically decreasing Tar
 
 The following example shows that the structure results for the operator $T$, which the fixed point approach crucially relies on, may fail for the operator $\optwo$ even for the the setting of two-sided matching with bilateral contracts.
 
-\begin{prop}
+\begin{prop} \label{prop:maxdom}
 The operator $\optwo$ may not be antitone.
 The squared operator $\optwo^2$ may not be isotone.
 $\optwo$ may fix uncoordinated preallocations; that is, $\fix(\optwo) \not \sub \coordpre$.
@@ -1359,12 +1365,13 @@ Finally, $ \{(s_2,b)\} \in \pre''(b)$, but $\{(s_2,b)\} \not \in \pre''(s_2)$, s
 However, we have shown that $\optwo(\pre'') = \pre''$, so $\fix(\optwo) \not \sub \coordpre$.
 \eprf
 
-\emph{Discussion}: These results, and the previous remark, show that the fixed point approach to finding all core allocations is doomed to fail on the lattice $\prealloc$.
+\subsubsection{Discussion} 
+These results, and the previous remark, show that the fixed point approach to finding all core allocations is doomed to fail on the lattice $\prealloc$.
 Similar negative results can be shown, for instance, for an operator $\opthree: \prealloc \to \prealloc$ associated with the set of all stable matchings $\stable$.
 Our results do not prove, however, that there is no fixed point method for finding all true core allocations $\core$ on \emph{any lattice}.
 Indeed, our construction of an algorithm to find all stable matchings relies on adapting the approach for $\strcore$ above to a lattice and partial order more appropriate for this solution concept. 
 
-\subsubsection{Generalized Information Sharing and Applications} \label{section:general}
+\subsection{Generalized Information Sharing and Applications} \label{section:general}
 In this section, we briefly describe how the notion of information sharing and the collision digraph algorithm developed above can be extended to similar economic problems on more general complete lattices.
 This extension is the basis of our algorithm for finding all stable allocations. 
 We also show how information sharing may be used to find Nash equilibria in games with strategic complementarities (GSC), extending Echenique (2003).
@@ -1375,7 +1382,8 @@ Let $\oper: \lattice \to \lattice$ be isotonic with $\point \sub \fix(\oper)$; t
 Note that for any $x_i \in \lattice$, where $i$ is some index, the cone $\{x' \in \lattice: x' \peq x_i\} \equiv \lattice_i \sub L$ is also a complete lattice.
 Suppose that an isotone operator $F_i : \lattice_i \to \lattice_i$ can be defined for each such sublattice.
 
-\emph{Fixed Point Guarantees}: To complete the construction, we need to assume some economic structure. 
+\subsubsection{Fixed Point Guarantees} 
+To complete the construction, we need to assume some economic structure. 
 Specifically, suppose that we can show $\fix(\oper)$ satisfies $\fix(\oper) \cap \lattice_i \sub \fix(\oper^i)$ (E).
 Guarantees of this form are surprisingly common in economics.
 For the problem of finding $\fix(T) \sub \prealloc$, this guarantee is given by lemma~\ref{lemma:contain}, which holds because truncating agents' preference profiles shrinks the set of available blocking allocations.
@@ -1384,7 +1392,7 @@ For finding stable allocations, the guarantee is given by the invariance of subs
 
 The following discussion shows how to extend our information sharing algorithm for finding $\fix(T) \sub \prealloc$ to an arbitrary complete lattice, conditional on an economic guarantee of the form above.
 
-\emph{Example - Information Sharing and Collision Chains}:
+\subsubsection{Example - Information Sharing and Collision Chains}
 In this example, we show how to extend the notion of combining subproblem information to general complete lattices.
 Suppose that we currently have $n$ active problems on lattices $L_i = \{x' \in \lattice:x'\peq x_i\}$. 
 Denote $\fix(\oper) \cap \lattice_i \equiv \fix(x_i)$ and $\point_i = \point \cap L_i$
@@ -1403,7 +1411,8 @@ In general, the lattice may not have such a regular structure.
 For instance, for the $(2^X, \sub)$, for $X_i \sub X$, we can form subproblems by noting that $\{Y \in 2^X: Y \subsetneq X_i\} \sub \bigcup_{x \in X_i} \{Y \in 2^X: Y \sub X \setminus \{x\} \}$.
 For more general problems, we work with whatever regularity is offered by the lattice.
 
-\emph{Games with Strategic Complementarities}: We briefly show how the above discussion can be used to incorporate information sharing in Echenique's algorithm for finding all pure strategy Nash equilibria in GSC. 
+\subsubsection{Games with Strategic Complementarities}
+We briefly show how the above discussion can be used to incorporate information sharing in Echenique's algorithm for finding all pure strategy Nash equilibria in GSC. 
 In GSC, we suppose a set of players $1 \leq i \leq n$ with strategy profiles $S_i$, each of which is a complete lattice.
 Then $S = \bigtimes_{i = 1}^n S_i$ is also a complete lattice under the product order.
 Let $\beta_i: S \to 2^{S_i}$ denote the best response correspondence for player $i$.
@@ -1437,7 +1446,6 @@ Similarly, a choice function $C_a$ is said to satisfy \emph{irrelevance of rejec
 In this setting, for a set $Y \sub X$, we let $C_D(Y) = \bigcup_{d \in D} C_d(Y)$ and similarly let $C_H(Y) = \bigcup_{h \in H} C_h(Y)$ denote the set of contracts chosen out of $Y$ by the hospitals.
 
 \subsubsection{Lattice Definition and Sublattice Operators}
-
 Consider $\lattice = 2^X \times 2^X$, pairs of subsets of $X$, where we define a partial order by $(Z,W) \peq (Z',W')$ if and only if $Z \sub Z'$ and $W' \sub W$. 
 It is easy to check that this partial order defines a complete lattice.
 For instance, given a collection of $(Z_i, W_i) \in \lattice$, the greatest lower bound is $\bigwedge_i (Z_i, W_i) = \lft \bigcap_i Z_i, \bigcup_i W_i \rt \in 2^X \times 2^X$.
@@ -1464,7 +1472,7 @@ This observation motivates our definition of operators on sublattices of $\latti
 Specifically, for a fixed element $(\topx, \topy) \suq (X_i, Y_i) \suq (\botx, \boty)$, where $i$ is an index, we let $\lattice_i \equiv \{(Z,W): (Z,W) \peq (X_i, Y_i) \}$ and note that this is a complete sublattice.
 Define $\Phi_i: \lattice \to \lattice$ by setting $\Phi_i(Z,W) = (\Phi^D_i(W), \Phi^H_i(Z))$, where $\Phi^D_i(W) = \{z \in X_i \setminus \botx: z \in C_H(\{z\} \cup W) \} \cup \botx$ and $\Phi^H_i(Z) = \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z ) \} \cup Y_i$.
 
-\subsubsection{Fixed Point Guarantees and Initializing Subproblems}
+\subsection{Fixed Point Guarantees and Initializing Subproblems}
 
 The following result shows that the family of operators introduced above satisfies the conditions required for an information sharing algorithm on the lattice $\lattice = 2^X \times 2^X$. 
 
@@ -1505,7 +1513,7 @@ Clearly $\{z \in \boty \setminus Y_i: z \in C_H( \{z \} \cup Z) \} \sub \Phi^H(Z
 Then we have shown $(Z,W) \in \fix(\Phi_i)$, so $\fix(\Phi) \cap \lattice_i \sub \fix(\Phi_i)$, completing the proof.
 \eprf
 
-\emph{Initialization of Subproblems}: 
+\subsubsection{Initialization of Subproblems}
 As in section~\ref{section:strcore}, for $i \in \mathcal{I}$ some index set we let $\lag (X_i, Y_i) \rag$ denote the problem of finding $\fix(\Phi_i) \sub \lattice_i = \{(X,Y) \peq (X_i, Y_i) \}$.
 Recall that we form the Tarski sequence $\Phi_i^k(X_i,Y_i)$, which, unless another stopping condition is triggered, converges to $\max \fix(\Phi_i) \suq \fix(\Phi) \cap \lattice_i$.
 After the Tarski sequence fixes, we need to initialize new problems to find elements of $\fix(\Phi)$ below $\max \fix(\Phi_i)$.
@@ -1516,7 +1524,7 @@ Suppose that a Tarski sequence converges to $(X',Y') = \max \fix(\Phi_i)$.
 If $(Z,W) \in \fix(\Phi)$ and $(Z,W) \pe (X',Y')$ then, by the lattice order, either there exists $x \in X' \setminus \botx$ with $Z \sub X' \setminus \{x\}$ or there is $y \in \boty \setminus Y'$ with $Y' \cup \{y\} \sub W$.
 Thus, to ensure that we find the fixed point $(Z,W)$, we initialize $|X' \setminus \botx| + |\boty \setminus Y'|$ new problems of the form $\lag (X' \setminus \{x\},Y') \rag$ and $\lag (X',Y' \cup \{y\}) \rag$, with $x$ and $y$ as above.
 
-\subsection{Algorithm for Finding all Stable Allocations} \label{section:algostable}
+\subsection{Full Algorithm for Finding all Stable Allocations} \label{section:algostable}
 
 In this section, we describe the full information sharing algorithm for finding all stable allocations in two-sided many-to-many matching with contracts assuming that agents' preferences are substitutable.
 
@@ -1595,7 +1603,8 @@ Set $\acto \leftarrow \actt$ and $\act \leftarrow \act \cup \actt$.
 Return $(\acto, \coll)$.
 \end{subroutine}
 
-\emph{Discussion}: We briefly note the substantive differences between this algorithm and algorithm~\ref{alg:main} for finding all strict core outcomes.
+\subsubsection{Discussion} 
+We briefly note the substantive differences between this algorithm and algorithm~\ref{alg:main} for finding all strict core outcomes.
 Here, when forming new problems during InformationCombine, we replace the pointwise minima used in algorithm~\ref{alg:main} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
 For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second, as shown above.
 Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is \emph{not constant}.
@@ -1607,7 +1616,7 @@ Otherwise, the algorithm is structurally identical, with slightly different nota
 
 The following result is an easy extension of lemma~\ref{lemma:termination} and theorem~\ref{thm:correct}.
 
-\begin{thm}
+\begin{thm} \label{thm:correct2}
 FindStable returns $\fixfind = \fix(\Phi)$. 
 In particular, $\{Z \cap W: (Z,W) \in \fixfind\} = \stable$, so the algorithm finds all stable allocations.
 \end{thm}
@@ -1633,7 +1642,8 @@ In the analysis, we use this lemma to argue that $\fix(T) \cap \{\pre'' : \pre''
 No such analysis is necessary for finding stable outcomes, because this stopping condition is not used.
 \eprf
 
-\emph{Remark}: Consider the worst case scenario where $\Phi_i: \lattice_i \to \lattice_i$ fixes at $\pairi = \max \lattice_i$ for every $(\botx, \boty) \peq \pairi \peq (\topx, \topy)$.
+\subsubsection{Remark}
+Consider the worst case scenario where $\Phi_i: \lattice_i \to \lattice_i$ fixes at $\pairi = \max \lattice_i$ for every $(\botx, \boty) \peq \pairi \peq (\topx, \topy)$.
 If we were to initialize \emph{every} subproblem of the form $(X_i \setminus \{x\}, Y_i)$ and $(X_i, Y_i \cup \{y \})$, we would create $\lft |\topx| - |\botx| + |\boty|- |\topy|\rt !$ problems in total, whereas greedy search only needs to check $2^{|\topx| - |\botx| + |\boty|- |\topy|} $ points.
 However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
 
@@ -1641,21 +1651,17 @@ However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant proble
 
 AGENDA
 rewrite main algorithms / proofs and try to slim
-fix auxiliary lemma
-    we don't check for true redundancy - rewrite main theorem?
-    there is a dependency for this in key lemma also
-        dep in case1 of key lemma - uses descendant relation
-reread again to look for reductions
-try to assoc problems and preallocs in a 1-1 way
-strong red for active problems only to salvage?
+rewrite sections / numbering
+rewrite discussion sections up to references
+collate references 
 
+track problems and rewrite informationcombine to get more efficiency, uniqueness over Q, and 1-1 index matching
 
 
 TODO-------
 add discussion sections, minus related literature
     beginning of strcore
     exploiting lattice geometry
-rewrite algo and proofs using new index
 
 look up all related literature
 write bib
@@ -1676,10 +1682,10 @@ for scott
     sub preferences and core equivalences - a remark on our maximal domain result
     discussion of figures 
 
-
-
-references / reference based content
-nice figures
+PERFORMANCE 
+    when paths cross between different problems, leading to more evaluations than there should have been
+    thinking in terms of paths and moving cone guarantees makes us think that no path redundancies can ever happen without being accounted for by our information combination routine
+    ***there may even be some theorem to be proved about this
 
 
 TODO
@@ -1690,17 +1696,24 @@ what does substituability have to do with $\strcore = \core$?
 note down cases where SC = C, tie in with substitutability
 ----ask scott about what should be appendix level material 
 appendix note about calculation down a chain and inclusions?
-appendix note about generalization to arbitrary complete lattices
 add line / language above about how general our approach is
-link this with coarsening results
-keep full pseudocode for appendix
 technically, the w(pre) notation is incorrect, since we need a unique index
 remember, strong redundancy is impossible because of dependencie - what about for active problems only though?
 **better proof for auxiliary, dealing with all diff cases (perhaps inductive for collision case, of initializing a problem at same ENDING POINT as another problem, to show that we actually do make appropriate use of information here.
-    how do indices affect... information guarantees? you can pull RANK from any pair (pre,i) by looking if (pre,i) leq (pre',j) iff pre leq pre', so no problem there
+***think about case when two problems in acta end at same node - this can definitely happen, killing uniqueness, and it would make things more efficient, allowing for a smaller forest and more guarantee combination, but then we would have to search the forest every single time... which we already do..... since we're adding to Q
+    ----->this can probably be done
+    we would get out-degree geq 2 for infac as well, we would also have a more confusing tree structure
+    kill tree result?
+
+
 
 
 \section{extra text} 
+
+
+From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether or not a specific allocation $Y$ is in the strict core.
+This operation can be very costly even in classical matching models\footnote{add some concrete complexity reference}.
+Our algorithm attempts to minimize the number of evaluations of $T^2$ by using lattice geometry to combine the information from related subproblems. 
 
 
 \end{document}
