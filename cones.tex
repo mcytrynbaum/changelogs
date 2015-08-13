@@ -361,30 +361,35 @@ There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \
 \section{Sharing Information to Find All Strict Core Allocations}
 \subsection{Introduction}
 In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
-Our algorithm builds upon the original approach in Echenique and Yenmez xxxxx.
+Our algorithm builds upon the original approach in Echenique and Yenmez.
 In particular, we show how to fully exploit the problem's complete lattice structure to more efficiently find the full set of strict core matchings. 
 
-At a basic level, the algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
+The algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
 Our main contribution is to realize that many of the subproblems created while searching the lattice $\fix(T^2)$ share geometric information with other subproblems.
 We show how fast digraph algorithms may be used to combine shared information and more quickly identify the full set of strict core matchings. 
 
-\subsection{Notation and Intuition} \label{section:description1}
+\subsection{Intuition and Notation} \label{section:description1}
+\subsubsection{Algorithm Intuition}
 Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
 That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for each $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
-We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem, in which each agent $a$'s preference list is truncated to allocations in $2^{X_a}$ ranked below $\pre(a)$ by agent $a$ (inclusive). 
-Often in what follows, we will identify a problem $\lag \pre \rag$ with its maximal point $\pre$.
+We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem in which each agent $a$'s preference list is truncated to allocations in $2^{X_a}$ ranked below $\pre(a)$ by agent $a$ (inclusive). 
+We will often identify a problem $\lag \pre \rag$ with its maximal point $\pre$.
 Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$ denote the fixed points of $T$ below $\pre$.  
 
-By Tarski's Theorem\footnote{add standard Tarski argument}, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
-If $T \toppre = \toppre$, then by lemma~\ref{lemma:top}, $\fix(T) = \{\toppre\}$.
+By Tarski's Theorem\footnote{This is easy to see.
+Note that $T^2 \pre^* \peq \pre^*$ by maximality, so $(T^2)^k \pre^* \peq (T^2)^{k+1} \pre^*$ for any $k\geq 1$ by isotonicity.
+Then this sequence is monotonically decreasing and bounded above $\min \fix(T^2)$ on a finite lattice, so it converges in finitely many iterations, say at $k = \ell$.
+Let $\pre' \in \fix(T^2)$ another fixed point, then $\pre^* \suq \pre'$, so $\toppre = (T^2)^{\ell} \pre^* \suq (T^2)^{\ell} \pre' = \pre'$, so $\toppre = \max(\fix(T^2))$}, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
+If $T \toppre = \toppre$, then by lemma~\ref{lemma:top} showing that no elements of $\fix(T^2)$ are ranked by ``$\peq$'', $\fix(T) = \{\toppre\}$.
 So suppose that $T \toppre \not = \toppre$. 
-Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iteratively applying $T^2$, we have learned that $\fix(T) \sub \fix (T^2) \sub \{\pre': \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}$. We will often denote cone relations of this type by $\fix(T) \peq \toppre$. 
+Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iteratively applying $T^2$, we have learned that $\fix(T) \sub \fix (T^2) \sub \{\pre': \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}$.
+We will sometimes denote relations of this type by $\fix(T) \peq \toppre$. 
 
-Since $T\toppre \not = \toppre$, apparently $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, where $e_i$ denotes the standard unit vector in $\mr^m$ \footnote{identifying $\prealloc$ with a grid in $\mr^m$ as above.}. 
+Since $T\toppre \not = \toppre$, apparently $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, where $e_i$ denotes the standard unit vector\footnote{identifying $\prealloc$ with a grid in $\mr^m$ as above.} in $\mr^m$. 
 Consider a subproblem of the form $\lag \toppre - e_i \rag$, and let $T_i$ be the operator corresponding to this subproblem, where agents' preferences are truncated above $\toppre - e_i$.
 The key insight of Echenique (2003), which generalizes to the current model, is that $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i)$.
-That is, the fixed points of $T$ contained in the cone $\{\pre' \peq \toppre - e_i\}$ are also fixed points of the subproblem $\lag \toppre - e_i \rag$ with operator $T_i$. 
+That is, the fixed points of $T$ contained in the cone $\{\pre' \peq \toppre - e_i\}$ are also fixed points of the new problem $\lag \toppre - e_i \rag$ with operator $T_i$. 
 Then apparently we have $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i) \sub \fix(T_i^2)$, so information about the lattice of fixed points of $T_i^2$ can be used to bound $\fix(T)$.
 The general result in our setting is as follows 
 \begin{lemma} \label{lemma:contain}
@@ -415,18 +420,17 @@ Starting with $\toppre_i$, the unanimously most preferred preallocation in the s
 
 Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of subproblem cones. 
 We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$. 
-In this way, we can eventually find the full set of strict core outcomes, directly extending the algorithm of Echenique and Yenmez to the present setting.  
+In this way, we will eventually find the full set of strict core outcomes, directly extending the Echenique and Yenmez algorithm to the present setting.  
 
-Depending on the structure of the lattice $\fix(T^2)$, the strategy described above can actually be quite similar to greedy search.  
-In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.
-
-As we will show, many of the subproblems generated by this strategy are either redundant or do not need to be solved completely.
-In particular, we can significantly improve this algorithm by capitalizing on the structure of the preallocation lattice, which allows subproblems to share geometric information with each other. 
+However, depending on the structure of the lattice $\fix(T^2)$, the strategy described above can actually be quite similar to greedy search.  
+In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.As we will show, many of the subproblems generated by this strategy are either redundant or do not need to be solved completely.
+We will show that we can capitalize on the structure of the preallocation lattice by allowing subproblems to share geometric information with each other. 
 With this modification, evaluation of the full Tarski sequence $S_i^k \toppre_i$ is often unnecessary. 
 In fact, it is often the case that subproblems can be stopped or removed entirely after a few iterations. 
 We will illustrate this idea with a couple of simple examples.  
 
-First, we recall some graph-theoretic notation, which will be useful in the coming sections. A \emph{graph} is a pair $(V,E)$, where $V$ is a collection of \emph{vertices} and $E \sub V \times V$ is a collection of \emph{edges}.
+\subsubsection{Graph-Theoretic Notation}
+First, we briefly recall some graph-theoretic notation, which will be useful in the coming sections. A \emph{graph} is a pair $(V,E)$, where $V$ is a collection of \emph{vertices} and $E \sub V \times V$ is a collection of \emph{edges}.
 In a \emph{directed graph} (digraph), the order of vertices in an edge matters. 
 A \emph{directed path} is a sequence $e^1 \hdots e^n$ of edges, where $e_2^k = e_1^{k+1}$ for $k \leq n-1$. 
 A subset $W \sub V$ is \emph{strongly connected} if for any $v_i, v_j \in W$, there exist directed paths $v_i \to v_j$ and $v_j \to v_i$ using only vertices in $W$. 
@@ -568,13 +572,14 @@ Pseudocode and correctness proofs for the full algorithm follow.
 First, we discuss indexing. 
 
 \emph{Labels for Preallocations, Vertices, and Operators}:
-During the algorithm, we will build a collection of graphs.
+During the algorithm, we build various graphs.
 For any such graph, each vertex will correspond to a problem $\lag \pre \rag$, where $\pre \in \prealloc$.
-We thus require a way to denote correspondences between vertices and preallocations. 
+We thus require a way to denote correspondences between vertices and problems.
 We thus fix an index set $\mathcal{I}$, which we use to label problems and vertices.
 We will denote corresponding vertices and problems with the same subindex, for instance, $\pre_i \sim v_i \sim w_i$, where $i \in \mathcal{I}$. 
-Because storing information on all problems ever initialized can be costly, we allow the possibility that $\pre_i = \pre_j$ as preallocations for $i \not = j$.
-When clear, we let $v(\pre)$ and $w(\pre)$ denote the vertices corresponding to a certain problem $\lag \pre \rag$.
+We allow the possibility that $\pre_i = \pre_j$ as preallocations for $i \not = j$.
+Thus, technically, a problem $\pre_i$ is a preallocation index pair $(\pre,i) \in \prealloc \times \mathcal{I}$, and we enforce that the index of every problem initialized during the algorithm is chosen to be unique.
+When clear, we let $v(\pre)$ and $w(\pre)$ denote the vertices corresponding to a certain problem $\lag \pre \rag$, where $w(\pre) = w_k$ for some $k \in \mathcal{I}$.
 Thus, for instance, $v(\pre_i) = v_i$.
 For clarity, vertices of a digraph $G$ are always denoted by $v$, while vertices of a forest $F$ are always denoted by $w$.
 Similarly, the operator for a subproblem $\pre_i$ will be denoted by $T_i$.
@@ -582,22 +587,23 @@ The algorithm consists of two alternating stages.
 
 \emph{Stage 1 - Information Acquisiton}: In the first stage, we consider a set of problems $\acto$.
 As above, each problem $\lag \pre_i \rag$ is associated with an isotone operator $S_i = T_i^2$.
-In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$, creating new problems in $\acto$ when necessary.
-Let $\act$ be a set of problems $\acto \sub \act$, which we think of as the problems from all previous steps of the algorithm that still contain useful information.  
-We initialize $\pre = \pre_i$ and successively iterate $\pre \to S_i \pre$ until one of the following \emph{stopping conditions} occurs
-\begin{enumerate}
-\item $\pre \peq \ul{\pre} = \min \fix(T^2)$ 
-\item $T \pre = \pre$
-\item $S_i \pre = \pre$
-\item $\pre \peq \pre'$ for some $\pre' \in Q$ with $\pre_i \not \peq \pre'$ 
-\end{enumerate} 
+In this stage, we iteratively apply $S_i$ to each $\pre_i \in \acto$, creating new problems when necessary, as discussed below. 
+Let $\act$ be a set of problems $\acto \sub \act$, which we think of as the problems from previous steps of the algorithm that still contain useful information.  
 
-In case (1), $\fix(\pre_i) \peq \min \fix(T^2)$, so $\fix(\pre_i) = \emptyset$, and we may stop iteration. 
-In case (2), $\pre = S_i^k \pre_i$ is fixed by $T$, so, by lemma~\ref{lemma:contain}, $\fix(T) \cap \{\pre' \pe \pre \} = \emptyset$.
-That is, we can stop searching this problem.
-In case (3), the Tarski sequence for $\pre_i$ stops, so we stop the problem $\lag \pre_i \rag$ below $\pre$ and form new subproblems $\lag \pre - e_j \rag$ for $j = 1 \hdots m$, each of which we add to $\acto$.  
-In case (4), we have learned that $\fix(\pre_i) \sub \fix(\pre')$ for some other problem $\pre'$, so we stop work on $\pre_i$ and wait for the next stage of the algorithm, where we will combine the fixed point guarantees on $\fix(\pre')$ with those on $\fix(\pre_i)$.
-We let $\pref_i$ denote the final value of $\pre$ in the Tarski sequence for $\lag \pre_i \rag$ when one of the stopping conditions above is triggered. 
+\emph{Stopping Conditions}:
+During the algorithm, for a problem $\lag \pre_i \rag $, we compute the Tarski sequence $(T_i^2)^k \pre_i$, $k \geq 0$. 
+Define the following stopping conditions for an element $ (T_i^2)^k \pre_i \equiv \pre'$ of this sequence.
+\begin{enumerate}
+\item $\pre' \peq \bopre$ \label{cond:bottom1}
+\item $T_i^2 \pre'= \pre'$ \label{cond:fix1}
+\item There exists $\pre_j\in \act$ with $\pre' \peq \pre_j$ and $\pre_i \not \peq \pre_j$ \label{cond:collide1}
+\end{enumerate}
+
+Condition~(\ref{cond:bottom1}) corresponds to the problem exiting the lattice $\fix(T^2)$. 
+For Condition~(\ref{cond:fix1}), the Tarski sequence fixes.
+If $T\pre' = \pre'$, by lemma~\ref{lemma:order}, $\{\pre'' \pe \pre'\} \cap \fix(T) = \emptyset$. 
+Otherwise, we need to initialize new problems below $\pre'$.
+For Condition~(\ref{cond:collide1}), the problem $\lag \pre_i \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine, discussed below.
 
 \emph{Stage 2 - Information Combination}: In this stage, we use efficient digraph algorithms to combine information from related problems.
 First, we define a graph structure that relates different problems solved during the algorithm
@@ -616,21 +622,23 @@ Thus, siblings in a problem forest share fixed points of $T$, and the fixed poin
 For now, we assume the existence of such a forest for the problems considered below (construction in section~\ref{fullalgo}). Next, we define a graph structure that allows us to combine the information from intersecting problem cones.
 
 \begin{defn} \label{def:graph}
-Let $\forest$ be a collection of rooted trees. A digraph $G = (V,E)$ is said to be a \emph{collision digraph} when, with the notation above, $(v_i,v_k) \in E$ if and only if there exist $\pre_i \in \acto$ and $\pre_j \in \act$ such that (i) $\pref_i \peq \pre_j$, (ii) $\pre_i \not \peq \pre_j$, and (iii) $r(w_j) = w_k$.
+Let $\forest$ be a collection of rooted trees. A digraph $G = (V,E)$ is said to be a \emph{collision digraph} if $(v_i,v_k) \in E$ if and only if there exist $\pre_i \in \acto$ and $\pre_j \in \act$ such that (i) $(T_i^2)^{\ell} \peq \pre_j$ for some $\ell \geq 1$, (ii) $\pre_i \not \peq \pre_j$, and (iii) $r(w_j) = w_k$.
 \end{defn}
 
 That is, using the correspondence between vertices and problems, $(v_i,v_k)$ is added to $G$ only if during Stage 1 problem $\pre_i$ ``collided'' with some vertex $w_j$ in the tree which has $w_k$ as its root.  
 
-In stage 2 of the algorithm, the ``information combination'' stage, we start with a collection of problems $\acto$ and a list of problem collisions. We form the collision digraph $G$ as above and compute its strong components, denoted by $\strongc = \{\strongcomp_j\}_{j\in \mathcal{J}}$, where $\mathcal{J}$ is an index set. 
-For $j \in \mathcal{J}$, pick $v \in \strongcomp_j$ and compute its reachable set, by which we define $\reach_j$, the reachable set of component $j$. 
+In stage 2 of the algorithm, the ``information combination'' stage, we start with a collection of problems $\acto$ and a list of problem collisions $\coll(i)$ for each $\pre_i \in \acto$.
+We form the collision digraph $G$ and compute its strong components $\strongc = \{\strongcomp_j\}_{j\in \mathcal{J}}$, where $\mathcal{J}$ is an index set. 
+For $j \in \mathcal{J}$, pick $v \in \strongcomp_j$ and compute its reachable set, by which we define $\reach_j$, the reachable set of component $\strongcomp_j$. 
 Since strong components are strongly connected, this definition is independent of the choice of $v$. 
 
-In proposition~\ref{prop:graph}, we show that our construction of the collision digraph and inductive assumption on the forest $\forest$ guarantees that $\fix(\pre_i) \sub \fix(\pre_k)$ whenever $(v_i,v_k) \in E$. In particular, we can show that $\fix(\pre_i) \sub \fix(\pre_j)$ whenever $v_i \in \strongcomp_k$ and $v_j \in \reach_k$, that is, whenever $v_j$ is in the reachable set of the strong component containing $v_i$.
+In proposition~\ref{prop:graph}, we show that our construction of the collision digraph and inductive assumption on the forest $\forest$ guarantees that $\fix(\pre_i) \sub \fix(\pre_k)$ whenever $(v_i,v_k) \in E$.
+In particular, we can show that $\fix(\pre_i) \sub \fix(\pre_k)$ whenever $v_i \in \strongcomp_j$ and $v_k \in \reach_j$.
 
 Let $\actt = \emptyset$ and, for each strong component $\strongcomp_j \in \strongc$, add $\pre = \min\limits_{v_k \in \reach_j} \pre_k$ to $\actt$.
-By the guarantees above, we can combine all problems represented in strong component $k$ of the digraph into a new active set of problems by letting $\acto \leftarrow \actt$ \emph{without losing any points} of $\fix(T)$.
+By the guarantees above, we can combine all problems represented in strong component $\strongcomp_j$ of the digraph into a new active set of problems by letting $\acto \leftarrow \actt$ \emph{without losing any points} of $\fix(T)$.
 Note that, by changing $\acto$ in this way, we may have actually caused new cone collisions.
-We can combine the geometric information from these collisions as above to weakly improve the progress of the algorithm.
+We can use these collisions to weakly improve the progress of the algorithm, as above.
 Thus, we run the information combination subroutine in stage 2 iteratively until there are no more cone collisions.
 This process terminates, as discussed in lemma~\ref{lemma:termination}.
 After termination, we return to stage 1 with a new collection of active problems $\acto \leftarrow \actt$.
@@ -639,20 +647,6 @@ In general, we would like to spend as much time as possible in the information c
 
 \subsection{Full Algorithm} \label{fullalgo}
 In this section, we state the full algorithm to find all strict core allocations $\strcore$. 
-First, we need to define some stopping conditions.
-
-\emph{Stopping Conditions}:
-During the algorithm, for a problem $\lag \pre_i \rag $, we compute the Tarski sequence $(T_i^2)^k \pre_i$, $k \geq 0$. 
-Define the following stopping conditions for an element $ (T_i^2)^k \pre_i \equiv \pre'$ of this sequence.
-\begin{enumerate}
-\item $\pre' \peq \bopre$ \label{cond:bottom1}
-\item $T_i^2 \pre'= \pre'$ \label{cond:fix1}
-\item There exists $\pre_j\in \act$ with $\pre' \peq \pre_j$ and $\pre_i \not \peq \pre_j$ \label{cond:collide1}
-\end{enumerate}
-
-Condition~(\ref{cond:bottom1}) corresponds to the problem exiting the lattice $\fix(T^2)$. 
-For Condition~(\ref{cond:fix1}), the Tarski sequence fixes.
-For Condition~(\ref{cond:collide1}), the problem $\lag \pre_i \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine.
 Throughout what follows, we maintain global variables $\forest$, a rooted forest, and $\act$, a collection of active and previously solved problems.
 
 \emph{Initialization} To initialize the algorithm, set $\fixfind = \emptyset$ and create an empty forest $F = (\emptyset,\emptyset)$. 
@@ -1702,16 +1696,7 @@ remember, strong redundancy is impossible because of dependencie - what about fo
     we would get out-degree geq 2 for infac as well, we would also have a more confusing tree structure
     kill tree result?
 
-
-
-
 \section{extra text} 
-
-
-From a computational complexity perspective, evaluating the $T$ operator is equivalent to checking whether or not a specific allocation $Y$ is in the strict core.
-This operation can be very costly even in classical matching models\footnote{add some concrete complexity reference}.
-Our algorithm attempts to minimize the number of evaluations of $T^2$ by using lattice geometry to combine the information from related subproblems. 
-
 
 \end{document}
 
