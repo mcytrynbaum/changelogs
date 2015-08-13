@@ -167,6 +167,7 @@
 \newcommand{\infacstoptwii}{(ii)\xspace}
 \newcommand{\infacstoptwiii}{(iii)\xspace}
 \newcommand{\infacstoptha}{(a)\xspace}
+\newcommand{\infacstopthb}{(b)\xspace}
 %%%%
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
@@ -655,16 +656,19 @@ Similarly, if $T\bopre = \bopre$, then set $\fixfind = \{\bopre}\}$ and terminat
 Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, and add $w(\pre - e_i)$ to $F$ as an isolated root. Then, run FindStrictCore. 
 Subroutine details are given below.
 
+\clearpage
+
+
 %%%%%%% CONTROLS
 %\newcommand{infacredi}{(i)}
 %\newcommand{infacredii}{(ii)}
 %\newcommand{infacbstopa}{(a)}
 %\newcommand{infacbstopb}{(b)}
-%\newcommand{infacstop2i}{(i)}
-%\newcommand{infacstop2ii}{(ii)}
-%\newcommand{infacstop2iii}{(iii)}
-%\newcommand{infacstop3a}{(a)}
-%\newcommand{infacstop3b}{(b)}
+%\newcommand{infacstoptwi}{(i)}
+%\newcommand{infacstoptwii}{(ii)}
+%\newcommand{infacstoptwiii}{(iii)}
+%\newcommand{infacstoptha}{(a)}
+%\newcommand{infacstopthb}{(b)}
 %%%%%%%
 
 \begin{subroutine}[InformationAcquire] \label{sub:infac}
@@ -878,7 +882,7 @@ This completes the proof of the lemma.
 Before proving our key result, we show an auxillary lemma about the relationship between $\forest$ and the problem sets returned from each subroutine 
 
 \begin{lemma} \label{lemma:roots}
-Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once in subroutine 1.
+Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once in subroutine~\ref{sub:infac}.
 Moreover, the following statements are true: 
 \begin{enumerate}
 \item If $\forest$ is a problem forest when subroutine~\ref{sub:infac} is initialized, then the set $\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
@@ -890,7 +894,7 @@ Moreover, the following statements are true:
 The first statement is a simple observation.
 If $\pre_i$ is processed more than once, then $\pre_i$ is added to $\acta$ more than once during the algorithm . 
 Since $\acta \sub \acto$, and elements are \emph{only added} (never removed) to $\acto$ after redundancy checks \infacredi and \infacredii, then $\pre_i \in \acto$ when it is added to $\acta$ the second time. 
-But we check for redundancy before we add a program in line~\ref{alg1:addq}, so this is impossible. 
+But we check for this when we process stopping condition~(\ref{cond:fix1}) at \infacstoptwii, so this is impossible.  
 Then any distinct preallocation is processed at most once. 
 
 For the other lemma statements, we work by induction on $\ell$, the total number of evaluations of subroutines~\ref{sub:infac} and \ref{sub:infcomb}. 
@@ -899,16 +903,16 @@ Then assume that (1) and (2) above hold up to $\ell = n \geq 0$.
 There are several cases. 
 Throughout, let $(\acto',\forest')$ and $(\acto'',\forest'')$ denote the states of $(\acto,\forest)$ at initialization and return, respectively, of the subroutine that finishes at $\ell = n + 1$.  
 
-\emph{Case 1}: InformationAcquire (subroutine 1) returns at $\ell = n + 1$. 
+\emph{Case 1}: InformationAcquire (subroutine~\ref{sub:infac}) returns at $\ell = n + 1$. 
 Note that subroutine~\ref{sub:infac} is called either directly after initialization or after evaluation of subroutine~\ref{sub:infcomb}. 
-$\forest''$ is obtained from $\forest'$ by adding vertices and edges satisfying the conditions of lemma~\ref{lemma:forest}. 
-Then, by the lemma, $\forest''$ is also a rooted forest.
-If subroutine 1 directly follows initialization of FindStrictCore, clearly $w(\pre) \in \roott(\forest')$ for $\pre \in \acto'$ by construction.
+If subroutine~\ref{sub:infac} directly follows initialization of FindStrictCore, clearly $w(\pre) \in \roott(\forest')$ for $\pre \in \acto'$ by construction.
 Otherwise, this statement holds by the inductive hypothesis and (\ref{lemma:roots:comb}) above. 
 Note that each $\pre$ added to $\acto$ during this subroutine is initialized as an isolated root. 
-This shows that, at any time before $\pre$ is processed (the Tarski sequence for $\pre \in \acta$ is evaluated), $w(\pre) \in \roott(\forest)$. 
+Since problem indices are unique, this shows that, at any time before $\pre$ is processed (the Tarski sequence for $\pre \in \acta$ is evaluated), $w(\pre) \in \roott(\forest)$. 
 In particular, $\depth(w_i, \forest) = 0$ when $\pre_i$ is added to the $\acto$ during the subroutine. 
 
+Note first that $\forest''$ is obtained from $\forest'$ by adding vertices and edges satisfying the conditions of lemma~\ref{lemma:forest}. 
+Then, by the lemma, $\forest''$ is also a rooted forest.
 Suppose that for $\pre_i \not = \pre_j \in \acto''$, $r(w_i) = r(w_j) = w$ in $\forest''$. 
 Then there are directed paths $w \to w_i$ and $w \to w_j$. 
 The directed path $w \to w_i$ can be represented as a sequence of vertices $w = w^1,w^2,\hdots, w^k = w_i$ and similarly for $w_j$. 
@@ -918,11 +922,10 @@ By minimality, the paths are identical up to $w_{k' - 1}$.
 
 Subcase 1: One of the paths, without loss $w \to w_i$, ends at $w_{k'-1}$. 
 Then there is a directed path $w_i \to w_j$.
-But $\depth(w_j, \forest) = 0$ when $\pre_j$ is added to $\acto$ as above, so all edges on this path must have been added during the subroutine, with $\pre_i$ added after $\pre_j$, since in-edges are only added to problems already in $\acto$. %more formal 
-By the monotonicity of the Tarski sequence for any problem, any edge $(w_1,w_2)$ added during the algorithm satisifies $\pre_1 \peq \pre_2$. 
-In particular, $\pre_i \peq \pre_j$. 
-But then $\pre_i$ is redundant given $\pre_j$, so it was not added to $\acto$ after $\pre_j$ (by line~\ref{alg1:redundant}). 
-This is a contradiction, so there is no such path.
+But $\depth(w_j, \forest) = 0$ when $\pre_j$ is added to $\acto$ as above, so all edges on this path must have been added during the subroutine, after $\pre_i$ was processed, since in-edges are only added to problems already in $\acto$.
+Immediately after $\pre_j$ is processed, we have so that $p(w_j) = r(w_j) = w(\pre') \equiv w_k$ for some index $k$.
+But indices assigned during the algorithm are unique, so no problem processed after $\pre_i$ can have index $k$.
+Then no edge of the form $(w',w_k)$ can ever be added, so this is a contradiction.
 
 Subcase 2: Both paths $w \to w_i$ and $w \to w_j$ continue beyond $w_{k'-1}$.
 Then $w' \equiv w_{k' - 1}$ has out-degree $\geq 2$.
@@ -936,7 +939,7 @@ This completes the proof for this case.
 \emph{Case 2}: Subroutine~\ref{sub:infcomb} returns at $\ell = n +1$ after subroutine~\ref{sub:infac} returns at $\ell = n$. 
 We will show that $w(\pre) \in \roott(\forest'')$ for all $\pre$ in the set of returned problems $\actt$.
 Let $G = (V,E)$ be the collision digraph formed during this subroutine.
-By definition, the strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$ of $G$ retained after removing irrelevant singletons (at line~\ref{alg2:cstrong}) are disjoint. 
+By definition, the strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$ of $G$ retained after removing irrelevant singletons at step \infcombgraphii are disjoint. 
 Then if $\strongcomp_j \not = \strongcomp_{j'}$ with $v_k \in \strongcomp_j$ and $v_{k'} \in \strongcomp_{j'}$ we must have $r(w_k) \not = r(w_{k'})$ by the inductive hypothesis and (\ref{lemma:roots:ac}) above, so $\{r(w_k): v_k \in \strongcomp_j\} \cap \{r(w_k): v_k \in \strongcomp_{\j'}\} = \emptyset$. 
 Define $R(j,\forest) = \{r(w_k): v_k \in \strongcomp_j\}$, roots of $\forest$ generated by vertices in $\strongcomp_i$. 
 At any point during the algorithm, call an index $j$ \emph{processed} if $\pre_j \in \actt$.
@@ -975,48 +978,46 @@ Then assume by induction that the statements above hold for $\pair_k$ up to $k =
 By an abuse of notation, we will denote components of $\pair_k$ as $\forest_k$ and $\coll_k$ when the meaning is clear.
 We consider separately each case where the pair $\pair$ can change.
 
-\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{sub:infac} when stopping condition (1) or (2) is triggered, and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree1}). 
-Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of InformationAcquire (subroutine 1).
+\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{sub:infac} when a stopping condition is triggered for problem $\pre_i$ at $(T_i^2)^{\ell}\pre_i = \pre'$, and $w(\pre')$ is added to $\forest$ at processing step \infacbstopa. 
+Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of InformationAcquire.
 From lemma~\ref{lemma:roots}, we know that (i) for any distinct preallocation $\pre$, the problem $\lag \pre \rag$ is processed (the Tarski sequence evaluated) at most once.
-Moreover, the lemma also shows that (ii) any $\pre \in \acto'$ has $w(\pre) \in \roott(\forest')$ and, from the proof of this lemma, (iii) any $\pre$ added to $\acto$ during the subroutine has $w(\pre) \in \roott(\forest)$ before $\pre$ is processed. 
+Moreover, the lemma also shows that (ii) any $\pre \in \acto'$ has $w(\pre) \in \roott(\forest')$ and, from the proof of this lemma, (iii) any $\pre_i$ added to $\acto$ during the subroutine has $w(\pre_i) \in \roott(\forest)$ before $\pre_i$ is processed. 
 We will use these facts below. 
 
-At the state change $\pair_n \to \pair_{n + 1}$, we set $\pre_i^f = \pre' = (T_i^2)^{\ell}$ for some $\ell \geq 0$.
-By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}$ for any $j$. 
-In particular, $\fix(T_i) \peq (T_i^2)^{\ell} = \pre'$.
-Combining this with lemma~\ref{lemma:contain} above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} \sub \fix(T_i) \peq \pre' = \pre_i^f$. 
-By monotonicity of the Tarski sequence, we have $\pre_i^f \peq \pre_i$, so $\fix(\pre_i^f) \sub \fix(\pre_i)$. 
-Then $\fix(\pre_i) = \fix(\pre_i^f)$.
-Since $w(\pre_i^f) = p(w_i)$, we have shown that $\fix(\pre_i) = \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest_n$. 
-We add $w(\pre_i^f)$ with $c(w(\pre_i^f)) = \{\pre_i\}$, so there are no new sibling relations. 
+By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}\pre_i$ for any $j$. 
+In particular, $\fix(T_i) \peq (T_i^2)^{\ell}\pre_i = \pre'$.
+Combining this with lemma~\ref{lemma:contain} above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} \sub \fix(T_i) \peq \pre'$. 
+By monotonicity of the Tarski sequence, we have $\pre' \peq \pre_i$, so $\fix(\pre') \sub \fix(\pre_i)$. 
+Then $\fix(\pre_i) = \fix(\pre')$.
+Since $w(\pre') = p(w_i)$, we have shown that $\fix(\pre_i) = \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest_n$. 
+We add $w(\pre')$ with $c(w(\pre')) = \{\pre_i\}$, so there are no new sibling relations. 
 Then by the inductive hypothesis, $\forest_{n+1}$ also satisfies condition~(\ref{def:forest2}) and (\ref{def:forest3}) defining a a problem forest.
 By (iii) above, $\forest_n$ has $w(\pre_i) = r(w(\pre_i))$, so the modification $\forest_n \to \forest_{n + 1}$ satisfies the conditions of lemma~\ref{lemma:forest}.
 Then, by the lemma, $\forest_{n + 1}$ is also a rooted forest. 
 This completes the proof that $\forest_{n + 1}$ is a problem forest.
 
-By mutual exclusion of stopping conditions and single-processing condition (i) above, we must have $\coll(i) = \emptyset$.
-Then fix any $\ell \in \mathcal{I}$ and suppose that $k \in \coll_{n+1}(\ell) = \coll_{n}(\ell)$. 
+By the single-processing condition of lemma~\ref{lemma:roots}, we must have $\coll(i) = \emptyset$.
+Fix any $\ell \in \mathcal{I}$ and suppose that $k \in \coll_{n+1}(\ell) = \coll_{n}(\ell)$. 
 By the inductive hypothesis on $\pair_n$, if $r(w_{\ell}) = w_j$ in problem forest $\forest_n$, then $\fix(\pre_j) \sub \fix(\pre_k)$. 
 If we still have $r(w_{\ell}) = w_j$ in the forest $\forest_{n+1}$, we are done by induction. 
-If not, then it must be that $r(w_{\ell}) = w(\pre_i^f)$. 
+If not, then it must be that $r(w_{\ell}) = w(\pre')$. 
 But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$ in $\forest_n$.
 Case (1) of the proof of lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
 Then condition~(\ref{convlemma:coll}) holds as well, and we are done.
 
-\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, where stopping condition (4) is triggered and $w(\pre_i^f)$ is added to $\forest$ (line~\ref{alg1:tree2}). 
-By the exact same arguments as in case 1, $F_{n + 1}$ remains a problem forest after this modification. 
-We need only check item~(\ref{convlemma:coll}) of the inductive hypothesis above.
-$\coll_n(i) = \emptyset$ because $I = \emptyset$ at initialization, and each preallocation is processed at most once by lemma~\ref{lemma:roots}.
-For stopping condition (4), we evaluate the Tarski sequence for $\lag \pre_i \rag$ and find that $\pre_i^f \peq \pre_j \in \act$, and $j$ is added to $I_n(i)$ so that $I_{n + 1}(i) = \{j\}$. 
-By (iii) above from lemma~\ref{lemma:roots}, $w(\pre_i) \in \roott(\forest_n)$. 
-We add $w(\pre_i^f) = p(w_i)$, so $r(w_i) = w(\pre_i^f)$ in $\forest_{n+1}$. 
-Since $\pre_i^f \peq \pre_j$, $\fix(\pre_i^f) \sub \fix(\pre_j)$ for the only new collision index added during the change $\pair_n \to \pair_{n+1}$.
+\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, where stopping condition~(\ref{cond:collide1}) is triggered and the collection $\coll(i)$ is modified.
+Then $\forest_n = \forest_{n + 1}$, so we need only check item~(\ref{convlemma:coll}) of the inductive hypothesis above.
+$\coll_n(i) = \emptyset$ because $I = \emptyset$ at initialization of the subroutine and by the single-processing condition, and each preallocation is processed at most once by lemma~\ref{lemma:roots}. %leave flex for 1-1 proof
+For stopping condition~(\ref{cond:collide1}), we evaluated the Tarski sequence for $\lag \pre_i \rag$ and found that $\pre' \peq \pre_j \in \act$ for some collection of indices $j$, which were added to $I_n(i)$.
+By condition (iii) of lemma~\ref{lemma:roots}, $w(\pre_i) \in \roott(\forest_n)$. 
+We add $w(\pre') = p(w_i)$, so $r(w_i) = w(\pre')$ in $\forest_{n+1}$. 
+Since $\pre' \peq \pre_j$, $\fix(\pre') \sub \fix(\pre_j)$ for any new collision index $j$ added during the change $\pair_n \to \pair_{n+1}$.
 
 If $\ell \not = i$, then we have $\coll_n(\ell) = \coll_{n + 1}(\ell)$. 
 In this case, condition~(\ref{convlemma:coll}) holds by the argument at the end of case (1).
 Then we have shown that condition~(\ref{convlemma:coll}) holds for the pair $\pair_{n + 1}$, and we are done. 
 
-\emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, when stopping condition (3) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root (line~\ref{alg1:addq}). 
+\emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, when stopping condition~(\ref{cond:fix1}) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root at item \infacstoptwiii. 
 We denote $\pre_i - e_j = \pre_k$.
 That $\forest_{n + 1}$ is still a rooted forest is immediate from lemma~\ref{lemma:forest}, since the new vertex is isolated.
 No edges are added, so no new parent or child relations are added. 
@@ -1032,12 +1033,12 @@ Let $r(w_i) = w_k$, so, by induction, $\fix(\pre_i) = \fix(\pre_k)$.
 In particular, $\fix(\pre_k) \sub \fix(\pre_i)$ for the index $i \in \coll(i)$, so condition~(\ref{convlemma:coll}) holds automatically.
 Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:coll}) follows for other indices by the inductive hypothesis.
 
-\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{sub:infcomb} (line~\ref{alg2:forest}).
+\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{sub:infcomb} at item \infcombcombb. 
 Note that $\coll_n = \coll_{n + 1}$. 
-By construction (on line~\ref{alg2:forest}), we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
+By construction, we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
 
 Next, we show that defining conditions~(\ref{def:forest2}) and~(\ref{def:forest3}) still hold for $\forest_{n + 1}$, making use of our characterization of the collision digraph in lemma~\ref{prop:graph} above.
-Let $v_k, v_{\ell} \in \strongcomp_j$, a strong component of $G = (V,E)$ (after removing irrelevant singletons on line~\ref{alg2:cstrong}, and denote $r(w_k) = w_{k'}$ and $r(w_{\ell}) = w_{\ell'}$.
+Let $v_k, v_{\ell} \in \strongcomp_j$, a strong component of $G = (V,E)$ (after removing irrelevant singletons at item \infcombgraphii, and denote $r(w_k) = w_{k'}$ and $r(w_{\ell}) = w_{\ell'}$.
 By (strong) induction, $\forest'$ is a problem forest, so by lemma~\ref{lemma:forest2} above, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell})$ and $\fix(\pre_k) = \fix(\pre_{k'})$. 
 Moreover, the indices $\coll'$ at initialization satisfy condition~(\ref{convlemma:coll}), by the inductive hypothesis again, so lemma~\ref{prop:graph} shows that, in fact, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell}) = \fix(\pre_k) = \fix(\pre_{k'})$. 
 Now $w(\pre)$ is added to $\forest_n$ with $c(w(\pre)) = \{r(w_k):v_k \in \strongcomp_j\}$. 
@@ -1059,7 +1060,7 @@ Then it must be that $p(w_j) = w(\pre)$; for instance, by lemma~\ref{lemma:fores
 Then by lemma~\ref{lemma:forest2}, we have $\fix(\pre) = \fix(\pre_j) \sub \fix(\pre_{k'})$, where we use the inductive hypothesis in the subset relation, so condition~(\ref{convlemma:coll}) still holds for $\pair_{n+1}$. 
 This finishes the proof for this case.
 
-\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{sub:infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ (line~\ref{alg2:coll2}).
+\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{sub:infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ when we ``check for new collisions''.
 Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
 Let $r(w_i) = w_k$.
@@ -1081,7 +1082,7 @@ First, we show that, for any problem collection $\acto$, InformationAcquire (sub
 
 Consider the sequence $\actak$ formed by distinct states of $\acta$ during subroutine~\ref{sub:infac}.
 Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some problem $\pre$, then clearly $\disto(\acta^{k+1}) \leq \disto(\actak)$.
-By inspection, all changes to $\acta$ are of this form, except when we add new problems after triggering stopping condition (3) (line~\ref{alg1:addq}).
+By inspection, all changes to $\acta$ are of this form, except when we add new problems after triggering stopping condition~(\ref{cond:fix1}).
 For this state change, note that $\|\pre\|_1 > \max\limits_{i = 1,\hdots,m} \|\pre - e_i\|$, so, in fact, if $\acta^{k+1} = \actak \setminus \{\pre\} \cup \lft \bigcup_{i =1}^m \{\pre - e_i \} \rt$ then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
 Then $\disto(\actak)$ is monotonically decreasing and $\geq 0$.
 In particular, $\disto(\actak)$ converges in finite time, by finiteness of $\prealloc$.
@@ -1091,9 +1092,9 @@ Then $\disto(\actc) = \max_{\pre\in\actc} \|\pre\|_1 = \|\pre'\| \leq \disto(\ac
 So we have also shown $\disto(\acto) \geq \disto(\actc)$.
 
 The inequality $\dist(\acta^{k+1}) \leq \disto(\actak)$ is \emph{strict} whenever $\pre'' = \argmax_{\pre' \in \actak} \|\pre'\|_1$. 
-For any $k$, consider $\actak$ at the top of the processing loop (line~\ref{alg1:for2}). 
+For any $k$, consider $\actak$ at the top of the algorithm's main for loop. 
 Then $\pre'' \in \actak$, so, for at least one iteration of the loop, $\disto(\actak)$ decreases strictly.
-Since $\disto(\actak)$ converges in finite iterations, the subroutine's while loop (line~\ref{alg1:while1}) is runs for finitely many iterations, so the subroutine terminates.
+Since $\disto(\actak)$ converges in finite iterations, the subroutine's while loop runs for only finitely many iterations, so the subroutine terminates.
 
 Since all inputs are finite, subroutine~\ref{sub:infcomb} clearly terminates in finite time.
 
@@ -1101,13 +1102,13 @@ Next, we show that the information combination stage of FindStrictCore terminate
 Consider distinct states of $\acto$ returned by InformationCombine, which form a sequence $\actok$, during the inner while loop of FindStrictCore (line~\ref{alg3:while2}).
 We will show that the sequence $\distt(\actok)$ is monotonically decreasing.
 
-Consider a single execution of InformationCombine (subroutine 2) with input $\actok$.
-Let $\strongcomp \in \strongc$ be a strong component of the collision digraph $G = (V,E)$ left in $\{\strongcomp_j\}_{j \in \mathcal{J}}$ after removing irrelevant singletons (line~\ref{alg2:cstrong}).
+Consider a single execution of InformationCombine (subroutine~\ref{sub:infcomb}) with input $\actok$.
+Let $\strongcomp \in \strongc$ be a strong component of the collision digraph $G = (V,E)$ left in $\{\strongcomp_j\}_{j \in \mathcal{J}}$ after removing irrelevant singletons at item \infcombgraphii.
 By construction, a vertex $v_i \in V$ has out-degree $0$ if $\pre_i \not \in \actok$.
-Then each vertex $v_i$ \emph{not} associated with a preallocation $\pre_i \in \actok$ must generate a singleton strong component $\{v_i\}$, which is removed at line~\ref{alg2:cstrong}, so $\{v_i: v_i \in \strongcomp_j; j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \actok\}$. 
+Then each vertex $v_i$ \emph{not} associated with a preallocation $\pre_i \in \actok$ must generate a singleton strong component $\{v_i\}$, which is removed at item \infcombgraphii, so $\{v_i: v_i \in \strongcomp_j; j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \actok\}$. 
 Therefore, by disjointness of $\{\strongcomp_j\}_{j \in \mathcal{J}}$, we can define a surjection $p: \actok \to \actt$ by setting $p(\pre_i) = \min_{k \in K_j} \pre_k \in \actt$. 
 By construction, for any $\pre_j \in \actt$, we have $p\inv(\{\pre_j\}) \supseteq \{\pre_k: w_k \in c(w_j)\}$. 
-Note that, since $i \in \coll(i)$ (line~\ref{alg2:self_int}), if $\pre_i \in \strongcomp_j$ and $r(w_i) = w_{\ell}$, then $v_i \to v_{\ell}$; in particular, $v_{\ell} \in \reach_j$, the reachable set of strong component $j$.
+Note that, since $i$ is added to $\coll(i)$ during initialization, if $\pre_i \in \strongcomp_j$ and $r(w_i) = w_{\ell}$, then $v_i \to v_{\ell}$; in particular, $v_{\ell} \in \reach_j$, the reachable set of strong component $j$.
 Lemma~\ref{lemma:key} shows that $\forest$ is a problem forest at any time during the algorithm, so if $\pre_k = p(\pre_i)$, then $\pre_k \peq \pre_i$.
 By iterating, we have $\pre_{\ell} \peq \pre_i$ for the root also.
 Then apparently $p(\pre_i) = \min_{k \in K_j} \pre_k \peq \pre_i$ for any such $i$. 
@@ -1126,10 +1127,10 @@ This argument shows that the \emph{sequence of sets} $\actok$ actually converges
 
 Suppose, then, that $\actok = \acto^{k+1}$ for some $k$ and consider a single execution of InformationCombine. 
 Above, we showed that $p\inv(\pre_i) = \pre_i$ for any $\pre_i \in \actt$.
-Then, as noted above, we have $\{i\} = \{j: \pre_j \in p\inv(\pre_i)\} \supseteq \{j: w_j \in c(w_i)\}$, so the expression defining a collision (line~\ref{alg2:collide}) must be false for all $\pre_i \in \actt$. Then the subroutine must return $I = \emptyset$. 
+Then, as noted above, we have $\{i\} = \{j: \pre_j \in p\inv(\pre_i)\} \supseteq \{j: w_j \in c(w_i)\}$, so the expression defining a collision in stopping condition~(\ref{cond:collide1}) must be false for all $\pre_i \in \actt$. Then the subroutine must return $I = \emptyset$. 
 
 This shows that the information combination stage of the algorithm terminates.
-That is, every sequence of executions of InformationCombine (subroutine 2) is finite.
+That is, every sequence of executions of InformationCombine (subroutine~\ref{sub:infcomb}) is finite.
 
 We have shown that the sequence $\disto(\actok)$ is monotonically decreasing during the information combination stage (the second while loop in FindStrictCore) as well as during a single evaluation of InformationAcquire (subroutine~\ref{sub:infac}).
 Then the sequence $\disto(\actok)$ formed by distinct states of $\acto$ at \emph{any time} during FindStrictCore is monotonically decreasing.  
@@ -1141,19 +1142,20 @@ Note that, by inspection, $\acto \not = \emptyset$.
 Then apparently $0 = \disto(\acto^{k+1}) = \disto(\actc) < \dist(\actok)$. 
 
 \emph{Case 2}: Suppose $\actc \not = \emptyset$ and consider $\pre_i \in \actc$.
-Since $\pre_i$ was added to $\actc$, there must exist $k \geq 0$ such that $(T_i^2)^k \pre_i \not = (T_i^2)^{k+1} \pre_i$ (line~\ref{alg1:coll}).  
-In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we must have $\pre_i^f \pe \pre_i$ \emph{strictly}.
-Note that, for all such $\pre_i \in \actc$, we add $w(\pre_i^f) = p(w_i)$ (line~\ref{alg1:tree2}), so that $r(p(w_i)) = r(w(\pre_i^f))$.
-Then $r(w_i) = r(w(\pre_i^f))$, which we denote by $r(w_i) = w_k$.
+Since $\pre_i$ was added to $\actc$, there must exist $k \geq 0$ such that $(T_i^2)^k \pre_i \not = (T_i^2)^{k+1} \pre_i$ by the definition of stopping condition~(\ref{cond:fix1}).  
+Suppose that the sequence stops at $\pre' = (T_i^2)^{\ell} \pre_i$.
+In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we must have $\pre' \pe \pre_i$ \emph{strictly}.
+Note that, for all such $\pre_i \in \actc$, we add $w(\pre') = p(w_i)$ (at item \infacstoptha), so that $r(p(w_i)) = r(w(\pre'))$.
+Then $r(w_i) = r(w(\pre'))$, which we denote by $r(w_i) = w_k$.
 
 The algorithm returns $\acto' \equiv \actc$ which is an input for subroutine~\ref{sub:infcomb}.
 In subroutine~\ref{sub:infcomb}, we form strong components of the collision digraph $G = (V,E)$. 
 Suppose that $W_j$ is the strong component containing $v_i$.
 We add $i$ to $\coll(i)$ before forming the edges of $G$, so $(v_i,v_k) \in E$.
 Then $v_k \in \reach_j$, the reachable set of strong component $\strongcomp_j$. 
-Therefore, $\pre' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \peq \pre_i^f \pe \pre_i$, where the second inequality follows by lemma~\ref{lemma:key}, which shows that $\forest$ is a problem forest, and because $w(\pre_i^f)$ is a descendant of $w(\pre_k)$.
-Using the map $p:\acto' \to \actt$ above, we have $p(\pre_i) = \pre'$.
-We calculate as before $\disto(\actt) = \max_{\pre_j \in \actt} \|\pre_j\|_1 < \max_{\pre_j \in \actt} \disto(p\inv(\pre_j)) = \disto(\acto')$, where the inequality is strict by the work above, noting that $\pre_i \in p\inv(\{\pre'\})$. 
+Therefore, $\pre'' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \peq \pre' \pe \pre_i$, where the second inequality follows by lemma~\ref{lemma:key}, which shows that $\forest$ is a problem forest, and because $w(\pre')$ is a descendant of $w(\pre_k)$.
+Using the map $p:\acto' \to \actt$ above, we have $p(\pre_i) = \pre''$.
+We calculate as before $\disto(\actt) = \max_{\pre_j \in \actt} \|\pre_j\|_1 < \max_{\pre_j \in \actt} \disto(p\inv(\pre_j)) = \disto(\acto')$, where the inequality is strict by the work above, noting that $\pre_i \in p\inv(\{\pre''\})$. 
 Since $\actokk \leftarrow \actt$ when this subroutine returns, we have shown that, in both cases above, the sequence $\disto(\actok)$ decreases \emph{strictly} during a single execution of the outer while loop in FindStrictCore. 
 
 Above, we argued that $\disto(\actok)$ converges in finite time. 
@@ -1181,15 +1183,15 @@ We show that these statements still hold for $k = n +1$.
 Throughout, for a set $E$, we let $E'$ denote the state of $E$ at subroutine initialization, and $E''$ its state at algorithm return.
 There are two main cases, corresponding to each subroutine.
 
-\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ and $\fixfindk \to \fixfindkk$ when InformationAcquire (subroutine 1) returns.
-InformationAcquire returns a set $\actc$ of ``collided'' problems, which will be combined during subroutine 2.
+\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ and $\fixfindk \to \fixfindkk$ when InformationAcquire (subroutine~\ref{sub:infac}) returns.
+InformationAcquire returns a set $\actc$ of ``collided'' problems, which will be combined during subroutine~\ref{sub:infcomb}.
 In the above notation, $\actc'' = \acto^{k+1}$ is the set of problems and $\fixtemp''$ is the set of fixed points returned by the subroutine.
 By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
 Then, to show that no fixed points are ``lost'' during the subroutine, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \fix(\actc'')$.
 
 Formally, we work by induction on $\ell \geq 0$ (\emph{within} this subroutine), for distinct states of the tuple \[(\acta,\acto,\actc,\fixtemp)_{\ell}\]
 Note that, by inspection of the algorithm, the last three sets in the tuple change \emph{only if} $\acta$ changes. 
-Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states that occur at \emph{different} iterations of the processing loop at line~\ref{alg1:for1}.
+Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states that occur at outside of the algorithm's stopping condition processing code.
 Thus, we are allowed to remove a fixed point from $\acta \cup \actc$ and add it back later while processing a single problem $\pre_i$ without creating a ``distinct'' state.} of the working set of active problems $\acta$.
 We will show by induction that for any $\ell \geq 0$ if $\pre'' \in \fix(\pre)$ for some problem $\pre \in \acto^{\ell}$ then either $\pre'' \in \fixtemp^{\ell}$ or there exists $\pre' \in \acta^{\ell} \cup \actc^{\ell}$ with $\pre'' \peq \pre' \peq \pre$ (GAR).
 We call such a relationship a guarantee (GAR) on $\pre''$ \emph{afforded} by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$, which is either still active, or in the set of ``collided'' problems to be returned by the algorithm.
@@ -1199,7 +1201,7 @@ Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''
 Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \cup \fix(\actc'') \cup \fixtemp'' = \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
 
 First, we show that $\fix(\acto') \sub \fix(\acto'')$. 
-Consider the beginning of subroutine 1, where we remove redundant subproblems (line~\ref{alg1:redundant}).
+Consider the beginning of subroutine~\ref{sub:infac}, where we remove redundant subproblems (items \infacredi and \infacredii).
 If $\pre \in \acto'$ and $\pre \peq \min \fix(T^2)$, then $\fix(\pre) = \emptyset$ since we checked $\bopre = \min \fix(T^2) \not \in \fix(T)$. 
 Otherwise, if we remove $\pre$ from $\acto$ during this loop, then there is a $\pre \peq \pre' \in \acto$, so that $\fix(\pre) \sub \fix(\pre')$, and no fixed points are lost.
 Let $\acto^R$ denote the state of $\acto$ after this removal step.
@@ -1210,7 +1212,7 @@ We now begin the induction.
 The base case is clear, since we set $\acta' \leftarrow \acto'$ at initialization.
 Then suppose by induction that our hypothesis holds up to $\ell = t$.
 We will show that guarantees of the form (GAR) above still exist for all $\pre \in \fix(\actott)$.
-By the argument above, it suffices to consider changes to $\acta$ after redundant problem removal (line~\ref{alg1:redundant}), since no fixed points guarantees are lost during this step.
+By the argument above, it suffices to consider changes to $\acta$ after the redundant problem removal step, since no fixed points guarantees are lost during this step.
 There are several cases.
 
 \emph{Subcase 1}: There is a state change $\actat \to \actatt$ when stopping condition (1) or (2) is triggered for a problem $\pre_i \in \actat$, which is then removed $\actatt \leftarrow \actat \setminus \{\pre_i\}$.
@@ -1229,7 +1231,7 @@ Then $\pre'' \in \actatt \cup \actctt$ since it is not removed, so we are done.
 
 \emph{Subcase 2}: There is a state change $\actat \to \actatt$ when stopping condition (3) is triggered for a problem $\pre_i \in \actat$.
 Again, we have $\pre'$ the lowest element of the Tarski sequence, and, as above, $\fix(\pre_i) \sub \fix(\pre')$.
-We then remove $\pre_i$ and add $\pre' - e_i$ for $1 \leq i \leq m$, so $\actatt = \actat \setminus \{\pre_i \} \cup \left (\bigcup_{i \in I} \{\pre' - e_i \} \right )$, where $I \sub \{1,\hdots,m\}$ are the indices such that $\pre' - e_i$ is non-redundant (as in line~\ref{alg1:addq}).
+We then remove $\pre_i$ and add $\pre' - e_i$ for $1 \leq i \leq m$, so $\actatt = \actat \setminus \{\pre_i \} \cup \left (\bigcup_{i \in I} \{\pre' - e_i \} \right )$, where $I \sub \{1,\hdots,m\}$ are the indices such that $\pre' - e_i$ is non-redundant (as in item \infacstoptwii).
 Let $\pre \in \fix(\pren)$ for $\pren \in \acto$, and suppose that $\pre \not \in \fixtemptt}$, so we need to show that there exists some guarantee for $\pre$.
 Suppose $\pre \peq \pre_i \peq \pren$ as in (GAR) above, so that $\pre \peq \pre'$ by the Tarski argument.
 In fact, $\pre \pe \pre'$, because we check if $\pre' \in \fix(T)$, as in the previous case.
@@ -1250,9 +1252,9 @@ Specifically, $\actatt = \actat \setminus \{\pre_i\}$ and $\actctt = \actct \cup
 Then $\actat \cup \actct = \actatt \cup \actctt$, so none of the guarantees of the form (GAR) above can change, which finishes the subcases.
 
 By the remarks at the beginning and since the algorithm terminates by lemma~\ref{lemma:termination}, we have shown by induction that $\fix(\acto') \sub \fix(\actc'') \cup \fixtemp''$, so we are done.
-Returning to the first induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (subroutine 1), we have, using the inductive hypothesis, that $\fix(T) \sub \fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindk \cup \fixtemp'' = \fix(\actokk) \cup \fixfindkk$.
+Returning to the first induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (subroutine~\ref{sub:infac}), we have, using the inductive hypothesis, that $\fix(T) \sub \fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindk \cup \fixtemp'' = \fix(\actokk) \cup \fixfindkk$.
 
-\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine (subroutine 2) returns.
+\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine (subroutine~\ref{sub:infcomb}) returns.
 In the notation above, $\acto'$ is the input to the subroutine, and $\actt'' = \actokk$ is the set returned by the subroutine. 
 We will argue that, for any $\pre \in \acto'$, there is a $\pre' \in \actt''$ such that $\fix(\pre) \sub \fix(\pre')$.
 It will follow immediately that $\fix(\actok) = \fix(\acto') \sub \fix(\actt'') = \fix(\actokk)$.
@@ -1260,13 +1262,13 @@ The proof relies crucially on the collision digraph and problem forest structure
 
 Fix $\pre_i \in \acto'$.
 By construction, we have $v_i \in G$, where $G = (V,E)$ is the collision digraph built during the algorithm.
-Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after trimming irrelevant singletons (line~\ref{alg2:cstrong}).
+Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after trimming irrelevant singletons (at item \infcombgraphii).
 By our key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$ during the algorithm, $\forest$ is a problem forest, as in definition~\ref{def:forest}, at any time during the execution of FindStrictCore.
 Moreover, condition~(\ref{convlemma:coll}) of lemma~\ref{lemma:forest} also holds, showing that collision indices are compatible with $\forest$.
 Then proposition~\ref{prop:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph, can be applied. 
 Let $\reach_j$ denote the reachable set of strong component $\strongcomp_j$.
 By item~(\ref{prop:graph:reach}) of the graph structure proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
-If $K_j$ denotes the set of indices associated with $\reach_j$ (as in line~\ref{alg2:indices}), we have $\fix(\pre_i) \peq \min_{k \in K_j} \pre_k \equiv \pre'$, which is added to $\actt$.
+Now we have $\fix(\pre_i) \peq \min\limits_{v_k \in S_j} \pre_k \equiv \pre'$, which is added to $\actt$.
 In particular, $\fix(\pre_i) \sub \fix(\pre')$, where $\pre' \in \actt'' = \actokk$.
 This shows that $\fix(\actok) \sub \fix(\actokk)$, so, in particular, $\fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindkk$ since $\fixfindk = \fixfindkk$.
 
@@ -1276,132 +1278,6 @@ Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, s
 Then $\fixfind = \fix(T)$. 
 That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations. 
 \eprf
-
-
-
-\prf
-We will show that at any point during the execution of FindStrictCore, a fixed point $\pre \in \fix(T)$ satisfies either (i) $\pre \in \fixfind$, the fixed points already found by the algorithm, or (ii) there exists a $\pre' \in \acto$ such that $\pre \peq \pre'$. 
-We work by induction on $k$, the number of distinct states $\actok$ of the set of active problems $\acto$ during the main loop of FindStrictCore\footnote{Note that $\fixfind$ changes only if $\acto$ changes, so it suffices to consider distinct states of $\acto$}. 
-For any set of problems $W$, we denote $\fix(W) \equiv \bigcup_{\pre \in W} \fix(\pre)$.
-
-For the base case, note that if $\toppre \in \fix(T)$ or $\ul{\pre} \in \fix(T)$, then, by lemma~\ref{lemma:contain} above, $\fix(T) = \{\toppre\}$ or $\{\ul{\pre}\}$, so the algorithm is correct. 
-Suppose the algorithm continues, and we set $\acto = \bigcup_{i = 1}^m \{\toppre - e_i\}$ (identifying $\prealloc$ with a grid as above).
-Since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, the inductive hypothesis is clearly satisfied. 
-Then suppose by induction that (i) and (ii) above are satisfied up to $k = n$.
-We show that these statements still hold for $k = n +1$.
-
-Throughout, for a set $E$, we let $E'$ denote the state of $E$ at subroutine initialization, and $E''$ its state at algorithm return.
-There are two main cases, corresponding to each subroutine.
-
-\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ and $\fixfindk \to \fixfindkk$ when InformationAcquire (subroutine 1) returns.
-InformationAcquire returns a set $\actc$ of ``collided'' problems, which will be combined during subroutine 2.
-In the above notation, $\actc'' = \acto^{k+1}$ is the set of problems and $\fixtemp''$ is the set of fixed points returned by the subroutine.
-By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
-Then, to show that no fixed points are ``lost'' during the subroutine, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \fix(\actc'')$.
-
-Formally, we work by induction on $\ell \geq 0$ (\emph{within} this subroutine), for distinct states of the tuple \[(\acta,\acto,\actc,\fixtemp)_{\ell}\]
-Note that, by inspection of the algorithm, the last three sets in the tuple change \emph{only if} $\acta$ changes. 
-Therefore, it suffices to consider distinct states\footnote{Note that by ``distinct states'' we mean distinct states that occur at \emph{different} iterations of the processing loop at line~\ref{alg1:for1}.
-Thus, we are allowed to remove a fixed point from $\acta \cup \actc$ and add it back later while processing a single problem $\pre_i$ without creating a ``distinct'' state.} of the working set of active problems $\acta$.
-We will show by induction that for any $\ell \geq 0$ if $\pre'' \in \fix(\pre)$ for some problem $\pre \in \acto^{\ell}$ then either $\pre'' \in \fixtemp^{\ell}$ or there exists $\pre' \in \acta^{\ell} \cup \actc^{\ell}$ with $\pre'' \peq \pre' \peq \pre$ (GAR).
-We call such a relationship a guarantee (GAR) on $\pre''$ \emph{afforded} by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$, which is either still active, or in the set of ``collided'' problems to be returned by the algorithm.
-In particular, this will show that $\fix(\acto^{\ell}) \sub \fix(\acta^{\ell}) \cup \fix(\actc^{\ell}) \cup \fixtemp^{\ell}$ for all $\ell \geq 0$.
-By lemma~\ref{lemma:termination}, this subroutine terminates with $\acta'' = \emptyset$. 
-Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''$ is the state of $\acto$ when the algorithm returns. 
-Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \cup \fix(\actc'') \cup \fixtemp'' = \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
-
-First, we show that $\fix(\acto') \sub \fix(\acto'')$. 
-Consider the beginning of subroutine 1, where we remove redundant subproblems (line~\ref{alg1:redundant}).
-If $\pre \in \acto'$ and $\pre \peq \min \fix(T^2)$, then $\fix(\pre) = \emptyset$ since we checked $\bopre = \min \fix(T^2) \not \in \fix(T)$. 
-Otherwise, if we remove $\pre$ from $\acto$ during this loop, then there is a $\pre \peq \pre' \in \acto$, so that $\fix(\pre) \sub \fix(\pre')$, and no fixed points are lost.
-Let $\acto^R$ denote the state of $\acto$ after this removal step.
-Then $\fix(\acto^R) = \fix(\acto')$.
-After this step, we only add, never remove, points from $\acto$, so we have $\fix(\acto') \sub \fix(\acto^R) \sub \fix(\acto'')$, as required.
-
-We now begin the induction.
-The base case is clear, since we set $\acta' \leftarrow \acto'$ at initialization.
-Then suppose by induction that our hypothesis holds up to $\ell = k$.
-We will show that guarantees of the form (GAR) above still exist for all $\pre \in \fix(\actokk)$.
-By the argument above, it suffices to consider changes to $\acta$ after redundant problem removal (line~\ref{alg1:redundant}), since no fixed points guarantees are lost during this step.
-There are several cases.
-
-\emph{Subcase 1}: There is a state change $\actak \to \actakk$ when stopping condition (1) or (2) is triggered for a problem $\pre_i \in \actak$, which is then removed $\actakk \leftarrow \actak \setminus \{\pre_i\}$.
-Let $\pren \in \actok$ and $\pre \in \fix(\pren)$ and suppose that $\pre \not \in \fixtempkk$, the set of fixed points found by $\ell = k + 1$.
-We show that the guarantee (GAR) on $\pre$ cannot be afforded by $\pre_i$, so it is safe to remove $\pre_i$ from $\actak \cup \actck$.
-Suppose that $\pre \peq \pre_i$.
-We have $\pre' = (T_i^2)^k \pre_i$ for some $k \geq 0$, and $\pre' \peq \bopre$ or $T \pre' = \pre'$.
-By the Tarski argument discussed earlier in the text, $\fix(\pre_i) \sub \fix(\pre')$, so, in fact, $\pre \peq \pre'$.
-But $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $\pre_i$, and we assumed $\pre' \in \fixtempkk}$.
-Then $\pre \pe \pre'$ strictly.
-For stopping condition (1), note that $\fix(T) \sub \fix(T^2) \succeq \bopre$.
-Combining these, $\pre \pe \pre' \peq \bopre$, which is a contradiction.
-For stopping condition (2), note that by lemma~\ref{lemma:top}, which shows that no fixed points of $T$ are ordered strictly by ``$\pe$'', if $T\pre' = \pre'$ then there can be no $\pre \pe \pre'$ fixed by $T$, so this also results in a contradiction. 
-By the inductive hypothesis, there must be $\pre'' \not = \pre_i$ such that $\pre'' \in \actak \cup \actck$ and affords a guarantee $\pre \peq \pre'' \peq \pren$.
-Then $\pre'' \in \actakk \cup \actckk$ since it is not removed, so we are done.
-
-\emph{Subcase 2}: There is a state change $\actak \to \actakk$ when stopping condition (3) is triggered for a problem $\pre_i \in \actak$.
-Again, we have $\pre'$ the lowest element of the Tarski sequence, and, as above, $\fix(\pre_i) \sub \fix(\pre')$.
-We then remove $\pre_i$ and add $\pre' - e_i$ for $1 \leq i \leq m$, so $\actakk = \actak \setminus \{\pre_i \} \cup \left (\bigcup_{i \in I} \{\pre' - e_i \} \right )$, where $I \sub \{1,\hdots,m\}$ are the indices such that $\pre' - e_i$ is non-redundant (as in line~\ref{alg1:addq}).
-Let $\pre \in \fix(\pren)$ for $\pren \in \acto$, and suppose that $\pre \not \in \fixtempkk}$, so we need to show that there exists some guarantee for $\pre$.
-Suppose $\pre \peq \pre_i \peq \pren$ as in (GAR) above, so that $\pre \peq \pre'$ by the Tarski argument.
-In fact, $\pre \pe \pre'$, because we check if $\pre' \in \fix(T)$, as in the previous case.
-Then we must have, $\pre \peq \pre' - e_i$ for some $i$.
-If $i \in I$ then $\pre \peq \pre' - e_i \pe \pre' \peq \pren$, so $\pre' - e_i \in \actakk$ gives a new guarantee (GAR) on this fixed point for $\pren \in \acto$.
-No other points of $\actak \cup \actck$ are removed, so we are done.
-Suppose, conversely, that $i \not \in I$; that is, the problem $\pre' - e_i$ is redundant.
-Then $\pre - e_i = \pre'' \in \actk$. 
-Note that by induction, we have $\fix(Q') \sub \fix(T) \sub \fix(\acto') \cup \fixfind^k$
-
-
-
-
-so we actually have $\pre \in \fix(\pre'') \cap \fix(\pren)$.
-By working with the guarantee (GAR) for $\pre'' \in \actok$ (rather than the guarantee for $\pren \in \actok$), by the inductive hypothesis for $\ell = k$ there exists $\pre_g \in \actak \cup \actck$ such that $\pre \peq \pre_g \peq \pre'' = \pre' - e_i \pe \pre' \peq \pre_i$.
-Then $\pre_g \not = \pre_i$, so, in particular, it is not removed at step $k+1$, and we have $\pre_g \in \actakk \cup \actckk$.
-Then, in either case, we still have a guarantee on all fixed points.
-
-\emph{Subcase 3}: There is a state change $\actak \to \actakk$ when stopping condition (4) is triggered for a problem $\pre_i \in \actak$.
-Note that in this case we just move $\pre_i$ between sets.
-Specifically, $\actakk = \actak \setminus \{\pre_i\}$ and $\actckk = \actck \cup \{\pre_i\}$.
-Then $\actak \cup \actck = \actakk \cup \actckk$, so none of the guarantees of the form (GAR) above can change, which finishes the subcases.
-
-By the remarks at the beginning and since the algorithm terminates by lemma~\ref{lemma:termination}, we have shown by induction that $\fix(\acto') \sub \fix(\actc'') \cup \fixtemp''$, so we are done.
-Returning to the first induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (subroutine 1), we have, using the inductive hypothesis, that $\fix(T) \sub \fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindk \cup \fixtemp'' = \fix(\actokk) \cup \fixfindkk$.
-
-\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine (subroutine 2) returns.
-In the notation above, $\acto'$ is the input to the subroutine, and $\actt'' = \actokk$ is the set returned by the subroutine. 
-We will argue that, for any $\pre \in \acto'$, there is a $\pre' \in \actt''$ such that $\fix(\pre) \sub \fix(\pre')$.
-It will follow immediately that $\fix(\actok) = \fix(\acto') \sub \fix(\actt'') = \fix(\actokk)$.
-The proof relies crucially on the collision digraph and problem forest structure results developed above.
-
-Fix $\pre_i \in \acto'$.
-By construction, we have $v_i \in G$, where $G = (V,E)$ is the collision digraph built during the algorithm.
-Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after trimming irrelevant singletons (line~\ref{alg2:cstrong}).
-By our key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$ during the algorithm, $\forest$ is a problem forest, as in definition~\ref{def:forest}, at any time during the execution of FindStrictCore.
-Moreover, condition~(\ref{convlemma:coll}) of lemma~\ref{lemma:forest} also holds, showing that collision indices are compatible with $\forest$.
-Then proposition~\ref{prop:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph, can be applied. 
-Let $\reach_j$ denote the reachable set of strong component $\strongcomp_j$.
-By item~(\ref{prop:graph:reach}) of the graph structure proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
-If $K_j$ denotes the set of indices associated with $\reach_j$ (as in line~\ref{alg2:indices}), we have $\fix(\pre_i) \peq \min_{k \in K_j} \pre_k \equiv \pre'$, which is added to $\actt$.
-In particular, $\fix(\pre_i) \sub \fix(\pre')$, where $\pre' \in \actt'' = \actokk$.
-This shows that $\fix(\actok) \sub \fix(\actokk)$, so, in particular, $\fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindkk$ since $\fixfindk = \fixfindkk$.
-
-We have exhausted both cases, so this completes the induction. 
-By our termination analysis in lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
-Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, so clearly $\fixfind \sub \fix(T)$.
-Then $\fixfind = \fix(T)$. 
-That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations. 
-\eprf
-
-
-
-
-
-
-
-
-
-
 
 \emph{Discussion}: Note that, given $\pre = \pre_Y \in \fixfind$, we have $Y = \bigcup_{a \in A} Y_a = \bigcup_{a \in A} \pre(a)$, so the allocation corresponding to $\pre$ can be found by taking a union.
 The performance of the algorithm for a given problem instance depends on the exact structure of the lattice $\fix(T^2)$.
@@ -1663,7 +1539,7 @@ Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in fini
 Add each of these to the fixed point collection $\fixfind$.
 For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$, and add the vertex $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
 Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$, and add the vertex $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
-Then run algorithm~\ref{alg:main}, where we modify the subroutines InformationAcquire (subroutine 1) and InformationCombine (subroutine 2) as shown below.
+Then run algorithm~\ref{alg:main}, where we modify the subroutines InformationAcquire (subroutine~\ref{sub:infac}) and InformationCombine (subroutine~\ref{sub:infcomb}) as shown below.
 
 \begin{subroutine}[InformationAcquire] \label{sub:infac2}
 Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
@@ -1761,15 +1637,19 @@ No such analysis is necessary for finding stable outcomes, because this stopping
 If we were to initialize \emph{every} subproblem of the form $(X_i \setminus \{x\}, Y_i)$ and $(X_i, Y_i \cup \{y \})$, we would create $\lft |\topx| - |\botx| + |\boty|- |\topy|\rt !$ problems in total, whereas greedy search only needs to check $2^{|\topx| - |\botx| + |\boty|- |\topy|} $ points.
 However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
 
----------------
----------------
---------------
-
 \subsubsection{Notes}
 
 AGENDA
-deal with some discussion / tune
 rewrite main algorithms / proofs and try to slim
+fix auxiliary lemma
+    we don't check for true redundancy - rewrite main theorem?
+    there is a dependency for this in key lemma also
+        dep in case1 of key lemma - uses descendant relation
+reread again to look for reductions
+try to assoc problems and preallocs in a 1-1 way
+strong red for active problems only to salvage?
+
+
 
 TODO-------
 add discussion sections, minus related literature
@@ -1814,6 +1694,10 @@ appendix note about generalization to arbitrary complete lattices
 add line / language above about how general our approach is
 link this with coarsening results
 keep full pseudocode for appendix
+technically, the w(pre) notation is incorrect, since we need a unique index
+remember, strong redundancy is impossible because of dependencie - what about for active problems only though?
+**better proof for auxiliary, dealing with all diff cases (perhaps inductive for collision case, of initializing a problem at same ENDING POINT as another problem, to show that we actually do make appropriate use of information here.
+    how do indices affect... information guarantees? you can pull RANK from any pair (pre,i) by looking if (pre,i) leq (pre',j) iff pre leq pre', so no problem there
 
 
 \section{extra text} 
