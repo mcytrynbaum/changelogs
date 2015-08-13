@@ -1273,7 +1273,7 @@ We have exhausted both cases, so this completes the induction.
 By our termination analysis in lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
 Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, so clearly $\fixfind \sub \fix(T)$.
 Then $\fixfind = \fix(T)$. 
-That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations. 
+That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations.
 \eprf
 
 \subsubsection{Discussion} 
@@ -1640,6 +1640,8 @@ No such analysis is necessary for finding stable outcomes, because this stopping
 Consider the worst case scenario where $\Phi_i: \lattice_i \to \lattice_i$ fixes at $\pairi = \max \lattice_i$ for every $(\botx, \boty) \peq \pairi \peq (\topx, \topy)$.
 If we were to initialize \emph{every} subproblem of the form $(X_i \setminus \{x\}, Y_i)$ and $(X_i, Y_i \cup \{y \})$, we would create $\lft |\topx| - |\botx| + |\boty|- |\topy|\rt !$ problems in total, whereas greedy search only needs to check $2^{|\topx| - |\botx| + |\boty|- |\topy|} $ points.
 However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
+
+\clearpage
 
 \subsubsection{Notes}
 
