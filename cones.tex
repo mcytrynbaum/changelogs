@@ -1072,7 +1072,7 @@ First, we handle termination analysis.
 FindStrictCore terminates in finite time
 \end{lemma}
 \prf
-For any set $E \sub \prealloc$, define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|$ is the standard 1-norm .}.
+For any set $E \sub \prealloc$, define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|_1$ is the standard 1-norm .}.
 Similarly, let $\distt(E) = \sum_{\pre \in E} \|\pre\|_1$.
 Note that by finiteness, both $\disto(\cdot)$ and $\distt(\cdot)$ take finitely many values on subsets of $\prealloc$.
 First, we show that, for any problem collection $\acto$, InformationAcquire (subroutine~\ref{sub:infac}) terminates in finitely many iterations.
@@ -1080,12 +1080,12 @@ First, we show that, for any problem collection $\acto$, InformationAcquire (sub
 Consider the sequence $\actak$ formed by distinct states of $\acta$ during subroutine~\ref{sub:infac}.
 Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some problem $\pre$, then clearly $\disto(\acta^{k+1}) \leq \disto(\actak)$.
 By inspection, all changes to $\acta$ are of this form, except when we add new problems after triggering stopping condition~(\ref{cond:fix1}).
-For this state change, note that $\|\pre\|_1 > \max\limits_{i = 1,\hdots,m} \|\pre - e_i\|$, so, in fact, if $\acta^{k+1} = \actak \setminus \{\pre\} \cup \lft \bigcup_{i =1}^m \{\pre - e_i \} \rt$ then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
+For this state change, note that $\|\pre\|_1 > \max\limits_{i = 1,\hdots,m} \|\pre - e_i\|_1$, so, in fact, if $\acta^{k+1} = \actak \setminus \{\pre\} \cup \lft \bigcup_{i =1}^m \{\pre - e_i \} \rt$ then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
 Then $\disto(\actak)$ is monotonically decreasing and $\geq 0$.
 In particular, $\disto(\actak)$ converges in finite time, by finiteness of $\prealloc$.
 
 Note that $\actc$, the set returned by the algorithm, has $\pre \in \actc \implies \pre \in \acta^{\ell}$ for some $\ell$.
-Then $\disto(\actc) = \max_{\pre\in\actc} \|\pre\|_1 = \|\pre'\| \leq \disto(\acta^{\ell}) \leq \disto(\acto)$ for some $\pre' \in \actc \cap \acto^{\ell}$.
+Then $\disto(\actc) = \max_{\pre\in\actc} \|\pre\|_1 = \|\pre'\|_1 \leq \disto(\acta^{\ell}) \leq \disto(\acto)$ for some $\pre' \in \actc \cap \acto^{\ell}$.
 So we have also shown $\disto(\acto) \geq \disto(\actc)$.
 
 The inequality $\dist(\acta^{k+1}) \leq \disto(\actak)$ is \emph{strict} whenever $\pre'' = \argmax_{\pre' \in \actak} \|\pre'\|_1$. 
@@ -1439,7 +1439,7 @@ We say that an agent $a \in A$ has \emph{substitutable preferences} if for any $
 Similarly, a choice function $C_a$ is said to satisfy \emph{irrelevance of rejected contracts} if for any $Y \sub X$ and $z \not \in Y$, if $z \in C_a(Y \cup \{ z \})$ then $C_a(Y \cup \{z\}) = C_a(Y)$.
 In this setting, for a set $Y \sub X$, we let $C_D(Y) = \bigcup_{d \in D} C_d(Y)$ and similarly let $C_H(Y) = \bigcup_{h \in H} C_h(Y)$ denote the set of contracts chosen out of $Y$ by the hospitals.
 
-\subsubsection{Lattice Definition and Sublattice Operators}
+\subsubsection{Fixed Point Construction}
 Consider $\lattice = 2^X \times 2^X$, pairs of subsets of $X$, where we define a partial order by $(Z,W) \peq (Z',W')$ if and only if $Z \sub Z'$ and $W' \sub W$. 
 It is easy to check that this partial order defines a complete lattice.
 For instance, given a collection of $(Z_i, W_i) \in \lattice$, the greatest lower bound is $\bigwedge_i (Z_i, W_i) = \lft \bigcap_i Z_i, \bigcup_i W_i \rt \in 2^X \times 2^X$.
@@ -1457,7 +1457,7 @@ Then for any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
 Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
 \end{lemma}
 
-\emph{Definition of Sublattice Operators} - This lemma shows that finding all stable matchings $\stable$ is equivalent to finding all fixed points of the operator $\fix(\Phi)$.
+\subsubsection{Definition of Sublattice Operators} - This lemma shows that finding all stable matchings $\stable$ is equivalent to finding all fixed points of the operator $\fix(\Phi)$.
 By isotonicity of $\Phi$, the standard Tarski argument from previous sections shows that the sequence formed by $\Phi^k(X, \emptyset)$ is monotonically decreasing, and fixes at $(\topx, \topy) = \max \fix(\Phi)$.
 Similarly, iterating $\Phi^k(\emptyset, X)$ eventually fixes at a $(\botx, \boty) = \min \fix( \Phi)$.
 Note then that any $(Z,W) \in \fix(\Phi)$ (corresponding to stable allocation $Z \cap W$) satisfies $\botx \sub Z \sub \topx$ and $\topy \sub W \sub \boty$.
@@ -1650,6 +1650,7 @@ collate references
 write all discussion and literature sections
 makebib
 notation finalize
+figure annotation
 
 track problems and rewrite informationcombine to get more efficiency, uniqueness over Q, and 1-1 index matching
 
