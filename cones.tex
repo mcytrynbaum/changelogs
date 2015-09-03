@@ -39,7 +39,6 @@
 
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
-\renewcommand{\algorithmiccomment[1]}{ \hfill // \eqparbox{}{#1} }
 \newcommand{\prf}{\begin{proof}}
 \newcommand{\eprf}{\end{proof}}
 \newcommand{\lft}{\left(}
@@ -96,7 +95,7 @@
 \newcommand{\actot}{Q_0^t} 
 \newcommand{\actott}{Q_0^{t+1}} 
 \newcommand{\actol}{Q_0^{\ell}} 
-\newcommand{\actol}{Q_0^{\ell + 1}} 
+\newcommand{\actoll}{Q_0^{\ell + 1}} 
 \newcommand{\acta}{Q_A} 
 \newcommand{\actak}{Q_A^k} 
 \newcommand{\actakk}{Q_A^{k + 1}} 
@@ -158,6 +157,7 @@
 \newcommand{\infcombgraphii}{(2)\xspace}
 \newcommand{\infcombgraphiii}{(3)\xspace}
 \newcommand{\infcombcomba}{(a)\xspace}
+\newcommand{\infcombcombb}{(b)\xspace}
 
 \newcommand{\infacredi}{(i)\xspace}
 \newcommand{\infacredii}{(ii)\xspace}
@@ -547,10 +547,10 @@ In particular, we make efficient use of both the geometric information shared be
 \tikzset{vertex2/.style = {circle, fill =orange!40}}
 \tikzset{edge/.style = {->, thick}}
 
-\node[vertex2] (e) at (3,1);
-\node[vertex2] (f) at (2,3);
-\node[vertex2] (g) at (3,3);
-\node[vertex2] (h) at (4,3);
+\node[vertex2] (e) at (3,1) {};
+\node[vertex2] (f) at (2,3) {};
+\node[vertex2] (g) at (3,3) {};
+\node[vertex2] (h) at (4,3) {};
 
 \draw[edge] (e) to (f);
 \draw[edge] (e) to (g);
@@ -652,7 +652,7 @@ Throughout what follows, we maintain global variables $\forest$, a rooted forest
 \emph{Initialization} To initialize the algorithm, set $\fixfind = \emptyset$ and create an empty forest $F = (\emptyset,\emptyset)$. 
 Apply $T^2$ iteratively to each of $\pre^*$ and $\pre_*$, the maximal and minimal allocations in $\prealloc$, to find $\toppre = \max \fix(T^2)$ and $\ul{\pre} = \min \fix(T^2)$, respectively.
 If $T\toppre = \toppre$ set $\fixfind = \{\toppre\}$ and terminate.
-Similarly, if $T\bopre = \bopre$, then set $\fixfind = \{\bopre}\}$ and terminate. 
+Similarly, if $T\bopre = \bopre$, then set $\fixfind = \{\bopre\}$ and terminate. 
 Otherwise, for $i = 1 \hdots m$ add $\toppre - e_i$ to $\act$ and $\acto$, and add $w(\pre - e_i)$ to $F$ as an isolated root. Then, run FindStrictCore. 
 Subroutine details are given below.
 
@@ -1072,7 +1072,7 @@ First, we handle termination analysis.
 FindStrictCore terminates in finite time
 \end{lemma}
 \prf
-For any set $E \sub \prealloc$, define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $\x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|_1$ is the standard 1-norm .}.
+For any set $E \sub \prealloc$, define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|_1$ is the standard 1-norm .}.
 Similarly, let $\distt(E) = \sum_{\pre \in E} \|\pre\|_1$.
 Note that by finiteness, both $\disto(\cdot)$ and $\distt(\cdot)$ take finitely many values on subsets of $\prealloc$.
 First, we show that, for any problem collection $\acto$, InformationAcquire (subroutine~\ref{sub:infac}) terminates in finitely many iterations.
@@ -1088,7 +1088,7 @@ Note that $\actc$, the set returned by the algorithm, has $\pre \in \actc \impli
 Then $\disto(\actc) = \max_{\pre\in\actc} \|\pre\|_1 = \|\pre'\|_1 \leq \disto(\acta^{\ell}) \leq \disto(\acto)$ for some $\pre' \in \actc \cap \acto^{\ell}$.
 So we have also shown $\disto(\acto) \geq \disto(\actc)$.
 
-The inequality $\dist(\acta^{k+1}) \leq \disto(\actak)$ is \emph{strict} whenever $\pre'' = \argmax_{\pre' \in \actak} \|\pre'\|_1$. 
+The inequality $\disto(\acta^{k+1}) \leq \disto(\actak)$ is \emph{strict} whenever $\pre'' = \argmax_{\pre' \in \actak} \|\pre'\|_1$. 
 For any $k$, consider $\actak$ at the top of the algorithm's main for loop. 
 Then $\pre'' \in \actak$, so, for at least one iteration of the loop, $\disto(\actak)$ decreases strictly.
 Since $\disto(\actak)$ converges in finite iterations, the subroutine's while loop runs for only finitely many iterations, so the subroutine terminates.
@@ -1136,8 +1136,7 @@ Consider evaluating subroutine~\ref{sub:infac} with input $\acto$.
 
 \emph{Case 1}: The collection $\actc$ returned by the subroutine is empty.
 Note that, by inspection, $\acto \not = \emptyset$. 
-Then apparently $0 = \disto(\acto^{k+1}) = \disto(\actc) < \dist(\actok)$. 
-
+Then apparently $0 = \disto(\acto^{k+1}) = \disto(\actc) < \disto(\actok)$.
 \emph{Case 2}: Suppose $\actc \not = \emptyset$ and consider $\pre_i \in \actc$.
 Since $\pre_i$ was added to $\actc$, there must exist $k \geq 0$ such that $(T_i^2)^k \pre_i \not = (T_i^2)^{k+1} \pre_i$ by the definition of stopping condition~(\ref{cond:fix1}).  
 Suppose that the sequence stops at $\pre' = (T_i^2)^{\ell} \pre_i$.
@@ -1218,7 +1217,7 @@ We show that the guarantee (GAR) on $\pre$ cannot be afforded by $\pre_i$, so it
 Suppose that $\pre \peq \pre_i$.
 We have $\pre' = (T_i^2)^{m'} \pre_i$ for some $m' \geq 0$, and $\pre' \peq \bopre$ or $T \pre' = \pre'$.
 By the Tarski argument discussed earlier in the text, $\fix(\pre_i) \sub \fix(\pre')$, so, in fact, $\pre \peq \pre'$.
-But $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $\pre_i$, and we assumed $\pre' \in \fixtemptt}$.
+But $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $\pre_i$, and we assumed $\pre' \in \fixtemptt$.
 Then $\pre \pe \pre'$ strictly.
 For stopping condition (1), note that $\fix(T) \sub \fix(T^2) \succeq \bopre$.
 Combining these, $\pre \pe \pre' \peq \bopre$, which is a contradiction.
@@ -1229,7 +1228,7 @@ Then $\pre'' \in \actatt \cup \actctt$ since it is not removed, so we are done.
 \emph{Subcase 2}: There is a state change $\actat \to \actatt$ when stopping condition (3) is triggered for a problem $\pre_i \in \actat$.
 Again, we have $\pre'$ the lowest element of the Tarski sequence, and, as above, $\fix(\pre_i) \sub \fix(\pre')$.
 We then remove $\pre_i$ and add $\pre' - e_i$ for $1 \leq i \leq m$, so $\actatt = \actat \setminus \{\pre_i \} \cup \left (\bigcup_{i \in I} \{\pre' - e_i \} \right )$, where $I \sub \{1,\hdots,m\}$ are the indices such that $\pre' - e_i$ is non-redundant (as in item \infacstoptwii).
-Let $\pre \in \fix(\pren)$ for $\pren \in \acto$, and suppose that $\pre \not \in \fixtemptt}$, so we need to show that there exists some guarantee for $\pre$.
+Let $\pre \in \fix(\pren)$ for $\pren \in \acto$, and suppose that $\pre \not \in \fixtemptt$, so we need to show that there exists some guarantee for $\pre$.
 Suppose $\pre \peq \pre_i \peq \pren$ as in (GAR) above, so that $\pre \peq \pre'$ by the Tarski argument.
 In fact, $\pre \pe \pre'$, because we check if $\pre' \in \fix(T)$, as in the previous case.
 Then we must have, $\pre \peq \pre' - e_i$ for some $i$.
