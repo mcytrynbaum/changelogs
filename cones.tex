@@ -171,14 +171,14 @@
 %%%%
 
 \title{Using Lattice Geometry to Find All Stable Allocations}
-\author{Max Cytrynbaum and Scott Duke Kominers}
+\author{Max Cytrynbaum} 
 
 \begin{document}
 \maketitle
 
 \section{Introduction}
 
-In this paper, we extend the algorithm pioneered in Echenique and Yenmez to find \emph{all} strict core allocations in a highly general model of multilateral many-to-many matching with contracts.
+In this paper\footnote{I am very grateful to Scott Kominers for continual guidance on this project. This work was completed with the help of an Economic Design Summer Fellowship from the Harvard Society of Fellows.}, we extend an algorithm pioneered in Echenique and Yenmez (2013) to find \emph{all} strict core allocations in a highly general model of multilateral many-to-many matching with contracts.
 We show that, as in the case of matching with preferences over colleagues, strict core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
 Our main contribution is to show that the original algorithm does not take full advantage of the geometric relationships implied by the problem's lattice structure.
 We develop a notion of ``information sharing'' in lattices, construct and prove correctness for an algorithm that implements this idea, and show how this approach may be extended to a wider class of economic problems for which there is a complete lattice structure. 
@@ -270,7 +270,7 @@ This result shows that an algorithm that finds all $\pre \in \fix(T)$ will also 
 
 However, if there are \emph{uncoordinated} preallocations that are also fixed by $T$, such an algorithm may return extraneous solutions not associated with any strict core matching.
 The following lemma, which is essential for the construction of our algorithm, shows that there are no such preallocations.
-Note that this result significantly generalizes the corresponding lemma in Echenique and Yenmez and also subsumes the main theorem of Kojima (xxxx). 
+Note that this result significantly generalizes the corresponding lemma in Echenique and Yenmez (2013) and also subsumes the main result of Kojima (2015). 
 
 \begin{lemma} \label{lemma:coordinated}
 $\fix(T) \sub \coordpre$
@@ -328,16 +328,16 @@ Our maximal domain results will show that this is not the case for the natural e
 For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations (see lemma~\ref{lemma:core}). 
 
 \subsection{The Lattice of Fixed Preallocations}
-In this section, we generalize constructions from Echenqiue and Yenmez showing the the fixed points of the squared operator $T^2$ form a lattice. 
+In this section, we generalize constructions from Echenique and Yenmez (2013) showing the the fixed points of the squared operator $T^2$ form a lattice. 
 First, we define a natural partial order on the set of preallocations $\prealloc$.
 
 Say that $\pre \su \pre'$ if and only if $\pre(a) \suq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
 Thus, we write $\pre \suq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
 This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
 Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
-These results are an almost direct extension of lemmas 4.x through 4.y of Echenique and Yenmez.
+These results are an almost direct extension of lemmas 4.x through 4.y of Echenique and Yenmez (2013) .
 For the purposes of illustration, we include the proof the first result for the more general framework of preallocations considered in this paper.
-The rest of the lemmas follow from straightforward extensions of the work in Echenique in and Yenmez. 
+The rest of the lemmas follow from straightforward extensions of the work in Echenique in and Yenmez (2013). 
 \begin{lemma} \label{lemma:antitone}
 $T$ is antitone 
 \end{lemma}
@@ -348,7 +348,7 @@ Then there is an allocation $Y \sub X$ with $Y_a = Z$ such that $Y_b \suq_b \pre
 Then $Y_b \suq_b \pre'(b) \suq_b \pre_b$ also for all such agents, so we also have $Z \in V(\pre,a)$.
 Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \suq T\pre'(a)$. $a$ was arbitrary, so $T\pre \suq T\pre'$ under our partial order. 
 \eprf
-The following lemmas follow exactly as in Echenique and Yenmez, using the antitonicity of $T$. 
+The following lemmas follow exactly as in Echenique and Yenmez (2013), using the antitonicity of $T$. 
 \begin{cor} $T^2$ is isotone, and $\fix(T^2)$ is a non-empty complete lattice. 
 \end{cor}
 \begin{lemma} \label{lemma:order}
@@ -361,7 +361,7 @@ There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \
 \section{Sharing Information to Find All Strict Core Allocations}
 \subsection{Introduction}
 In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
-Our algorithm builds upon the original approach in Echenique and Yenmez.
+Our algorithm builds upon the original approach in Echenique and Yenmez (2013).
 In particular, we show how to fully exploit the problem's complete lattice structure to more efficiently find the full set of strict core matchings. 
 
 The algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
@@ -420,7 +420,7 @@ Starting with $\toppre_i$, the unanimously most preferred preallocation in the s
 
 Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of subproblem cones. 
 We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$. 
-In this way, we will eventually find the full set of strict core outcomes, directly extending the Echenique and Yenmez algorithm to the present setting.  
+In this way, we will eventually find the full set of strict core outcomes, directly extending the Echenique and Yenmez (2013) algorithm to the present setting.  
 
 However, depending on the structure of the lattice $\fix(T^2)$, the strategy described above can actually be quite similar to greedy search.  
 In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.As we will show, many of the subproblems generated by this strategy are either redundant or do not need to be solved completely.
@@ -794,7 +794,7 @@ Then the following are true
 \end{lemma}
 
 \prf
-Note that a graph $G = (V,E)$ is a tree\footnote{Gross and Yellen xxxx} if and only if $G$ is connected and $|E| = |V| - 1$. 
+Note that a graph $G = (V,E)$ is a tree\footnote{Gross and Yellen (2005) p.116} if and only if $G$ is connected and $|E| = |V| - 1$. 
 Consider the forest $\forest$ and let $\{t_i\}_{i \in I}$ be its constituent rooted trees. 
 That is, $\{t_i\}_{i \in I}$ is the collection of maximal connected components of $\forest$.
 For case (1), no edges were added, so the new collection of maximal connected components is now $\{t_i\}_{i \in I} \cup \{w\}$. 
@@ -1279,14 +1279,14 @@ That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above
 Note that, given $\pre = \pre_Y \in \fixfind$, we have $Y = \bigcup_{a \in A} Y_a = \bigcup_{a \in A} \pre(a)$, so the allocation corresponding to $\pre$ can be found by taking a union.
 The performance of the algorithm for a given problem instance depends on the exact structure of the lattice $\fix(T^2)$.
 For instance, it could be that by stopping a Tarski sequence $(T^2)^k \pre$ before it converges and running InformationCombine, we miss some $\pre'$ in the sequence for which $T^2 \pre' \pe \bopre$, showing that $\fix(\pre) = \emptyset$. 
-In particular, FindStrictCore and the original Echenique and Yenmez algorithm are incommensurable. 
+In particular, FindStrictCore and the original Echenique and Yenmez (2013) algorithm are incommensurable. 
 Our algorithm uses the heuristic that evaluation of the $T$ operator is very costly, and we prefer to make progress through the lattice by using fast graph algorithms to share information between problems whenever this is possible. 
 
 \section{Maximal Domain Results and Generalizations} 
 \subsection{True Core Allocations}
 It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of true core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
 Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
-For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered in the original paper by Echenique and Yenmez\footnote{something about other examples of this xxxx}.
+For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered considered in Echenique and Yenmez (2013) \footnote{something about other examples of this xxxx}.
 
 At first glance, it appears that such a generalization will be forthcoming. 
 Similarly to the strict core case, for $a \in A$ we define a set 
@@ -1405,14 +1405,14 @@ For instance, for the $(2^X, \sub)$, for $X_i \sub X$, we can form subproblems b
 For more general problems, we work with whatever regularity is offered by the lattice.
 
 \subsubsection{Games with Strategic Complementarities}
-We briefly show how the above discussion can be used to incorporate information sharing in Echenique's algorithm for finding all pure strategy Nash equilibria in GSC. 
+We briefly show how the above discussion can be used to incorporate information sharing in the Echenique (2003) algorithm for finding all pure strategy Nash equilibria in GSC. 
 In GSC, we suppose a set of players $1 \leq i \leq n$ with strategy profiles $S_i$, each of which is a complete lattice.
 Then $S = \bigtimes_{i = 1}^n S_i$ is also a complete lattice under the product order.
 Let $\beta_i: S \to 2^{S_i}$ denote the best response correspondence for player $i$.
 Then we can form a map $\oper: S \to S$ by setting $\oper_i = \sup \beta_i(s) \in S_i$.
-Lemma 2 of Echenique shows that this map is isotone on $S$.
+Lemma 2 of Echenique (2003) shows that this map is isotone on $S$.
 For a sublattice $S_r = \bigtimes_{i = 1}^n \{s' \in S_i: s' \peq s^r_i\}$, we can define a restricted best response correspondence $\beta^r$ using only strategies in $S_r$, which extends to an operator $\oper_r: S_r \to S_r$ as above.
-Lemmas 3 and 4 of Echenique show that the guarantee $\fix(\oper) \cap S_r \sub \fix (F_r)$ of the form (E) above holds for this family of operators $\oper_r$ on sublattices $S_r \sub S$, showing that the information sharing algorithm above may be applied.
+Lemmas 3 and 4 of Echenique (2003) show that the guarantee $\fix(\oper) \cap S_r \sub \fix (F_r)$ of the form (E) above holds for this family of operators $\oper_r$ on sublattices $S_r \sub S$, showing that the information sharing algorithm above may be applied.
 
 \section{Finding All Stable Matchings} 
 In this section, we extend the information sharing technique developed above to an algorithm for finding all stable allocations in the setting of two-sided many-to-many matching with contracts under the assumption of substitutable preferences.
@@ -1444,13 +1444,13 @@ It is easy to check that this partial order defines a complete lattice.
 For instance, given a collection of $(Z_i, W_i) \in \lattice$, the greatest lower bound is $\bigwedge_i (Z_i, W_i) = \lft \bigcap_i Z_i, \bigcup_i W_i \rt \in 2^X \times 2^X$.
 The least upper bound is attained similarly by swapping unions and intersections. 
 
-As in Hatfield and Kominers, we may define an operator $\Phi: \lattice \to \lattice$ by $\Phi(Z,W) = (\Phi_D(W), \Phi_H(Z))$, where $\Phi^D(Z) = \{z \in X: z \in C_D(\{z \} \cup Z) \}$ and $\Phi^H(W) = \{z \in X: z \in C_H(\{z \} \cup W) \}$.
+As in Hatfield and Kominers (2015), we may define an operator $\Phi: \lattice \to \lattice$ by $\Phi(Z,W) = (\Phi_D(W), \Phi_H(Z))$, where $\Phi^D(Z) = \{z \in X: z \in C_D(\{z \} \cup Z) \}$ and $\Phi^H(W) = \{z \in X: z \in C_H(\{z \} \cup W) \}$.
 As usual, we define the fixed point set $\fix(\Phi) \equiv \{(Z,W) \in 2^X \times 2^X: \Phi(Z,W) = (Z,W) \}$.
 It is easy to see from the definition of substitutability that this operator is isotone on $\lattice$.
 Therefore, by Tarski's Theorem, $\fix(\Phi)$ is a non-empty lattice.
 
-The following characterization of stable matchings is due to Hatfield and Kominers
-\begin{lemma}[Hatfield and Kominers, Lemma 1] \label{lemma:hk}
+The following characterization of stable matchings is due to Hatfield and Kominers (2015)
+\begin{lemma}[Hatfield and Kominers (2015), Lemma 1] \label{lemma:hk}
 Assume that agents' preferences are substitutable and satisfy irrelevance of rejected contracts.
 Then for any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
 Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
@@ -1484,7 +1484,7 @@ Since $\botx \sub X_i$, and the hospitals are only allowsed to choose from $X_i$
 By definition, $\Phi^H_i(Z) \supseteq Y_i$, so apparently $\Phi_i(Z,W) \peq (X_i, Y_i)$ for any $(Z,W) \in \lattice$. 
 In particular, $\Phi_i: \lattice_i \to \lattice_i$.
 Suppose that $(Z,W) \peq (Z',W')$ are elements of $\lattice_i$, so that $Z \sub Z'$ and $W' \sub W$.
-By Proposition 4 of Hatfield and Kominers, substitutability is preserved under a coarsening of the contract language to any $X' \sub X$.
+By Proposition 4 of Hatfield and Kominers (2015), substitutability is preserved under a coarsening of the contract language to any $X' \sub X$.
 Thus, hospitals' preferences are substitutable over $X_i \setminus \botx \sub X$, and, similarly, doctors' preferences are substitutable over $\boty \setminus Y_i \sub X$.
 In particular, by substitutability for doctors, $\{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z') \} \sub \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z) \}$. 
 Then $\Phi_i^H(Z') \sub \Phi_i^H(Z)$ by taking the union with $Y_i$ on both sides.
@@ -1615,7 +1615,7 @@ In particular, $\{Z \cap W: (Z,W) \in \fixfind\} = \stable$, so the algorithm fi
 \end{thm}
 
 \prf
-This is a straightforward extension of the auxiliary lemmas and correctness proof provided above, using lemma~\ref{lemma:hk} from Hatfield and Kominers to get all of $\stable$ from the fixed point set $\fix(\Phi)$.
+This is a straightforward extension of the auxiliary lemmas and correctness proof provided above, using lemma~\ref{lemma:hk} from Hatfield and Kominers (2015) to get all of $\stable$ from the fixed point set $\fix(\Phi)$.
 Here, we just note the substantive differences between the proofs.
 
 In the analysis for algorithm~\ref{alg:main}, we think of $\prealloc$ as a sublattice of $\mr^m$.
