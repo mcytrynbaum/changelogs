@@ -6,6 +6,7 @@
 \usepackage{graphics} 
 \usepackage{algorithm}
 \usepackage{algorithmic}
+\usepackage{natbib}
 \usepackage{caption}
 \usepackage{tikz}
 \usepackage{xspace}
@@ -170,6 +171,7 @@
 \newcommand{\infacstopthb}{(b)\xspace}
 %%%%
 
+\date{Novemeber 21, 2015}
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum} 
 
@@ -178,7 +180,7 @@
 
 \section{Introduction}
 
-In this paper\footnote{I am very grateful to Scott Kominers for continual guidance on this project. This work was completed with the help of an Economic Design Summer Fellowship from the Harvard Society of Fellows.}, we extend an algorithm pioneered in Echenique and Yenmez (2013) to find \emph{all} strict core allocations in a highly general model of multilateral many-to-many matching with contracts.
+In this paper\footnote{I am very grateful to Scott Kominers for continual guidance on this project. This project was completed with the help of an Economic Design Summer Fellowship from the Harvard Society of Fellows.}, we extend an algorithm pioneered in \cite{EcheniqueYenmez2013} to find \emph{all} strict core allocations in a highly general model of multilateral many-to-many matching with contracts.
 We show that, as in the case of matching with preferences over colleagues, strict core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
 Our main contribution is to show that the original algorithm does not take full advantage of the geometric relationships implied by the problem's lattice structure.
 We develop a notion of ``information sharing'' in lattices, construct and prove correctness for an algorithm that implements this idea, and show how this approach may be extended to a wider class of economic problems for which there is a complete lattice structure. 
@@ -200,7 +202,7 @@ Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$
 In this section, we show how strict core allocations can be characterized as the fixed points of an antitone operator on a certain complete lattice.
 
 \subsection{Model}
-We construct an appropriate framework in which to generalize the fixed point construction in Echenique and Yenmez. 
+We construct an appropriate framework in which to generalize the fixed point construction discussed above. 
 We start by generalizing the classical notion of a \emph{prematching}. 
 
 \begin{defn}[Preallocation] We call a map $\pre: A \to 2^X$ a \emph{preallocation} if $\pre(a) \in 2^{X_a}$ for all $a\in A$. Let $(2^X)^A$ denote the set of all preallocations.  
@@ -232,7 +234,7 @@ We denote the core by $\core$.
 Note that $\core \supseteq \strcore$.
 
 \subsection{Fixed Preallocations and the Strict Core}
-Our method proceeds by identifying allocations $Y \in \strcore$ with fixed points of an operator on preallocations, generalizing the construction in Echenique and Yenmez. 
+Our method proceeds by identifying allocations $Y \in \strcore$ with fixed points of an operator on preallocations, generalizing the construction in \cite{EcheniqueYenmez2013}.
 
 For each agent $a \in A$, we define 
 
@@ -270,7 +272,7 @@ This result shows that an algorithm that finds all $\pre \in \fix(T)$ will also 
 
 However, if there are \emph{uncoordinated} preallocations that are also fixed by $T$, such an algorithm may return extraneous solutions not associated with any strict core matching.
 The following lemma, which is essential for the construction of our algorithm, shows that there are no such preallocations.
-Note that this result significantly generalizes the corresponding lemma in Echenique and Yenmez (2013) and also subsumes the main result of Kojima (2015). 
+Note that this result significantly generalizes the corresponding lemma in \cite{EcheniqueYenmez2013} and also subsumes the main result of \cite{Kojima2007b}. 
 
 \begin{lemma} \label{lemma:coordinated}
 $\fix(T) \sub \coordpre$
@@ -325,30 +327,30 @@ Combining these lemmas, we see that searching for strict core allocations in a v
 Our algorithm depends heavily on this result, which shows, critically, that the fixed points $\fix(T)$ are only as dense in $\prealloc$ as the strict core outcomes.
 
 Our maximal domain results will show that this is not the case for the natural extension of this method to \emph{true} core outcomes $\core$.
-For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations (see lemma~\ref{lemma:core}). 
+For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations (see Lemma~\ref{lemma:core}). 
 
 \subsection{The Lattice of Fixed Preallocations}
-In this section, we generalize constructions from Echenique and Yenmez (2013) showing the the fixed points of the squared operator $T^2$ form a lattice. 
+In this section, we generalize constructions from \cite{EcheniqueYenmez2013} showing the the fixed points of the squared operator $T^2$ form a lattice. 
 First, we define a natural partial order on the set of preallocations $\prealloc$.
 
 Say that $\pre \su \pre'$ if and only if $\pre(a) \suq_a \pre'(a)$ for all $a \in A$, where at least one of these inequalities \emph{holds strictly}. 
 Thus, we write $\pre \suq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
-This is a product order on a product space, which makes $\prealloc$ into a complete lattice (cite)(footnote about joins and meets). 
+This is a product order on a product space, which makes $\prealloc$ into a complete lattice. 
 Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
-These results are an almost direct extension of lemmas 4.x through 4.y of Echenique and Yenmez (2013) .
+These results are an almost direct extension of Lemmas through 4.y of \cite{EcheniqueYenmez2013}.
 For the purposes of illustration, we include the proof the first result for the more general framework of preallocations considered in this paper.
-The rest of the lemmas follow from straightforward extensions of the work in Echenique in and Yenmez (2013). 
+The rest of the lemmas follow from straightforward extensions of the work in \cite{EcheniqueYenmez2013}. 
 \begin{lemma} \label{lemma:antitone}
 $T$ is antitone 
 \end{lemma}
 \prf
-Let $\pre \leq \pre'$ be preallocations.
+Let $\pre \peq \pre'$ be preallocations.
 Fix $a \in A$, and let $Z \in V(\pre',a)$.
 Then there is an allocation $Y \sub X$ with $Y_a = Z$ such that $Y_b \suq_b \pre'(b)$ for $b \in d(Y) \setminus \{a\}$.
 Then $Y_b \suq_b \pre'(b) \suq_b \pre_b$ also for all such agents, so we also have $Z \in V(\pre,a)$.
-Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \suq T\pre'(a)$. $a$ was arbitrary, so $T\pre \suq T\pre'$ under our partial order. 
+Then $V(\pre,a) \supseteq V(\pre',a)$, so that $T\pre(a) \suq T\pre'(a)$. The agent $a$ was arbitrary, so $T\pre \suq T\pre'$ under our partial order. 
 \eprf
-The following lemmas follow exactly as in Echenique and Yenmez (2013), using the antitonicity of $T$. 
+The following lemmas follow exactly as in \cite{EcheniqueYenmez2013}, using the antitonicity of $T$. 
 \begin{cor} $T^2$ is isotone, and $\fix(T^2)$ is a non-empty complete lattice. 
 \end{cor}
 \begin{lemma} \label{lemma:order}
@@ -358,37 +360,37 @@ No two preallocations $\pre$ and $\pre'$ can be compared under the partial order
 There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \in \fix(T)$, we have $\ol{\pre} \suq \pre \suq \ul{\pre}$. Moreover, if $\pre = \ol{\pre}$ or $\pre = \ul{\pre}$, then $\fix(T) = \{\pre\}$. 
 \end{lemma}
 
-\section{Sharing Information to Find All Strict Core Allocations}
+\section{Sharing Lattice Information to Find All Strict Core Allocations}
 \subsection{Introduction}
 In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
-Our algorithm builds upon the original approach in Echenique and Yenmez (2013).
+Our algorithm builds upon the original approach in \cite{EcheniqueYenmez2013}.
 In particular, we show how to fully exploit the problem's complete lattice structure to more efficiently find the full set of strict core matchings. 
 
 The algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
 Our main contribution is to realize that many of the subproblems created while searching the lattice $\fix(T^2)$ share geometric information with other subproblems.
-We show how fast digraph algorithms may be used to combine shared information and more quickly identify the full set of strict core matchings. 
+We show how fast digraph algorithms may be used to combine this shared information and more quickly identify the full set of strict core matchings. 
 
 \subsection{Intuition and Notation} \label{section:description1}
 \subsubsection{Algorithm Intuition}
 Let $\pre^*$ denote the largest preallocation under the partial order $\su$.
 That is, $\pre^*(a) = \argmax U_a(\pre(a))$ for each $a \in A$.
 Suppose that the total number of agents $|A| = m > 0$.
-We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem in which each agent $a$'s preference list is truncated to allocations in $2^{X_a}$ ranked below $\pre(a)$ by agent $a$ (inclusive). 
+We will use $\langle \pre \rangle$ or $\langle \pre(1) \hdots \pre(m) \rangle$  to denote a version of the original problem in which each agent $a$'s preference list is truncated to allocations in $2^{X_a}$ ranked weakly below $\pre(a)$ by agent $a$. 
 We will often identify a problem $\lag \pre \rag$ with its maximal point $\pre$.
 Let $\fix(\pre) \equiv \{\pre' \in \fix(T): \: \pre' \peq \pre\}$ denote the fixed points of $T$ below $\pre$.  
 
 By Tarski's Theorem\footnote{This is easy to see.
 Note that $T^2 \pre^* \peq \pre^*$ by maximality, so $(T^2)^k \pre^* \peq (T^2)^{k+1} \pre^*$ for any $k\geq 1$ by isotonicity.
 Then this sequence is monotonically decreasing and bounded above $\min \fix(T^2)$ on a finite lattice, so it converges in finitely many iterations, say at $k = \ell$.
-Let $\pre' \in \fix(T^2)$ another fixed point, then $\pre^* \suq \pre'$, so $\toppre = (T^2)^{\ell} \pre^* \suq (T^2)^{\ell} \pre' = \pre'$, so $\toppre = \max(\fix(T^2))$}, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
-If $T \toppre = \toppre$, then by lemma~\ref{lemma:top} showing that no elements of $\fix(T^2)$ are ranked by ``$\peq$'', $\fix(T) = \{\toppre\}$.
+Let $\pre' \in \fix(T^2)$ another fixed point, then $\pre^* \suq \pre'$, so $\toppre = (T^2)^{\ell} \pre^* \suq (T^2)^{\ell} \pre' = \pre'$, so $\toppre = \max(\fix(T^2))$.}, the sequence $(T^2)^k \pre^*$ converges to a preallocation $\toppre$, fixed by $T^2$, which is the maximal point of the lattice $\fix(T^2)$.
+If $T \toppre = \toppre$, then by Lemma~\ref{lemma:top} showing that no elements of $\fix(T^2)$ are ranked by ``$\peq$'', $\fix(T) = \{\toppre\}$.
 So suppose that $T \toppre \not = \toppre$. 
 Clearly $\fix(T) \sub \fix(T^2)$ for any operator, and, by iteratively applying $T^2$, we have learned that $\fix(T) \sub \fix (T^2) \sub \{\pre': \pre' \peq \toppre\} \equiv \{\pre' \peq \toppre\}$.
 We will sometimes denote relations of this type by $\fix(T) \peq \toppre$. 
 
 Since $T\toppre \not = \toppre$, apparently $\fix(T) \sub \bigcup_{i = 1}^m \{\pre' \peq \toppre - e_i\}$, where $e_i$ denotes the standard unit vector\footnote{identifying $\prealloc$ with a grid in $\mr^m$ as above.} in $\mr^m$. 
 Consider a subproblem of the form $\lag \toppre - e_i \rag$, and let $T_i$ be the operator corresponding to this subproblem, where agents' preferences are truncated above $\toppre - e_i$.
-The key insight of Echenique (2003), which generalizes to the current model, is that $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i)$.
+The key insight of \cite{Echenique2007Equilibria}, which generalizes to the current model, is that $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i)$.
 That is, the fixed points of $T$ contained in the cone $\{\pre' \peq \toppre - e_i\}$ are also fixed points of the new problem $\lag \toppre - e_i \rag$ with operator $T_i$. 
 Then apparently we have $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i) \sub \fix(T_i^2)$, so information about the lattice of fixed points of $T_i^2$ can be used to bound $\fix(T)$.
 The general result in our setting is as follows 
@@ -406,7 +408,7 @@ We can compute $\wh{T}\pre(a) = \max \wh{V}(\pre,a) \leq \max V(\pre,a) = T\pre(
 
 Now, suppose that $\pre \in \fix(T)\cap\{\pre' \peq \wh{\pre}\}$.
 Then we have have $\pre(a) = T\pre(a) \suq_a \wh{T}\pre(a)$ for all $a \in A$. 
-By lemma~\ref{lemma:coordinated} above, $\fix(T) \sub \coordpre$, so $\pre = \pre_Y$ for some allocation $Y \in 2^X$.
+By Lemma~\ref{lemma:coordinated} above, $\fix(T) \sub \coordpre$, so $\pre = \pre_Y$ for some allocation $Y \in 2^X$.
 In particular, $Y_a = \pre(a) \peq_a \wh{\pre}(a)$, so $\pre(a) \in \wh{V}(\pre,a)$.
 Then by the definition of $\wh{T}$, we get $\wh{T}\pre(a) \suq_a \pre(a)$. 
 
@@ -416,11 +418,11 @@ Returning to the discussion above, we showed that $\fix(T) \sub \bigcup_{i = 1}^
 That is, $\fix(T) \sub \bigcup_{i = 1}^m \fix(\toppre - e_i)$.
 Fix $i$ and consider $\fix(\toppre - e_i)$, the fixed points of $T$ below $\toppre - e_i$.
 For convenience, denote $S_i \equiv T_i^2$ and $\toppre_i \equiv \toppre - e_i$.
-Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, lemma~\ref{lemma:strictcore} and the Tarski argument used above show that each iteration of $S_i$ gives a ``cone guarantee'' on the fixed points $\fix(T)$ of the form $\fix(\toppre_i) \peq S_i^k \toppre_i$.
+Starting with $\toppre_i$, the unanimously most preferred preallocation in the subproblem $\lag \toppre_i \rag$, Lemma~\ref{lemma:strictcore} and the Tarski argument used above show that each iteration of $S_i$ gives a ``cone guarantee'' on the fixed points $\fix(T)$ of the form $\fix(\toppre_i) \peq S_i^k \toppre_i$.
 
 Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of subproblem cones. 
 We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$. 
-In this way, we will eventually find the full set of strict core outcomes, directly extending the Echenique and Yenmez (2013) algorithm to the present setting.  
+In this way, we will eventually find the full set of strict core outcomes, directly extending the \cite{EcheniqueYenmez2013} algorithm to the present setting.  
 
 However, depending on the structure of the lattice $\fix(T^2)$, the strategy described above can actually be quite similar to greedy search.  
 In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.As we will show, many of the subproblems generated by this strategy are either redundant or do not need to be solved completely.
@@ -440,7 +442,7 @@ The \emph{reachable set} from a vertex $v$ is the set of all $v' \in V$ such tha
 
 By a \emph{rooted tree}, we mean a graph that is connected with no cycles (paths starting and ending at the same vertex) and has one vertex designated as the \emph{root}. 
 Edges on a rooted tree are naturally oriented away from the root. 
-A collection of such rooted trees is called a \emph{forest} and, for such a collection, for a vertex $w$ we let $r(w)$ denote the root of the tree containing $w$, and we let $c(w)$ denote the \emph{children} of $w$ as above - the vertices connected by an edge to $w$ on a path away from the root - and $p(w)$ denote the parent vertex of $w$, defined similarly.  
+A collection of such rooted trees is called a \emph{forest} and, for such a collection, for a vertex $w$ we let $r(w)$ denote the root of the tree containing $w$, and we let $c(w)$ denote the \emph{children} of $w$, the vertices connected by an edge to $w$ on a path away from the root, and $p(w)$ denote the parent vertex of $w$, defined similarly.  
 
 \subsubsection{Example 1 - Colliding Subproblem Cones}
 In this section, we give a simple example of how subproblems can share information.
@@ -484,7 +486,7 @@ That is, by \emph{combining the information} from subproblem 2 with subproblem 1
 \draw[fill] (3,5) circle [radius=0.07];
 \draw[fill] (6,2) circle [radius=0.07];
 \end{tikzpicture}
-\caption{Combining Guarantees on Subproblem Cones}
+\caption{Combining Information from Subproblem Cones Guarantees}
 \end{figure}
 
 Note that, even if we learn $\fix(\toppre_1) \sub \fix(\toppre_2)$, we may still wish to retain the information associated with subproblem 1. 
@@ -503,7 +505,7 @@ Thus, we can collapse all of these subproblems to a new subproblem started at $\
 We have seen that collisions between subproblem cones give information relations of the form $\fix(\toppre_i) \sub \fix(\toppre_j)$ regarding the fixed points of $T$.
 Consider a digraph that tracks these collisions.
 Then this digraph has the form shown below, where subproblems correspond to vertices, and there is an edge $v_i \to v_j$ only if problem $i$ ``collides'' with problem $j$ (made precise below). 
-Since, in particular, the digraph has a directed edge $(v_i,v_j)$ only if $\fix(\pre_i) \sub \fix(\pre_j)$, we see that the equivalence of subproblems is reflected in the connectedness of the graph. 
+Since, in particular, the digraph has a directed edge $(v_i,v_j)$ only if $\fix(\pre_i) \sub \fix(\pre_j)$, the equivalence of subproblems is reflected in the connectedness of the graph. 
 
 \begin{figure} \label{fig:digraph}
 \begin{tikzpicture}
@@ -601,7 +603,7 @@ Define the following stopping conditions for an element $ (T_i^2)^k \pre_i \equi
 
 Condition~(\ref{cond:bottom1}) corresponds to the problem exiting the lattice $\fix(T^2)$. 
 For Condition~(\ref{cond:fix1}), the Tarski sequence fixes.
-If $T\pre' = \pre'$, by lemma~\ref{lemma:order}, $\{\pre'' \pe \pre'\} \cap \fix(T) = \emptyset$. 
+If $T\pre' = \pre'$, by Lemma~\ref{lemma:order}, $\{\pre'' \pe \pre'\} \cap \fix(T) = \emptyset$. 
 Otherwise, we need to initialize new problems below $\pre'$.
 For Condition~(\ref{cond:collide1}), the problem $\lag \pre_i \rag$ ``collides'' with some problem in $\act$, so we stop the sequence and wait for the information sharing subroutine, discussed below.
 
@@ -632,7 +634,7 @@ We form the collision digraph $G$ and compute its strong components $\strongc = 
 For $j \in \mathcal{J}$, pick $v \in \strongcomp_j$ and compute its reachable set, by which we define $\reach_j$, the reachable set of component $\strongcomp_j$. 
 Since strong components are strongly connected, this definition is independent of the choice of $v$. 
 
-In proposition~\ref{prop:graph}, we show that our construction of the collision digraph and inductive assumption on the forest $\forest$ guarantees that $\fix(\pre_i) \sub \fix(\pre_k)$ whenever $(v_i,v_k) \in E$.
+In Proposition~\ref{prop:graph}, we show that our construction of the collision digraph and inductive assumption on the forest $\forest$ guarantees that $\fix(\pre_i) \sub \fix(\pre_k)$ whenever $(v_i,v_k) \in E$.
 In particular, we can show that $\fix(\pre_i) \sub \fix(\pre_k)$ whenever $v_i \in \strongcomp_j$ and $v_k \in \reach_j$.
 
 Let $\actt = \emptyset$ and, for each strong component $\strongcomp_j \in \strongc$, add $\pre = \min\limits_{v_k \in \reach_j} \pre_k$ to $\actt$.
@@ -640,7 +642,7 @@ By the guarantees above, we can combine all problems represented in strong compo
 Note that, by changing $\acto$ in this way, we may have actually caused new cone collisions.
 We can use these collisions to weakly improve the progress of the algorithm, as above.
 Thus, we run the information combination subroutine in stage 2 iteratively until there are no more cone collisions.
-This process terminates, as discussed in lemma~\ref{lemma:termination}.
+This process terminates, as discussed in Lemma~\ref{lemma:termination}.
 After termination, we return to stage 1 with a new collection of active problems $\acto \leftarrow \actt$.
 
 In general, we would like to spend as much time as possible in the information combination stage, since this stage improves the progress of the search for $\fix(T)$ by using fast\footnote{Tarjan's algorithm for finding strong components of a graph $G = (V,E)$ runs in $\mathcal{O}(|V| + |E|)$, for instance.} digraph algorithms, as opposed to the often costly process of computing the operator $T$, which is equivalent to checking whether a given allocation is strict core.  
@@ -766,7 +768,7 @@ At any point during the execution of FindStrictCore
 \end{enumerate}
 \end{lemma}
 
-Before proving lemma~\ref{lemma:key}, we give definitions, some needed auxiliary lemmas, and a structure result for the collision digraph $G$. 
+Before proving Lemma~\ref{lemma:key}, we give definitions, some needed auxiliary lemmas, and a structure result for the collision digraph $G$. 
 
 For a forest (a collection of rooted trees) define the \emph{root set} $\roott(\forest) = \{r(w): w\in F\}$. 
 That is, $\roott(\forest)$ consists of all roots of trees in the forest.
@@ -794,7 +796,7 @@ Then the following are true
 \end{lemma}
 
 \prf
-Note that a graph $G = (V,E)$ is a tree\footnote{Gross and Yellen (2005) p.116} if and only if $G$ is connected and $|E| = |V| - 1$. 
+Note that a graph $G = (V,E)$ is a tree\footnote{\cite{GrossYellen2013graphs} p.116} if and only if $G$ is connected and $|E| = |V| - 1$. 
 Consider the forest $\forest$ and let $\{t_i\}_{i \in I}$ be its constituent rooted trees. 
 That is, $\{t_i\}_{i \in I}$ is the collection of maximal connected components of $\forest$.
 For case (1), no edges were added, so the new collection of maximal connected components is now $\{t_i\}_{i \in I} \cup \{w\}$. 
@@ -862,7 +864,7 @@ Statement (3) shows that fast digraph algorithms for computing reachable sets ca
 \prf
 First, we characterize the edges of $G = (V,E)$. 
 Consider $\pre_i \in \acto$ at initialization of the subroutine and $j \in \coll(i)$ with $w_k = r(w_j)$ and $w_{\ell} = r(w_i)$.
-Since $\forest$ is a problem tree, by lemma~\ref{lemma:forest2} above $\fix(\pre_i) = \fix(\pre_{\ell})$ and $\fix(\pre_j) = \fix(\pre_k)$.
+Since $\forest$ is a problem tree, by Lemma~\ref{lemma:forest2} above $\fix(\pre_i) = \fix(\pre_{\ell})$ and $\fix(\pre_j) = \fix(\pre_k)$.
 By our assumption about collision indices, we have $\fix(\pre_{\ell}) \sub \fix(\pre_j)$. 
 Putting this together, we have $\fix(\pre_i) \sub \fix(\pre_k)$ for every $(v_i, v_k) \in E$.
 This shows that~(\ref{prop:graph:edge}) above holds.
@@ -879,11 +881,11 @@ This completes the proof of the lemma.
 Before proving our key result, we show an auxiliary lemma about the relationship between $\forest$ and the problem sets returned from each subroutine 
 
 \begin{lemma} \label{lemma:roots}
-Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once in subroutine~\ref{sub:infac}.
+Any distinct problem $\pre \in \prealloc$, is processed (the Tarski sequence for $\lag \pre \rag$ is evaluated) at most once in Subroutine~\ref{sub:infac}.
 Moreover, the following statements are true: 
 \begin{enumerate}
-\item If $\forest$ is a problem forest when subroutine~\ref{sub:infac} is initialized, then the set $\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
-\item If $\acto$ is returned from subroutine~\ref{sub:infcomb}, then $w(\pre) \in \roott(\forest)$ for each $\pre \in \acto$. \label{lemma:roots:comb}
+\item If $\forest$ is a problem forest when Subroutine~\ref{sub:infac} is initialized, then the set $\acto$ returned from the subroutine satisfies $\pre_i \not = \pre_j \in \acto \implies r(w_i) \not = r(w_j)$. \label{lemma:roots:ac}
+\item If $\acto$ is returned from Subroutine~\ref{sub:infcomb}, then $w(\pre) \in \roott(\forest)$ for each $\pre \in \acto$. \label{lemma:roots:comb}
 \end{enumerate}
 \end{lemma}
 \prf 
@@ -894,21 +896,21 @@ Since $\acta \sub \acto$, and elements are \emph{only added} (never removed) to 
 But we check for this when we process stopping condition~(\ref{cond:fix1}) at \infacstoptwii, so this is impossible.  
 Then any distinct preallocation is processed at most once. 
 
-For the other lemma statements, we work by induction on $\ell$, the total number of evaluations of subroutines~\ref{sub:infac} and \ref{sub:infcomb}. 
+For the other lemma statements, we work by induction on $\ell$, the total number of evaluations of Subroutine~\ref{sub:infac} and \ref{sub:infcomb}. 
 For $\ell = 0$ the statements are trivially true. 
 Then assume that (1) and (2) above hold up to $\ell = n \geq 0$. 
 There are several cases. 
 Throughout, let $(\acto',\forest')$ and $(\acto'',\forest'')$ denote the states of $(\acto,\forest)$ at initialization and return, respectively, of the subroutine that finishes at $\ell = n + 1$.  
 
-\emph{Case 1}: InformationAcquire (subroutine~\ref{sub:infac}) returns at $\ell = n + 1$. 
-Note that subroutine~\ref{sub:infac} is called either directly after initialization or after evaluation of subroutine~\ref{sub:infcomb}. 
-If subroutine~\ref{sub:infac} directly follows initialization of FindStrictCore, clearly $w(\pre) \in \roott(\forest')$ for $\pre \in \acto'$ by construction.
+\emph{Case 1}: InformationAcquire (Subroutine~\ref{sub:infac}) returns at $\ell = n + 1$. 
+Note that Subroutine~\ref{sub:infac} is called either directly after initialization or after evaluation of Subroutine~\ref{sub:infcomb}. 
+If Subroutine~\ref{sub:infac} directly follows initialization of FindStrictCore, clearly $w(\pre) \in \roott(\forest')$ for $\pre \in \acto'$ by construction.
 Otherwise, this statement holds by the inductive hypothesis and (\ref{lemma:roots:comb}) above. 
 Note that each $\pre$ added to $\acto$ during this subroutine is initialized as an isolated root. 
 Since problem indices are unique, this shows that, at any time before $\pre$ is processed (the Tarski sequence for $\pre \in \acta$ is evaluated), $w(\pre) \in \roott(\forest)$. 
 In particular, $\depth(w_i, \forest) = 0$ when $\pre_i$ is added to the $\acto$ during the subroutine. 
 
-Note first that $\forest''$ is obtained from $\forest'$ by adding vertices and edges satisfying the conditions of lemma~\ref{lemma:forest}. 
+Note first that $\forest''$ is obtained from $\forest'$ by adding vertices and edges satisfying the conditions of Lemma~\ref{lemma:forest}. 
 Then, by the lemma, $\forest''$ is also a rooted forest.
 Suppose that for $\pre_i \not = \pre_j \in \acto''$, $r(w_i) = r(w_j) = w$ in $\forest''$. 
 Then there are directed paths $w \to w_i$ and $w \to w_j$. 
@@ -927,13 +929,13 @@ Then no edge of the form $(w',w_k)$ can ever be added, so this is a contradictio
 Subcase 2: Both paths $w \to w_i$ and $w \to w_j$ continue beyond $w_{k'-1}$.
 Then $w' \equiv w_{k' - 1}$ has out-degree $\geq 2$.
 Only vertices of out-degree $1$ are ever added to $\forest$ during the subroutine, so we must have $w' \in \forest'$, the problem forest at the beginning of the subroutine.
-By lemma~\ref{lemma:forest} the reachable sets for $w'$ have $\reach(w',\forest') = \reach(w',\forest'')$.  
+By Lemma~\ref{lemma:forest} the reachable sets for $w'$ have $\reach(w',\forest') = \reach(w',\forest'')$.  
 Then, in particular, $w_i \in \forest'$ and $\depth(w_i, \forest') \geq 1$
-By lemma~\ref{lemma:forest} again, $\depth(w_i, \forest) \geq \depth(w_i, \forest') \geq 1$  for any state of the forest $\forest$ during the subroutine. 
+By Lemma~\ref{lemma:forest} again, $\depth(w_i, \forest) \geq \depth(w_i, \forest') \geq 1$  for any state of the forest $\forest$ during the subroutine. 
 Then $\pre_i$ is never in $\acto$ during the algorithm, since we showed that, for any $\pre_i \in \acto$, $w_i \in \roott(\forest)$ at some point during the algorithm. 
 This completes the proof for this case.
 
-\emph{Case 2}: Subroutine~\ref{sub:infcomb} returns at $\ell = n +1$ after subroutine~\ref{sub:infac} returns at $\ell = n$. 
+\emph{Case 2}: Subroutine~\ref{sub:infcomb} returns at $\ell = n +1$ after Subroutine~\ref{sub:infac} returns at $\ell = n$. 
 We will show that $w(\pre) \in \roott(\forest'')$ for all $\pre$ in the set of returned problems $\actt$.
 Let $G = (V,E)$ be the collision digraph formed during this subroutine.
 By definition, the strong components $\{\strongcomp_j\}_{j \in \mathcal{J}}$ of $G$ retained after removing irrelevant singletons at step \infcombgraphii are disjoint. 
@@ -955,8 +957,8 @@ In particular, for any $\pre \in \actt$, $w(\pre) \not \in \forest'$ at the begi
 Then no edge of the form $(w', w(\pre))$ is ever added during this procedure. 
 This shows that each added vertex $w(\pre)$ is \emph{still a root} in $\forest''$, when the subroutine returns, so we have shown (\ref{lemma:roots:comb}) above for this case. 
 
-\emph{Case 3}: Subroutine~\ref{sub:infcomb} returns at $\ell = n +1$ after subroutine~\ref{sub:infcomb} returns at $\ell = n$.
-By the inductive hypothesis for problems returned from subroutine~\ref{sub:infcomb}, all inputs $\pre \in \acto'$ to subroutine~\ref{sub:infcomb} at $\ell = n + 1$ have $w(\pre) \in \roott(\forest')$.
+\emph{Case 3}: Subroutine~\ref{sub:infcomb} returns at $\ell = n +1$ after Subroutine~\ref{sub:infcomb} returns at $\ell = n$.
+By the inductive hypothesis for problems returned from Subroutine~\ref{sub:infcomb}, all inputs $\pre \in \acto'$ to Subroutine~\ref{sub:infcomb} at $\ell = n + 1$ have $w(\pre) \in \roott(\forest')$.
 Then $R(\forest',j) = \{r(w_k): v_k \in S_j\} = \{w_k: v_k \in S_j\}$. 
 Then the root sets are disjoint in this case as well, by disjointness of strong components.
 The inductive argument from case 2 then establishes~(\ref{lemma:roots:comb}) above for this case as well. 
@@ -975,38 +977,38 @@ Then assume by induction that the statements above hold for $\pair_k$ up to $k =
 By an abuse of notation, we will denote components of $\pair_k$ as $\forest_k$ and $\coll_k$ when the meaning is clear.
 We consider separately each case where the pair $\pair$ can change.
 
-\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine ~\ref{sub:infac} when a stopping condition is triggered for problem $\pre_i$ at $(T_i^2)^{\ell}\pre_i = \pre'$, and $w(\pre')$ is added to $\forest$ at processing step \infacbstopa. 
+\emph{Case 1}: There is a transition $\pair_n \to \pair_{n +1}$ in Subroutine ~\ref{sub:infac} when a stopping condition is triggered for problem $\pre_i$ at $(T_i^2)^{\ell}\pre_i = \pre'$, and $w(\pre')$ is added to $\forest$ at processing step \infacbstopa. 
 Let $\forest'$ and $\acto'$ denote the state of $\forest$ and $\acto$ at the beginning of InformationAcquire.
-From lemma~\ref{lemma:roots}, we know that (i) for any distinct preallocation $\pre$, the problem $\lag \pre \rag$ is processed (the Tarski sequence evaluated) at most once.
+From Lemma~\ref{lemma:roots}, we know that (i) for any distinct preallocation $\pre$, the problem $\lag \pre \rag$ is processed (the Tarski sequence evaluated) at most once.
 Moreover, the lemma also shows that (ii) any $\pre \in \acto'$ has $w(\pre) \in \roott(\forest')$ and, from the proof of this lemma, (iii) any $\pre_i$ added to $\acto$ during the subroutine has $w(\pre_i) \in \roott(\forest)$ before $\pre_i$ is processed. 
 We will use these facts below. 
 
 By the Tarski argument from the main text, we have $\fix(T_i) \peq \max \fix(T_i^2) \peq (T_i^2)^{j}\pre_i$ for any $j$. 
 In particular, $\fix(T_i) \peq (T_i^2)^{\ell}\pre_i = \pre'$.
-Combining this with lemma~\ref{lemma:contain} above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} \sub \fix(T_i) \peq \pre'$. 
+Combining this with Lemma~\ref{lemma:contain} above, $\fix(\pre_i) = \fix(T) \cap \{\pre'' \peq \pre_i\} \sub \fix(T_i) \peq \pre'$. 
 By monotonicity of the Tarski sequence, we have $\pre' \peq \pre_i$, so $\fix(\pre') \sub \fix(\pre_i)$. 
 Then $\fix(\pre_i) = \fix(\pre')$.
 Since $w(\pre') = p(w_i)$, we have shown that $\fix(\pre_i) = \fix(p(\pre_i))$ for the only \emph{new} parent-child relation added to $\forest_n$. 
 We add $w(\pre')$ with $c(w(\pre')) = \{\pre_i\}$, so there are no new sibling relations. 
 Then by the inductive hypothesis, $\forest_{n+1}$ also satisfies condition~(\ref{def:forest2}) and (\ref{def:forest3}) defining a a problem forest.
-By (iii) above, $\forest_n$ has $w(\pre_i) = r(w(\pre_i))$, so the modification $\forest_n \to \forest_{n + 1}$ satisfies the conditions of lemma~\ref{lemma:forest}.
+By (iii) above, $\forest_n$ has $w(\pre_i) = r(w(\pre_i))$, so the modification $\forest_n \to \forest_{n + 1}$ satisfies the conditions of Lemma~\ref{lemma:forest}.
 Then, by the lemma, $\forest_{n + 1}$ is also a rooted forest. 
 This completes the proof that $\forest_{n + 1}$ is a problem forest.
 
-By the single-processing condition of lemma~\ref{lemma:roots}, we must have $\coll(i) = \emptyset$.
+By the single-processing condition of Lemma~\ref{lemma:roots}, we must have $\coll(i) = \emptyset$.
 Fix any $\ell \in \mathcal{I}$ and suppose that $k \in \coll_{n+1}(\ell) = \coll_{n}(\ell)$. 
 By the inductive hypothesis on $\pair_n$, if $r(w_{\ell}) = w_j$ in problem forest $\forest_n$, then $\fix(\pre_j) \sub \fix(\pre_k)$. 
 If we still have $r(w_{\ell}) = w_j$ in the forest $\forest_{n+1}$, we are done by induction. 
 If not, then it must be that $r(w_{\ell}) = w(\pre')$. 
 But $\ell \not = i$, so $w_{\ell}$ is a descendant of $w_i$ in $\forest_n$.
-Case (1) of the proof of lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
+Case (1) of the proof of Lemma~\ref{lemma:roots} shows that such a descendant relation is impossible. 
 Then condition~(\ref{convlemma:coll}) holds as well, and we are done.
 
-\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, where stopping condition~(\ref{cond:collide1}) is triggered and the collection $\coll(i)$ is modified.
+\emph{Case 2}: There is a transition $\pair_n \to \pair_{n +1}$ in Subroutine~\ref{sub:infac} during processing of $\pre_i$, where stopping condition~(\ref{cond:collide1}) is triggered and the collection $\coll(i)$ is modified.
 Then $\forest_n = \forest_{n + 1}$, so we need only check item~(\ref{convlemma:coll}) of the inductive hypothesis above.
-$\coll_n(i) = \emptyset$ because $I = \emptyset$ at initialization of the subroutine and by the single-processing condition, and each preallocation is processed at most once by lemma~\ref{lemma:roots}. %leave flex for 1-1 proof
+$\coll_n(i) = \emptyset$ because $I = \emptyset$ at initialization of the subroutine and by the single-processing condition, and each preallocation is processed at most once by Lemma~\ref{lemma:roots}. %leave flex for 1-1 proof
 For stopping condition~(\ref{cond:collide1}), we evaluated the Tarski sequence for $\lag \pre_i \rag$ and found that $\pre' \peq \pre_j \in \act$ for some collection of indices $j$, which were added to $I_n(i)$.
-By condition (iii) of lemma~\ref{lemma:roots}, $w(\pre_i) \in \roott(\forest_n)$. 
+By condition (iii) of Lemma~\ref{lemma:roots}, $w(\pre_i) \in \roott(\forest_n)$. 
 We add $w(\pre') = p(w_i)$, so $r(w_i) = w(\pre')$ in $\forest_{n+1}$. 
 Since $\pre' \peq \pre_j$, $\fix(\pre') \sub \fix(\pre_j)$ for any new collision index $j$ added during the change $\pair_n \to \pair_{n+1}$.
 
@@ -1014,9 +1016,9 @@ If $\ell \not = i$, then we have $\coll_n(\ell) = \coll_{n + 1}(\ell)$.
 In this case, condition~(\ref{convlemma:coll}) holds by the argument at the end of case (1).
 Then we have shown that condition~(\ref{convlemma:coll}) holds for the pair $\pair_{n + 1}$, and we are done. 
 
-\emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in subroutine~\ref{sub:infac} during processing of $\pre_i$, when stopping condition~(\ref{cond:fix1}) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root at item \infacstoptwiii. 
+\emph{Case 3}: There is a transition $\pair_n \to \pair_{n +1}$ in Subroutine~\ref{sub:infac} during processing of $\pre_i$, when stopping condition~(\ref{cond:fix1}) is triggered and $w(\pre_i - e_j)$ is added to $\forest_n$ as an isolated root at item \infacstoptwiii. 
 We denote $\pre_i - e_j = \pre_k$.
-That $\forest_{n + 1}$ is still a rooted forest is immediate from lemma~\ref{lemma:forest}, since the new vertex is isolated.
+That $\forest_{n + 1}$ is still a rooted forest is immediate from Lemma~\ref{lemma:forest}, since the new vertex is isolated.
 No edges are added, so no new parent or child relations are added. 
 Then, by the inductive hypothesis, $\forest_{n + 1}$ remains a problem forest.
 For condition~(\ref{convlemma:coll}) above, fix $\ell$ and let $j \in \coll(\ell)$.
@@ -1024,20 +1026,20 @@ If $\ell \not = k$, then, because no edge is added to the graph, $r(w_{\ell})$ i
 If $\ell = k$, then $\coll(i) = \emptyset$, so the condition is trivially true. 
 We have shown (1) and (2) hold for $\pair_{n + 1}$, so we are done.
 
-\emph{Case 4} Before constructing the collision digraph in subroutine~\ref{sub:infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
+\emph{Case 4} Before constructing the collision digraph in Subroutine~\ref{sub:infcomb}, there is a transition $\pair_n \to \pair_{n + 1}$ when we add $i$ to $\coll(i)$. 
 Then $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Let $r(w_i) = w_k$, so, by induction, $\fix(\pre_i) = \fix(\pre_k)$. 
 In particular, $\fix(\pre_k) \sub \fix(\pre_i)$ for the index $i \in \coll(i)$, so condition~(\ref{convlemma:coll}) holds automatically.
 Since this was the only modification to $\coll_n$, condition~(\ref{convlemma:coll}) follows for other indices by the inductive hypothesis.
 
-\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during subroutine~\ref{sub:infcomb} at item \infcombcombb. 
+\emph{Case 5}: There is a transition $\pair_n \to \pair_{n + 1}$ by adding a vertex $w(\pre)$ to $\forest_n$ while processing the collision digraph $G = (V,E)$ during Subroutine~\ref{sub:infcomb} at item \infcombcombb. 
 Note that $\coll_n = \coll_{n + 1}$. 
-By construction, we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
+By construction, we have $c(w(\pre)) \sub \roott(\forest_n)$, so this vertex addition is of the form required in Lemma~\ref{lemma:forest}, which shows that $\forest_{n + 1}$ is still a rooted forest.  
 
-Next, we show that defining conditions~(\ref{def:forest2}) and~(\ref{def:forest3}) still hold for $\forest_{n + 1}$, making use of our characterization of the collision digraph in lemma~\ref{prop:graph} above.
+Next, we show that defining conditions~(\ref{def:forest2}) and~(\ref{def:forest3}) still hold for $\forest_{n + 1}$, making use of our characterization of the collision digraph in Lemma~\ref{prop:graph} above.
 Let $v_k, v_{\ell} \in \strongcomp_j$, a strong component of $G = (V,E)$ (after removing irrelevant singletons at item \infcombgraphii, and denote $r(w_k) = w_{k'}$ and $r(w_{\ell}) = w_{\ell'}$.
-By (strong) induction, $\forest'$ is a problem forest, so by lemma~\ref{lemma:forest2} above, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell})$ and $\fix(\pre_k) = \fix(\pre_{k'})$. 
-Moreover, the indices $\coll'$ at initialization satisfy condition~(\ref{convlemma:coll}), by the inductive hypothesis again, so lemma~\ref{prop:graph} shows that, in fact, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell}) = \fix(\pre_k) = \fix(\pre_{k'})$. 
+By (strong) induction, $\forest'$ is a problem forest, so by Lemma~\ref{lemma:forest2} above, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell})$ and $\fix(\pre_k) = \fix(\pre_{k'})$. 
+Moreover, the indices $\coll'$ at initialization satisfy condition~(\ref{convlemma:coll}), by the inductive hypothesis again, so Lemma~\ref{prop:graph} shows that, in fact, $\fix(\pre_{\ell'}) = \fix(\pre_{\ell}) = \fix(\pre_k) = \fix(\pre_{k'})$. 
 Now $w(\pre)$ is added to $\forest_n$ with $c(w(\pre)) = \{r(w_k):v_k \in \strongcomp_j\}$. 
 Then the previous argument shows that $w_i,w_k \in c(w(\pre))$ implies that $\fix(\pre_i) = \fix(\pre_k)$. 
 Since these are the only \emph{new} sibling relations added in $\forest_{n+1}$, by the inductive hypothesis we have shown condition~(\ref{def:forest2}) defining a problem forest for $\forest_{n+1}$. 
@@ -1045,7 +1047,7 @@ Since these are the only \emph{new} sibling relations added in $\forest_{n+1}$, 
 For the final defining condition of a problem forest, consider adding $\pre$ as above and let $v_i \in \strongcomp_j$. 
 Clearly $i \in \reach_j$, so that $i \in K_j$. 
 Then $\pre \peq \pre_i$, so $\fix(\pre) \sub \fix(\pre_i)$, and the second statement of condition~(\ref{def:forest3}) is satisfied. 
-If $v_k \in \reach_j$, then there is a directed path $v_i \to v_k$, so $\fix(\pre_i) \sub \fix(\pre_k)$ by statement~(\ref{prop:graph:reach}) of lemma~\ref{prop:graph} above.
+If $v_k \in \reach_j$, then there is a directed path $v_i \to v_k$, so $\fix(\pre_i) \sub \fix(\pre_k)$ by statement~(\ref{prop:graph:reach}) of Lemma~\ref{prop:graph} above.
 In particular, $\fix(\pre_i) \peq \pre_k$ for all $k \in K_j$. 
 Then $\fix(\pre_i) \peq \pre = \min_{k \in K_j} \pre_k$, so that $\fix(\pre_i) \sub \fix(\pre)$, and we are done. 
 This is the only new parent-child relation added to $\forest_n$, so, using the inductive hypothesis, $\forest_{n+1}$ satisfies defining condition~(\ref{def:forest3}) of a problem forest. 
@@ -1053,11 +1055,11 @@ This is the only new parent-child relation added to $\forest_n$, so, using the i
 For condition~(\ref{convlemma:coll}) regarding collision indices, it suffices to consider $w_{\ell}$ with $r(w_{\ell}) = w(\pre)$, because otherwise the statement follows directly from the inductive hypothesis, since $w(\pre)$ is the only root added to $\forest_n$.
 Let $k' \in \coll(\ell)$ and suppose $r(w_{\ell}) = w(\pre)$. 
 Let $w_j$ the root of $w_{\ell}$ in $\forest_n$
-Then it must be that $p(w_j) = w(\pre)$; for instance, by lemma~\ref{lemma:forest}, since otherwise the reachable set of some $w' \in \forest_n$ would have changed as $\forest_n \to \forest_{n+1}$. 
-Then by lemma~\ref{lemma:forest2}, we have $\fix(\pre) = \fix(\pre_j) \sub \fix(\pre_{k'})$, where we use the inductive hypothesis in the subset relation, so condition~(\ref{convlemma:coll}) still holds for $\pair_{n+1}$. 
+Then it must be that $p(w_j) = w(\pre)$; for instance, by Lemma~\ref{lemma:forest}, since otherwise the reachable set of some $w' \in \forest_n$ would have changed as $\forest_n \to \forest_{n+1}$. 
+Then by Lemma~\ref{lemma:forest2}, we have $\fix(\pre) = \fix(\pre_j) \sub \fix(\pre_{k'})$, where we use the inductive hypothesis in the subset relation, so condition~(\ref{convlemma:coll}) still holds for $\pair_{n+1}$. 
 This finishes the proof for this case.
 
-\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ in subroutine~\ref{sub:infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ when we ``check for new collisions''.
+\emph{Case 6}: There is a transition $\pair_n \to \pair_{n + 1}$ in Subroutine~\ref{sub:infac} when we add collision index $j$ to $\coll_n(i)$ for some newly created problem $\pre_i \in \actt$ when we ``check for new collisions''.
 Again, $\forest_n = \forest_{n + 1}$, so it suffices to check that condition~(\ref{convlemma:coll}) holds. 
 Now, by assumption, $\pre_i \peq \pre_j$, so $\fix(\pre_i) \sub \fix(\pre_j)$.
 Let $r(w_i) = w_k$.
@@ -1075,9 +1077,9 @@ FindStrictCore terminates in finite time
 For any set $E \sub \prealloc$, define $\disto(E) = \max_{\pre \in E} \|\pre\|_1$, where the set of preallocations $\prealloc$ is identified with a grid as above\footnote{For $x \in \mr^m$, $\|x\|_1 = \sum_{i = 1}^m |x_i|_1$ is the standard 1-norm .}.
 Similarly, let $\distt(E) = \sum_{\pre \in E} \|\pre\|_1$.
 Note that by finiteness, both $\disto(\cdot)$ and $\distt(\cdot)$ take finitely many values on subsets of $\prealloc$.
-First, we show that, for any problem collection $\acto$, InformationAcquire (subroutine~\ref{sub:infac}) terminates in finitely many iterations.
+First, we show that, for any problem collection $\acto$, InformationAcquire (Subroutine~\ref{sub:infac}) terminates in finitely many iterations.
 
-Consider the sequence $\actak$ formed by distinct states of $\acta$ during subroutine~\ref{sub:infac}.
+Consider the sequence $\actak$ formed by distinct states of $\acta$ during Subroutine~\ref{sub:infac}.
 Note that if for any $k\geq 0$ we have $\acta^{k+1} = \actak \setminus \{\pre\}$ for some problem $\pre$, then clearly $\disto(\acta^{k+1}) \leq \disto(\actak)$.
 By inspection, all changes to $\acta$ are of this form, except when we add new problems after triggering stopping condition~(\ref{cond:fix1}).
 For this state change, note that $\|\pre\|_1 > \max\limits_{i = 1,\hdots,m} \|\pre - e_i\|_1$, so, in fact, if $\acta^{k+1} = \actak \setminus \{\pre\} \cup \lft \bigcup_{i =1}^m \{\pre - e_i \} \rt$ then $\disto(\acta^{k+1}) \leq \disto(\actak)$. 
@@ -1093,13 +1095,13 @@ For any $k$, consider $\actak$ at the top of the algorithm's main for loop.
 Then $\pre'' \in \actak$, so, for at least one iteration of the loop, $\disto(\actak)$ decreases strictly.
 Since $\disto(\actak)$ converges in finite iterations, the subroutine's while loop runs for only finitely many iterations, so the subroutine terminates.
 
-Since all inputs are finite, subroutine~\ref{sub:infcomb} clearly terminates in finite time.
+Since all inputs are finite, Subroutine~\ref{sub:infcomb} clearly terminates in finite time.
 
 Next, we show that the information combination stage of FindStrictCore terminates.
 Consider distinct states of $\acto$ returned by InformationCombine, which form a sequence $\actok$, during the inner while loop of FindStrictCore (line~\ref{alg3:while2}).
 We will show that the sequence $\distt(\actok)$ is monotonically decreasing.
 
-Consider a single execution of InformationCombine (subroutine~\ref{sub:infcomb}) with input $\actok$.
+Consider a single execution of InformationCombine (Subroutine~\ref{sub:infcomb}) with input $\actok$.
 Let $\strongcomp \in \strongc$ be a strong component of the collision digraph $G = (V,E)$ left in $\{\strongcomp_j\}_{j \in \mathcal{J}}$ after removing irrelevant singletons at item \infcombgraphii.
 By construction, a vertex $v_i \in V$ has out-degree $0$ if $\pre_i \not \in \actok$.
 Then each vertex $v_i$ \emph{not} associated with a preallocation $\pre_i \in \actok$ must generate a singleton strong component $\{v_i\}$, which is removed at item \infcombgraphii, so $\{v_i: v_i \in \strongcomp_j; j \in \mathcal{J}\} \sub \{v_i: \pre_i \sub \actok\}$. 
@@ -1127,12 +1129,12 @@ Above, we showed that $p\inv(\pre_i) = \pre_i$ for any $\pre_i \in \actt$.
 Then, as noted above, we have $\{i\} = \{j: \pre_j \in p\inv(\pre_i)\} \supseteq \{j: w_j \in c(w_i)\}$, so the expression defining a collision in stopping condition~(\ref{cond:collide1}) must be false for all $\pre_i \in \actt$. Then the subroutine must return $I = \emptyset$. 
 
 This shows that the information combination stage of the algorithm terminates.
-That is, every sequence of executions of InformationCombine (subroutine~\ref{sub:infcomb}) is finite.
+That is, every sequence of executions of InformationCombine (Subroutine~\ref{sub:infcomb}) is finite.
 
-We have shown that the sequence $\disto(\actok)$ is monotonically decreasing during the information combination stage (the second while loop in FindStrictCore) as well as during a single evaluation of InformationAcquire (subroutine~\ref{sub:infac}).
+We have shown that the sequence $\disto(\actok)$ is monotonically decreasing during the information combination stage (the second while loop in FindStrictCore) as well as during a single evaluation of InformationAcquire (Subroutine~\ref{sub:infac}).
 Then the sequence $\disto(\actok)$ formed by distinct states of $\acto$ at \emph{any time} during FindStrictCore is monotonically decreasing.  
 We complete the termination proof by showing that $\disto(\acto)$ decreases strictly at \emph{least once} during a single iteration of the outer while loop of FindStrictCore.
-Consider evaluating subroutine~\ref{sub:infac} with input $\acto$. 
+Consider evaluating Subroutine~\ref{sub:infac} with input $\acto$. 
 
 \emph{Case 1}: The collection $\actc$ returned by the subroutine is empty.
 Note that, by inspection, $\acto \not = \emptyset$. 
@@ -1144,12 +1146,12 @@ In particular, by monotonicity of the Tarski sequence for $\lag \pre_i \rag$, we
 Note that, for all such $\pre_i \in \actc$, we add $w(\pre') = p(w_i)$ (at item \infacstoptha), so that $r(p(w_i)) = r(w(\pre'))$.
 Then $r(w_i) = r(w(\pre'))$, which we denote by $r(w_i) = w_k$.
 
-The algorithm returns $\acto' \equiv \actc$ which is an input for subroutine~\ref{sub:infcomb}.
-In subroutine~\ref{sub:infcomb}, we form strong components of the collision digraph $G = (V,E)$. 
+The algorithm returns $\acto' \equiv \actc$ which is an input for Subroutine~\ref{sub:infcomb}.
+In Subroutine~\ref{sub:infcomb}, we form strong components of the collision digraph $G = (V,E)$. 
 Suppose that $W_j$ is the strong component containing $v_i$.
 We add $i$ to $\coll(i)$ before forming the edges of $G$, so $(v_i,v_k) \in E$.
 Then $v_k \in \reach_j$, the reachable set of strong component $\strongcomp_j$. 
-Therefore, $\pre'' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \peq \pre' \pe \pre_i$, where the second inequality follows by lemma~\ref{lemma:key}, which shows that $\forest$ is a problem forest, and because $w(\pre')$ is a descendant of $w(\pre_k)$.
+Therefore, $\pre'' = \min_{\ell \in K_j} \pre_{\ell} \peq \pre_k \peq \pre' \pe \pre_i$, where the second inequality follows by Lemma~\ref{lemma:key}, which shows that $\forest$ is a problem forest, and because $w(\pre')$ is a descendant of $w(\pre_k)$.
 Using the map $p:\acto' \to \actt$ above, we have $p(\pre_i) = \pre''$.
 We calculate as before $\disto(\actt) = \max_{\pre_j \in \actt} \|\pre_j\|_1 < \max_{\pre_j \in \actt} \disto(p\inv(\pre_j)) = \disto(\acto')$, where the inequality is strict by the work above, noting that $\pre_i \in p\inv(\{\pre''\})$. 
 Since $\actokk \leftarrow \actt$ when this subroutine returns, we have shown that, in both cases above, the sequence $\disto(\actok)$ decreases \emph{strictly} during a single execution of the outer while loop in FindStrictCore. 
@@ -1170,7 +1172,7 @@ We will show that at any point during the execution of FindStrictCore, a fixed p
 We work by induction on $k$, the number of distinct states $\actok$ of the set of active problems $\acto$ during the main loop of FindStrictCore\footnote{Note that $\fixfind$ changes only if $\acto$ changes, so it suffices to consider distinct states of $\acto$}. 
 For any set of problems $W$, we denote $\fix(W) \equiv \bigcup_{\pre \in W} \fix(\pre)$.
 
-For the base case, note that if $\toppre \in \fix(T)$ or $\ul{\pre} \in \fix(T)$, then, by lemma~\ref{lemma:contain} above, $\fix(T) = \{\toppre\}$ or $\{\ul{\pre}\}$, so the algorithm is correct. 
+For the base case, note that if $\toppre \in \fix(T)$ or $\ul{\pre} \in \fix(T)$, then, by Lemma~\ref{lemma:contain} above, $\fix(T) = \{\toppre\}$ or $\{\ul{\pre}\}$, so the algorithm is correct. 
 Suppose the algorithm continues, and we set $\acto = \bigcup_{i = 1}^m \{\toppre - e_i\}$ (identifying $\prealloc$ with a grid as above).
 Since $\fix(T) \peq \toppre = \max \fix(T^2)$ and $\toppre \not \in \fix(T)$, the inductive hypothesis is clearly satisfied. 
 Then suppose by induction that (i) and (ii) above are satisfied up to $k = n$.
@@ -1179,8 +1181,8 @@ We show that these statements still hold for $k = n +1$.
 Throughout, for a set $E$, we let $E'$ denote the state of $E$ at subroutine initialization, and $E''$ its state at algorithm return.
 There are two main cases, corresponding to each subroutine.
 
-\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ and $\fixfindk \to \fixfindkk$ when InformationAcquire (subroutine~\ref{sub:infac}) returns.
-InformationAcquire returns a set $\actc$ of ``collided'' problems, which will be combined during subroutine~\ref{sub:infcomb}.
+\emph{Case 1}: There is a state change $\actok \to \acto^{k +1}$ and $\fixfindk \to \fixfindkk$ when InformationAcquire (Subroutine~\ref{sub:infac}) returns.
+InformationAcquire returns a set $\actc$ of ``collided'' problems, which will be combined during Subroutine~\ref{sub:infcomb}.
 In the above notation, $\actc'' = \acto^{k+1}$ is the set of problems and $\fixtemp''$ is the set of fixed points returned by the subroutine.
 By the inductive hypothesis, we have $\fix(T) \sub \fixfind' \cup \fix(\acto')$.
 Then, to show that no fixed points are ``lost'' during the subroutine, it suffices to show that $\fix(\acto') \sub \fixtemp'' \cup \fix(\actc'')$.
@@ -1192,12 +1194,12 @@ Thus, we are allowed to remove a fixed point from $\acta \cup \actc$ and add it 
 We will show by induction that for any $\ell \geq 0$ if $\pre'' \in \fix(\pre)$ for some problem $\pre \in \acto^{\ell}$ then either $\pre'' \in \fixtemp^{\ell}$ or there exists $\pre' \in \acta^{\ell} \cup \actc^{\ell}$ with $\pre'' \peq \pre' \peq \pre$ (GAR).
 We call such a relationship a guarantee (GAR) on $\pre''$ \emph{afforded} by the problem $\pre' \in \acta^{\ell} \cup \actc^{\ell}$, which is either still active, or in the set of ``collided'' problems to be returned by the algorithm.
 In particular, this will show that $\fix(\acto^{\ell}) \sub \fix(\acta^{\ell}) \cup \fix(\actc^{\ell}) \cup \fixtemp^{\ell}$ for all $\ell \geq 0$.
-By lemma~\ref{lemma:termination}, this subroutine terminates with $\acta'' = \emptyset$. 
+By Lemma~\ref{lemma:termination}, this subroutine terminates with $\acta'' = \emptyset$. 
 Also, as we will show shortly, $\fix(\acto') \sub \fix(\acto'')$, where $\acto''$ is the state of $\acto$ when the algorithm returns. 
 Then, assuming the inductive result above, we would have $\fix(\acto') \sub \fix(\acto'') \sub \fix(\acta'') \cup \fix(\actc'') \cup \fixtemp'' = \fix(\actc'') \cup \fixtemp''$, so that no fixed points are ``lost'' during this subroutine.
 
 First, we show that $\fix(\acto') \sub \fix(\acto'')$. 
-Consider the beginning of subroutine~\ref{sub:infac}, where we remove redundant subproblems (items \infacredi and \infacredii).
+Consider the beginning of Subroutine~\ref{sub:infac}, where we remove redundant subproblems (items \infacredi and \infacredii).
 If $\pre \in \acto'$ and $\pre \peq \min \fix(T^2)$, then $\fix(\pre) = \emptyset$ since we checked $\bopre = \min \fix(T^2) \not \in \fix(T)$. 
 Otherwise, if we remove $\pre$ from $\acto$ during this loop, then there is a $\pre \peq \pre' \in \acto$, so that $\fix(\pre) \sub \fix(\pre')$, and no fixed points are lost.
 Let $\acto^R$ denote the state of $\acto$ after this removal step.
@@ -1221,7 +1223,7 @@ But $\pre \not = \pre'$, since we check if $\pre' \in \fix(T)$ when processing $
 Then $\pre \pe \pre'$ strictly.
 For stopping condition (1), note that $\fix(T) \sub \fix(T^2) \succeq \bopre$.
 Combining these, $\pre \pe \pre' \peq \bopre$, which is a contradiction.
-For stopping condition (2), note that by lemma~\ref{lemma:top}, which shows that no fixed points of $T$ are ordered strictly by ``$\pe$'', if $T\pre' = \pre'$ then there can be no $\pre \pe \pre'$ fixed by $T$, so this also results in a contradiction. 
+For stopping condition (2), note that by Lemma~\ref{lemma:top}, which shows that no fixed points of $T$ are ordered strictly by ``$\pe$'', if $T\pre' = \pre'$ then there can be no $\pre \pe \pre'$ fixed by $T$, so this also results in a contradiction. 
 By the inductive hypothesis, there must be $\pre'' \not = \pre_i$ such that $\pre'' \in \actat \cup \actct$ and affords a guarantee $\pre \peq \pre'' \peq \pren$.
 Then $\pre'' \in \actatt \cup \actctt$ since it is not removed, so we are done.
 
@@ -1247,10 +1249,10 @@ Note that in this case we just move $\pre_i$ between sets.
 Specifically, $\actatt = \actat \setminus \{\pre_i\}$ and $\actctt = \actct \cup \{\pre_i\}$.
 Then $\actat \cup \actct = \actatt \cup \actctt$, so none of the guarantees of the form (GAR) above can change, which finishes the subcases.
 
-By the remarks at the beginning and since the algorithm terminates by lemma~\ref{lemma:termination}, we have shown by induction that $\fix(\acto') \sub \fix(\actc'') \cup \fixtemp''$, so we are done.
-Returning to the first induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (subroutine~\ref{sub:infac}), we have, using the inductive hypothesis, that $\fix(T) \sub \fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindk \cup \fixtemp'' = \fix(\actokk) \cup \fixfindkk$.
+By the remarks at the beginning and since the algorithm terminates by Lemma~\ref{lemma:termination}, we have shown by induction that $\fix(\acto') \sub \fix(\actc'') \cup \fixtemp''$, so we are done.
+Returning to the first induction, we have shown that in the case where $\actok \to \actokk$ during InformationAcquire (Subroutine~\ref{sub:infac}), we have, using the inductive hypothesis, that $\fix(T) \sub \fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindk \cup \fixtemp'' = \fix(\actokk) \cup \fixfindkk$.
 
-\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine (subroutine~\ref{sub:infcomb}) returns.
+\emph{Case 2}: There is a state change $\actok \to \acto^{k +1}$ when InformationCombine (Subroutine~\ref{sub:infcomb}) returns.
 In the notation above, $\acto'$ is the input to the subroutine, and $\actt'' = \actokk$ is the set returned by the subroutine. 
 We will argue that, for any $\pre \in \acto'$, there is a $\pre' \in \actt''$ such that $\fix(\pre) \sub \fix(\pre')$.
 It will follow immediately that $\fix(\actok) = \fix(\acto') \sub \fix(\actt'') = \fix(\actokk)$.
@@ -1259,9 +1261,9 @@ The proof relies crucially on the collision digraph and problem forest structure
 Fix $\pre_i \in \acto'$.
 By construction, we have $v_i \in G$, where $G = (V,E)$ is the collision digraph built during the algorithm.
 Then $v_i \in \strongcomp_j$, a strong component of $G$ left over after trimming irrelevant singletons (at item \infcombgraphii).
-By our key lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$ during the algorithm, $\forest$ is a problem forest, as in definition~\ref{def:forest}, at any time during the execution of FindStrictCore.
-Moreover, condition~(\ref{convlemma:coll}) of lemma~\ref{lemma:forest} also holds, showing that collision indices are compatible with $\forest$.
-Then proposition~\ref{prop:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph, can be applied. 
+By our key Lemma~\ref{lemma:forest} on the structure of the rooted forest $\forest$ during the algorithm, $\forest$ is a problem forest, as in Definition~\ref{def:forest}, at any time during the execution of FindStrictCore.
+Moreover, condition~(\ref{convlemma:coll}) of Lemma~\ref{lemma:forest} also holds, showing that collision indices are compatible with $\forest$.
+Then Proposition~\ref{prop:graph}, our result showing that fixed point relationships are reflected in the structure of the collisiion digraph, can be applied. 
 Let $\reach_j$ denote the reachable set of strong component $\strongcomp_j$.
 By item~(\ref{prop:graph:reach}) of the graph structure proposition, if $\pre_k \in \reach_j$, then $\fix(\pre_i) \peq \pre_k$.
 Now we have $\fix(\pre_i) \peq \min\limits_{v_k \in S_j} \pre_k \equiv \pre'$, which is added to $\actt$.
@@ -1269,24 +1271,24 @@ In particular, $\fix(\pre_i) \sub \fix(\pre')$, where $\pre' \in \actt'' = \acto
 This shows that $\fix(\actok) \sub \fix(\actokk)$, so, in particular, $\fix(\actok) \cup \fixfindk \sub \fix(\actokk) \cup \fixfindkk$ since $\fixfindk = \fixfindkk$.
 
 We have exhausted both cases, so this completes the induction. 
-By our termination analysis in lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
+By our termination analysis in Lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
 Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, so clearly $\fixfind \sub \fix(T)$.
 Then $\fixfind = \fix(T)$. 
-That is, by lemma~\ref{lemma:strictcore} and lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations.
+That is, by Lemma~\ref{lemma:strictcore} and Lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations.
 \eprf
 
 \subsubsection{Discussion} 
 Note that, given $\pre = \pre_Y \in \fixfind$, we have $Y = \bigcup_{a \in A} Y_a = \bigcup_{a \in A} \pre(a)$, so the allocation corresponding to $\pre$ can be found by taking a union.
 The performance of the algorithm for a given problem instance depends on the exact structure of the lattice $\fix(T^2)$.
 For instance, it could be that by stopping a Tarski sequence $(T^2)^k \pre$ before it converges and running InformationCombine, we miss some $\pre'$ in the sequence for which $T^2 \pre' \pe \bopre$, showing that $\fix(\pre) = \emptyset$. 
-In particular, FindStrictCore and the original Echenique and Yenmez (2013) algorithm are incommensurable. 
+In particular, FindStrictCore and the original \cite{EcheniqueYenmez2013} algorithm are incommensurable. 
 Our algorithm uses the heuristic that evaluation of the $T$ operator is very costly, and we prefer to make progress through the lattice by using fast graph algorithms to share information between problems whenever this is possible. 
 
 \section{Maximal Domain Results and Generalizations} 
 \subsection{True Core Allocations}
 It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of true core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
 Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
-For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered considered in Echenique and Yenmez (2013) \footnote{something about other examples of this xxxx}.
+For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered considered in \cite{EcheniqueYenmez2013}
 
 At first glance, it appears that such a generalization will be forthcoming. 
 Similarly to the strict core case, for $a \in A$ we define a set 
@@ -1347,7 +1349,7 @@ The contract space is $X = \{(s_1,b), (s_2,b)^2, (s_2,b), \emptyset_{s_1}, \empt
 
 Now define preallocations $\pre$ and $\pre'$ by setting $\pre'(a) = \emptyset_a$ for all $a \in A$ and $\pre(b) = \{(s_2,b)^2\}$, $\pre(s_1) = \emptyset_{s_1}$, $\pre(s_2) = \{(s_2,b)^2\}$.
 Note that $\pre = \pre_Y$, where $Y \in \core$ is the core allocation consisting of a single contract $\{(s_2,b)^2\}$. 
-Then by lemma~\ref{lemma:core} above $\optwo(\pre) = \pre$.
+Then by Lemma~\ref{lemma:core} above $\optwo(\pre) = \pre$.
 Since $\pre'(a) = \emptyset_a$ for all $a$, any trade listed above is a strict improvement for each agent involved, so every agent can propose its most preferred network structure.
 Thus, we get $\pre'' = \optwo(\pre')$ defined by $\pre''(b) = \{(s_1,b),(s_2,b)\}$ and $\pre''(s_1) = \{(s_1,b)\}$ and $\pre''(s_2) = \{(s_2,b)^2\}$.
 $\pre''$ is the unanimously most preferred preallocation, so, by the remarks above, $\optwo(\pre'') = \pre''$.
@@ -1367,7 +1369,7 @@ Indeed, our construction of an algorithm to find all stable matchings relies on 
 \subsection{Generalized Information Sharing and Applications} \label{section:general}
 In this section, we briefly describe how the notion of information sharing and the collision digraph algorithm developed above can be extended to similar economic problems on more general complete lattices.
 This extension is the basis of our algorithm for finding all stable allocations. 
-We also show how information sharing may be used to find Nash equilibria in games with strategic complementarities (GSC), extending Echenique (2003).
+We also show how information sharing may be used to find Nash equilibria in games with strategic complementarities (GSC), extending \cite{Echenique2007Equilibria}.
 
 Let $(\lattice,\peq)$ be a complete lattice, and suppose $\point \sub \lattice$ is a set of points that we are would like to find. 
 For instance, these could be stable allocations $\stable$ in the lattice $(2^X,\sub)$, where subsets are partially ordered by set inclusion. 
@@ -1379,8 +1381,8 @@ Suppose that an isotone operator $F_i : \lattice_i \to \lattice_i$ can be define
 To complete the construction, we need to assume some economic structure. 
 Specifically, suppose that we can show $\fix(\oper)$ satisfies $\fix(\oper) \cap \lattice_i \sub \fix(\oper^i)$ (E).
 Guarantees of this form are surprisingly common in economics.
-For the problem of finding $\fix(T) \sub \prealloc$, this guarantee is given by lemma~\ref{lemma:contain}, which holds because truncating agents' preference profiles shrinks the set of available blocking allocations.
-The corresponding result in Echenique (2003) for Nash equilibria is similarly derived from the invariance of Nash equilibria under truncation of strategy profiles.
+For the problem of finding $\fix(T) \sub \prealloc$, this guarantee is given by Lemma~\ref{lemma:contain}, which holds because truncating agents' preference profiles shrinks the set of available blocking allocations.
+The corresponding result in \cite{Echenique2007Equilibria} for Nash equilibria is similarly derived from the invariance of Nash equilibria under truncation of strategy profiles.
 For finding stable allocations, the guarantee is given by the invariance of substitutability under coarsening of the contract language $X$.
 
 The following discussion shows how to extend our information sharing algorithm for finding $\fix(T) \sub \prealloc$ to an arbitrary complete lattice, conditional on an economic guarantee of the form above.
@@ -1405,21 +1407,21 @@ For instance, for the $(2^X, \sub)$, for $X_i \sub X$, we can form subproblems b
 For more general problems, we work with whatever regularity is offered by the lattice.
 
 \subsubsection{Games with Strategic Complementarities}
-We briefly show how the above discussion can be used to incorporate information sharing in the Echenique (2003) algorithm for finding all pure strategy Nash equilibria in GSC. 
+We briefly show how the above discussion can be used to incorporate information sharing in the \cite{Echenique2007Equilibria} algorithm for finding all pure strategy Nash equilibria in GSC. 
 In GSC, we suppose a set of players $1 \leq i \leq n$ with strategy profiles $S_i$, each of which is a complete lattice.
 Then $S = \bigtimes_{i = 1}^n S_i$ is also a complete lattice under the product order.
 Let $\beta_i: S \to 2^{S_i}$ denote the best response correspondence for player $i$.
 Then we can form a map $\oper: S \to S$ by setting $\oper_i = \sup \beta_i(s) \in S_i$.
-Lemma 2 of Echenique (2003) shows that this map is isotone on $S$.
+Lemma 2 of \cite{Echenique2007Equilibria} shows that this map is isotone on $S$.
 For a sublattice $S_r = \bigtimes_{i = 1}^n \{s' \in S_i: s' \peq s^r_i\}$, we can define a restricted best response correspondence $\beta^r$ using only strategies in $S_r$, which extends to an operator $\oper_r: S_r \to S_r$ as above.
-Lemmas 3 and 4 of Echenique (2003) show that the guarantee $\fix(\oper) \cap S_r \sub \fix (F_r)$ of the form (E) above holds for this family of operators $\oper_r$ on sublattices $S_r \sub S$, showing that the information sharing algorithm above may be applied.
+Lemmas 3 and 4 of \cite{Echenique2007Equilibria} show that the guarantee $\fix(\oper) \cap S_r \sub \fix (F_r)$ of the form (E) above holds for this family of operators $\oper_r$ on sublattices $S_r \sub S$, showing that the information sharing algorithm above may be applied.
 
 \section{Finding All Stable Matchings} 
 In this section, we extend the information sharing technique developed above to an algorithm for finding all stable allocations in the setting of two-sided many-to-many matching with contracts under the assumption of substitutable preferences.
 This relates to previous literature xxxx median matchings xxxx.
 
 \subsection{Model and Notation} 
-In this section, we restrict our attention to two-sided many-to-many matching with contracts, and we may think of the contract language as $X = D\times H \times E$, where $E$ is a finite set of contract terms; for instance, $E$ could be a set of wages.
+In this section, we restrict our attention to two-sided many-to-many matching with contracts, and we may think of the contract language as $X = D\times H \times E$, where $E$ is a finite set of contract terms. For instance, $E$ could be a set of wages.
 
 We define choice functions in the usual way for $Y\in 2^{X_a}$ as 
 \[
@@ -1444,13 +1446,13 @@ It is easy to check that this partial order defines a complete lattice.
 For instance, given a collection of $(Z_i, W_i) \in \lattice$, the greatest lower bound is $\bigwedge_i (Z_i, W_i) = \lft \bigcap_i Z_i, \bigcup_i W_i \rt \in 2^X \times 2^X$.
 The least upper bound is attained similarly by swapping unions and intersections. 
 
-As in Hatfield and Kominers (2015), we may define an operator $\Phi: \lattice \to \lattice$ by $\Phi(Z,W) = (\Phi_D(W), \Phi_H(Z))$, where $\Phi^D(Z) = \{z \in X: z \in C_D(\{z \} \cup Z) \}$ and $\Phi^H(W) = \{z \in X: z \in C_H(\{z \} \cup W) \}$.
+As in \cite{HatfieldKominers2010b}, we may define an operator $\Phi: \lattice \to \lattice$ by $\Phi(Z,W) = (\Phi_D(W), \Phi_H(Z))$, where $\Phi^D(Z) = \{z \in X: z \in C_D(\{z \} \cup Z) \}$ and $\Phi^H(W) = \{z \in X: z \in C_H(\{z \} \cup W) \}$.
 As usual, we define the fixed point set $\fix(\Phi) \equiv \{(Z,W) \in 2^X \times 2^X: \Phi(Z,W) = (Z,W) \}$.
 It is easy to see from the definition of substitutability that this operator is isotone on $\lattice$.
 Therefore, by Tarski's Theorem, $\fix(\Phi)$ is a non-empty lattice.
 
-The following characterization of stable matchings is due to Hatfield and Kominers (2015)
-\begin{lemma}[Hatfield and Kominers (2015), Lemma 1] \label{lemma:hk}
+The following characterization of stable matchings is due to \cite{HatfieldKominers2010b} 
+\begin{lemma}[\cite{HatfieldKominers2010b}, Lemma 1] \label{lemma:hk}
 Assume that agents' preferences are substitutable and satisfy irrelevance of rejected contracts.
 Then for any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
 Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
@@ -1484,7 +1486,7 @@ Since $\botx \sub X_i$, and the hospitals are only allowsed to choose from $X_i$
 By definition, $\Phi^H_i(Z) \supseteq Y_i$, so apparently $\Phi_i(Z,W) \peq (X_i, Y_i)$ for any $(Z,W) \in \lattice$. 
 In particular, $\Phi_i: \lattice_i \to \lattice_i$.
 Suppose that $(Z,W) \peq (Z',W')$ are elements of $\lattice_i$, so that $Z \sub Z'$ and $W' \sub W$.
-By Proposition 4 of Hatfield and Kominers (2015), substitutability is preserved under a coarsening of the contract language to any $X' \sub X$.
+By Proposition 4 of \cite{HatfieldKominers2010b}, substitutability is preserved under a coarsening of the contract language to any $X' \sub X$.
 Thus, hospitals' preferences are substitutable over $X_i \setminus \botx \sub X$, and, similarly, doctors' preferences are substitutable over $\boty \setminus Y_i \sub X$.
 In particular, by substitutability for doctors, $\{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z') \} \sub \{z \in \boty \setminus Y_i: z \in C_D( \{z \} \cup Z) \}$. 
 Then $\Phi_i^H(Z') \sub \Phi_i^H(Z)$ by taking the union with $Y_i$ on both sides.
@@ -1540,7 +1542,7 @@ Iterate $\Phi^k(\emptyset,X)$ and $\Phi^k(X, \emptyset)$, which converge in fini
 Add each of these to the fixed point collection $\fixfind$.
 For each $x \in \topx \setminus \botx$, add $(\topx \setminus \{x\}, \topy)$ to $\acto$ and $\act$, and add the vertex $w(\topx \setminus \{x\}, \topy)$ to $\forest$ as an isolated root
 Similarly, for each $y \in \boty \setminus \topy$, add $(\topx, \topy \cup \{y\})$ to $\acto$ and $\act$, and add the vertex $w(\topx, \topy \cup \{y\})$ to $\forest$ as an isolated root.
-Then run algorithm~\ref{alg:main}, where we modify the subroutines InformationAcquire (subroutine~\ref{sub:infac}) and InformationCombine (subroutine~\ref{sub:infcomb}) as shown below.
+Then run Algorithm~\ref{alg:main}, where we modify the subroutines InformationAcquire (Subroutine~\ref{sub:infac}) and InformationCombine (Subroutine~\ref{sub:infcomb}) as shown below.
 
 \begin{subroutine}[InformationAcquire] \label{sub:infac2}
 Initialize $\acta = \acto$, and set $\fixtemp = \actc = \coll = \emptyset$.
@@ -1597,17 +1599,17 @@ Return $(\acto, \coll)$.
 \end{subroutine}
 
 \subsubsection{Discussion} 
-We briefly note the substantive differences between this algorithm and algorithm~\ref{alg:main} for finding all strict core outcomes.
-Here, when forming new problems during InformationCombine, we replace the pointwise minima used in algorithm~\ref{alg:main} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
+We briefly note the substantive differences between this algorithm and Algorithm~\ref{alg:main} for finding all strict core outcomes.
+Here, when forming new problems during InformationCombine, we replace the pointwise minima used in Algorithm~\ref{alg:main} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
 For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second, as shown above.
 Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is \emph{not constant}.
 This is necessary because $2^X \times 2^X$ has a less regular structure than the Euclidean lattice $\prealloc$ used in section~\ref{section:strcore}.
-Finally, for stable allocations, there is no equivalent of lemma~\ref{lemma:order}, since $\fix(\Phi)$ are fixed points of an isotone (not antitone) operator. 
-Thus, after finding $(Z,W) \in \fix(\Phi)$, we still have to search the lattice $\{\pairp \pe (Z,W) \}$ strictly below $(Z,W)$, whereas, for algorithm~\ref{alg:main}, lemma~\ref{lemma:order} shows that we can stop immediately.
-Because of this, subroutine~\ref{sub:infac2} has one fewer distinct stopping condition.
+Finally, for stable allocations, there is no equivalent of Lemma~\ref{lemma:order}, since $\fix(\Phi)$ are fixed points of an isotone (not antitone) operator. 
+Thus, after finding $(Z,W) \in \fix(\Phi)$, we still have to search the lattice $\{\pairp \pe (Z,W) \}$ strictly below $(Z,W)$, whereas, for Algorithm~\ref{alg:main}, Lemma~\ref{lemma:order} shows that we can stop immediately.
+Because of this, Subroutine~\ref{sub:infac2} has one fewer distinct stopping condition.
 Otherwise, the algorithm is structurally identical, with slightly different notation.
 
-The following result is an easy extension of lemma~\ref{lemma:termination} and theorem~\ref{thm:correct}.
+The following result is an easy extension of Lemma~\ref{lemma:termination} and Theorem~\ref{thm:correct}.
 
 \begin{thm} \label{thm:correct2}
 FindStable returns $\fixfind = \fix(\Phi)$. 
@@ -1615,22 +1617,22 @@ In particular, $\{Z \cap W: (Z,W) \in \fixfind\} = \stable$, so the algorithm fi
 \end{thm}
 
 \prf
-This is a straightforward extension of the auxiliary lemmas and correctness proof provided above, using lemma~\ref{lemma:hk} from Hatfield and Kominers (2015) to get all of $\stable$ from the fixed point set $\fix(\Phi)$.
+This is a straightforward extension of the auxiliary lemmas and correctness proof provided above, using Lemma~\ref{lemma:hk} from \cite{HatfieldKominers2010b} to get all of $\stable$ from the fixed point set $\fix(\Phi)$.
 Here, we just note the substantive differences between the proofs.
 
-In the analysis for algorithm~\ref{alg:main}, we think of $\prealloc$ as a sublattice of $\mr^m$.
+In the analysis for Algorithm~\ref{alg:main}, we think of $\prealloc$ as a sublattice of $\mr^m$.
 Thus, meet for this lattice is a pointwise minimum.
 For instance, we form new problems by setting $\pre = \min_{v_k \in \reach_j} \pre_k$.
 For finding all stable allocations, every such minimum must be replaced by the lattice meet for $\lattice = 2^X \times 2^X$.
 Given a collection $\{(Z_i,W_i)\}_{i \in I} \sub 2^X \times 2^X$, the meet, or greatest lower bound, takes the form $\bigwedge_{i \in I} (Z_i,W_i) = \lft \bigcap_{i \in I} Z_i, \bigcup_{i \in I} W_i \rt $. 
 
-Our termination analysis in lemma~\ref{lemma:termination} needs to be slightly modified. 
+Our termination analysis in Lemma~\ref{lemma:termination} needs to be slightly modified. 
 For a set $E \sub 2^X \times 2^X$, define $\disto(E) = \max\limits_{(Z,W) \in E} \lft |Z| + |X \setminus W| \rt $ and $\distt(E) = \sum\limits_{(Z,W) \in E} \lft |Z| + |X \setminus W | \rt$.
 These functions are positive and take finitely many values on the lattice $2^X \times 2^X$.
 Moreover, $\distt(\cdot)$ is additive on disjoint subsets of $2^X \times 2^X$.
 The rest of the termination analysis follows as before.
 
-Finally, as noted in the discussion above, there is an extra stopping condition in algorithm~\ref{alg:main} corresponding to the guarantee from lemma~\ref{lemma:order} that no two points $\pre, \pre' \in \fix(T^2)$ can be compared under $\peq$.
+Finally, as noted in the discussion above, there is an extra stopping condition in Algorithm~\ref{alg:main} corresponding to the guarantee from Lemma~\ref{lemma:order} that no two points $\pre, \pre' \in \fix(T^2)$ can be compared under $\peq$.
 In the analysis, we use this lemma to argue that $\fix(T) \cap \{\pre'' : \pre'' \pe \pre\} = \emptyset$ whenever $\pre \in \fix(T)$.
 No such analysis is necessary for finding stable outcomes, because this stopping condition is not used.
 \eprf
@@ -1638,7 +1640,7 @@ No such analysis is necessary for finding stable outcomes, because this stopping
 \subsubsection{Remark}
 Consider the worst case scenario where $\Phi_i: \lattice_i \to \lattice_i$ fixes at $\pairi = \max \lattice_i$ for every $(\botx, \boty) \peq \pairi \peq (\topx, \topy)$.
 If we were to initialize \emph{every} subproblem of the form $(X_i \setminus \{x\}, Y_i)$ and $(X_i, Y_i \cup \{y \})$, we would create $\lft |\topx| - |\botx| + |\boty|- |\topy|\rt !$ problems in total, whereas greedy search only needs to check $2^{|\topx| - |\botx| + |\boty|- |\topy|} $ points.
-However, in subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
+However, in Subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
 
 \clearpage
 
@@ -1698,7 +1700,8 @@ remember, strong redundancy is impossible because of dependencie - what about fo
     we would get out-degree geq 2 for infac as well, we would also have a more confusing tree structure
     kill tree result?
 
-\section{extra text} 
+\bibliographystyle{chicago}
+\bibliography{ConeReferences}
 
 \end{document}
 
