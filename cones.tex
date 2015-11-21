@@ -77,8 +77,8 @@
 \newcommand{\coordpre}{\mathrm{CP}}
 \newcommand{\prealloc}{(2^X)^A}
 \newcommand{\sub}{\subseteq}
-\newcommand{\strcore}{\mathrm{SC}(X,U)}
-\newcommand{\core}{\mathrm{C}(X,U)}
+\newcommand{\strcore}{\mathrm{C}(X,U)}
+\newcommand{\core}{\mathrm{WC}(X,U)}
 \newcommand{\stable}{\mathrm{S}(X,U)}
 \newcommand{\fecon}{\mathrm{E}}
 \newcommand{\fix}{\mathcal{E}}
@@ -174,14 +174,18 @@
 \date{Novemeber 21, 2015}
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum} 
+\thanks{I am very grateful to Scott Kominers for continual guidance on this project. This project was completed with the help of an Economic Design Summer Fellowship from the Harvard Society of Fellows. Please send comments and suggestions to mcytrynbaum@gmail.com.}
 
 \begin{document}
 \maketitle
+\begin{abstract}
+asdfasdfasdf
+\end{abstract}
 
 \section{Introduction}
 
-In this paper\footnote{I am very grateful to Scott Kominers for continual guidance on this project. This project was completed with the help of an Economic Design Summer Fellowship from the Harvard Society of Fellows.}, we extend an algorithm pioneered in \cite{EcheniqueYenmez2013} to find \emph{all} strict core allocations in a highly general model of multilateral many-to-many matching with contracts.
-We show that, as in the case of matching with preferences over colleagues, strict core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
+In this paper, we extend an algorithm pioneered in \cite{EcheniqueYenmez2013} to find \emph{all} worl allocations in a highly general model of multilateral many-to-many matching with contracts.
+We show that, as in the case of matching with preferences over colleagues, worl allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
 Our main contribution is to show that the original algorithm does not take full advantage of the geometric relationships implied by the problem's lattice structure.
 We develop a notion of ``information sharing'' in lattices, construct and prove correctness for an algorithm that implements this idea, and show how this approach may be extended to a wider class of economic problems for which there is a complete lattice structure. 
 To conclude, we restrict our attention to two-sided many-to-many matching with contracts with substitutable preferences, showing how information sharing may be used to find \emph{all} stable allocations.
@@ -191,6 +195,8 @@ We consider a finite set of contracts $X$, each of which is associated with at l
 We call a subset $Y\sub X$ an \emph{allocation}, and let $2^X$ denote the set of all allocations. 
 Let $d(x)$ be the set agents associated with a contract $x\in X$, and extend this definition to allocations by writing $d(Y) \equiv \bigcup_{y\in Y} d(y)$.
 Note that, in general, we may have $|d(x)| > 2$ for multilateral contracts.
+For instance, we can view $X$ as the set of potential multilateral relationships in a trading network\footnote{This setting is thus a slight generalization of \cite{HatfieldKominers2010} model of bilateral contracts in a trading network.}. 
+In particular, we \emph{do not} impose a two-sided market structure in this section.
 
 For $a\in A$, we let $Y_a = \{y\in Y: \, a\in d(y)\}$ denote the set of contracts associated with that agent (note that we may have $Y_a = \emptyset$). Thus, $2^{X_a}$ denotes the set of all allocations naming an agent $a\in A$. 
 We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where the utility of an allocation is given by the one-to-one function $U_a: 2^{X_a} \to \mr$.
@@ -199,7 +205,7 @@ Let $\su_a$ denote the strict preference relation induced by these utility funct
 Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
 
 \section{Characterizing Strict Core Allocations} \label{section:strcore}
-In this section, we show how strict core allocations can be characterized as the fixed points of an antitone operator on a certain complete lattice.
+In this section, we show how worl allocations can be characterized as the fixed points of an antitone operator on a certain complete lattice.
 
 \subsection{Model}
 We construct an appropriate framework in which to generalize the fixed point construction discussed above. 
@@ -219,19 +225,22 @@ In particular, there does not exist an allocation $Y$ such that $\pre = \pre_Y$.
 With this example in mind, we say that $\pre \in \prealloc$ is a \emph{coordinated} preallocation if there exists an allocation $Y$ such that $\pre = \pre_Y$. 
 We denote the set of all cooordinated preallocations by $\coordpre\sub \prealloc$.
 
-An allocation $Y \sub X$ is said to be in the \emph{strict core} if there does not exist a non-empty blocking set $Z \sub X$ such that 
+An allocation $Y \sub X$ is said to be in the \emph{worl} if there does not exist a non-empty blocking set $Z \sub X$ such that 
 \[
 U_b(Z_b) \geq U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
 where \emph{at least one} of the above inequalities holds strictly.
-We denote the strict core by $\strcore$. 
+We denote the worl by $\strcore$. 
 
-Similarly, an allocation $Y$ is said to be \emph{core} if there does not exist a non-empty blocking set $Z \sub X$ such that 
+Similarly, an allocation $Y$ is said to be \emph{weak core} if there does not exist a non-empty blocking set $Z \sub X$ such that 
 \[
 U_b(Z_b) > U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
-We denote the core by $\core$. 
+We denote the weak core by $\core$. 
 Note that $\core \supseteq \strcore$.
+
+It is easy to see that worl allocations need not exist in such a general setting.
+Our approach will be to construct an algorithm that either finds all worl allocations or shows that none exist. 
 
 \subsection{Fixed Preallocations and the Strict Core}
 Our method proceeds by identifying allocations $Y \in \strcore$ with fixed points of an operator on preallocations, generalizing the construction in \cite{EcheniqueYenmez2013}.
@@ -268,9 +277,9 @@ We know $\pre_Y$ is coordinated, so by the simple fact above $\pre_Y(a) \in V(\p
 Then $Z_a = T \pre_Y(a) \su_a \pre_Y(a) =  Y_a$. Then $Z$ is a blocking coalition for $Y$, so $Y \not \in \strcore$.  
 \eprf
 Thus, we have identified $\strcore$ with the set of \emph{coordinated} preallocations $\pre \in \coordpre$ such that $T \pre = \pre$. 
-This result shows that an algorithm that finds all $\pre \in \fix(T)$ will also find all strict core matchings. 
+This result shows that an algorithm that finds all $\pre \in \fix(T)$ will also find all worl matchings. 
 
-However, if there are \emph{uncoordinated} preallocations that are also fixed by $T$, such an algorithm may return extraneous solutions not associated with any strict core matching.
+However, if there are \emph{uncoordinated} preallocations that are also fixed by $T$, such an algorithm may return extraneous solutions not associated with any worl matching.
 The following lemma, which is essential for the construction of our algorithm, shows that there are no such preallocations.
 Note that this result significantly generalizes the corresponding lemma in \cite{EcheniqueYenmez2013} and also subsumes the main result of \cite{Kojima2007b}. 
 
@@ -323,11 +332,11 @@ Then apparently $W \in \glob(\pre,a_1)$ as defined above. However, by constructi
 This finishes the proof.
 \eprf
 \subsubsection{Discussion}
-Combining these lemmas, we see that searching for strict core allocations in a very general model of multilateral matching with contracts is equivalent to searching for the fixed points of $T$. 
-Our algorithm depends heavily on this result, which shows, critically, that the fixed points $\fix(T)$ are only as dense in $\prealloc$ as the strict core outcomes.
+Combining these lemmas, we see that searching for worl allocations in a very general model of multilateral matching with contracts is equivalent to searching for the fixed points of $T$. 
+Our algorithm depends heavily on this result, which shows, critically, that the fixed points $\fix(T)$ are only as dense in $\prealloc$ as the worl outcomes.
 
-Our maximal domain results will show that this is not the case for the natural extension of this method to \emph{true} core outcomes $\core$.
-For true core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations (see Lemma~\ref{lemma:core}). 
+Our maximal domain results will show that this is not the case for the natural extension of this method to \emph{weak} core outcomes $\core$.
+For weak core outcomes, where the lattice algorithm fails, $T$ also fixes at a large number of extraneous, uncoordinated preallocations (see Lemma~\ref{lemma:core}). 
 
 \subsection{The Lattice of Fixed Preallocations}
 In this section, we generalize constructions from \cite{EcheniqueYenmez2013} showing the the fixed points of the squared operator $T^2$ form a lattice. 
@@ -337,7 +346,7 @@ Say that $\pre \su \pre'$ if and only if $\pre(a) \suq_a \pre'(a)$ for all $a \i
 Thus, we write $\pre \suq \pre'$ if and only if $\pre \su \pre'$ or $\pre = \pre'$. 
 This is a product order on a product space, which makes $\prealloc$ into a complete lattice. 
 Next, we give a sequence of results concerning the operator $T$ and its fixed points. 
-These results are an almost direct extension of Lemmas through 4.y of \cite{EcheniqueYenmez2013}.
+These results are an almost direct extension of the results in Lemma 4 through Proposition 8 of \cite{EcheniqueYenmez2013}.
 For the purposes of illustration, we include the proof the first result for the more general framework of preallocations considered in this paper.
 The rest of the lemmas follow from straightforward extensions of the work in \cite{EcheniqueYenmez2013}. 
 \begin{lemma} \label{lemma:antitone}
@@ -362,13 +371,13 @@ There exist preallocations $\ol{\pre}$ and $\ul{\pre}$ such that for all $\pre \
 
 \section{Sharing Lattice Information to Find All Strict Core Allocations}
 \subsection{Introduction}
-In this section, we give an algorithm that finds \emph{all} strict core allocations in the model of multilateral matching with contracts considered above.
+In this section, we give an algorithm that finds \emph{all} worl allocations in the model of multilateral matching with contracts considered above.
 Our algorithm builds upon the original approach in \cite{EcheniqueYenmez2013}.
-In particular, we show how to fully exploit the problem's complete lattice structure to more efficiently find the full set of strict core matchings. 
+In particular, we show how to fully exploit the problem's complete lattice structure to more efficiently find the full set of worl matchings. 
 
 The algorithm proceeds by successively initializing modified versions of the original matching problem, in which each agent has a truncated preference list.
 Our main contribution is to realize that many of the subproblems created while searching the lattice $\fix(T^2)$ share geometric information with other subproblems.
-We show how fast digraph algorithms may be used to combine this shared information and more quickly identify the full set of strict core matchings. 
+We show how fast digraph algorithms may be used to combine this shared information and more quickly identify the full set of worl matchings. 
 
 \subsection{Intuition and Notation} \label{section:description1}
 \subsubsection{Algorithm Intuition}
@@ -395,7 +404,7 @@ That is, the fixed points of $T$ contained in the cone $\{\pre' \peq \toppre - e
 Then apparently we have $\fix(T) \cap \{\pre' \leq \toppre - e_i\} \sub \fix(T_i) \sub \fix(T_i^2)$, so information about the lattice of fixed points of $T_i^2$ can be used to bound $\fix(T)$.
 The general result in our setting is as follows 
 \begin{lemma} \label{lemma:contain}
-Suppose $\pre \peq \wh{\pre}$, and let $\wh{T}$ denote the strict core operator for the problem $\lag \wh{\pre} \rag$.
+Suppose $\pre \peq \wh{\pre}$, and let $\wh{T}$ denote the worl operator for the problem $\lag \wh{\pre} \rag$.
 If $\pre \in \fix(T)$, then $\pre \in \fix(\wh{T})$.
 In particular, $\fix(T) \cap \{\pre \leq \wh{\pre}\} \sub \fix(\wh{T}^2)$. 
 \end{lemma}
@@ -422,7 +431,7 @@ Starting with $\toppre_i$, the unanimously most preferred preallocation in the s
 
 Pursuing this strategy for $i = 1 \hdots m$, we can bound the complete set of fixed points $\fix(T)$ in a union of subproblem cones. 
 We continue this strategy recursively by generating $m$ new subproblems whenever a monotonic sequence of the form $S_i^k \toppre_i $ stops at a fixed point of $S_i^k$. 
-In this way, we will eventually find the full set of strict core outcomes, directly extending the \cite{EcheniqueYenmez2013} algorithm to the present setting.  
+In this way, we will eventually find the full set of worl outcomes, directly extending the \cite{EcheniqueYenmez2013} algorithm to the present setting.  
 
 However, depending on the structure of the lattice $\fix(T^2)$, the strategy described above can actually be quite similar to greedy search.  
 In particular, the number of subproblems generated at the kth recursive level scales exponentially in $k$ as $|A|^k$.As we will show, many of the subproblems generated by this strategy are either redundant or do not need to be solved completely.
@@ -438,11 +447,11 @@ A \emph{directed path} is a sequence $e^1 \hdots e^n$ of edges, where $e_2^k = e
 A subset $W \sub V$ is \emph{strongly connected} if for any $v_i, v_j \in W$, there exist directed paths $v_i \to v_j$ and $v_j \to v_i$ using only vertices in $W$. 
 Strong connectedness is an equivalence relation on $V$, and the (disjoint) maximal strongly connected subsets of $V$ are called the \emph{strong components} of $G$, which we denote by $\strongc$. 
 Weak connectedness is defined similarly for an undirected graph, where an (undirected) path is defined as above, ignoring the order on vertices in an edge. 
-The \emph{reachable set} from a vertex $v$ is the set of all $v' \in V$ such that there exists a directed path $v \to v'$. 
+The \emph{reachable set} from a vertex $v$ is the set of all $v' \in V$ such that there exists a directed path $v \to v'$.  
 
 By a \emph{rooted tree}, we mean a graph that is connected with no cycles (paths starting and ending at the same vertex) and has one vertex designated as the \emph{root}. 
 Edges on a rooted tree are naturally oriented away from the root. 
-A collection of such rooted trees is called a \emph{forest} and, for such a collection, for a vertex $w$ we let $r(w)$ denote the root of the tree containing $w$, and we let $c(w)$ denote the \emph{children} of $w$, the vertices connected by an edge to $w$ on a path away from the root, and $p(w)$ denote the parent vertex of $w$, defined similarly.  
+A collection of such rooted trees is called a \emph{forest} and, for such a collection, for a vertex $w$ we let $r(w)$ denote the root of the tree containing $w$, and we let $c(w)$ denote the \emph{children} of $w$, the vertices connected by an edge to $w$ on a path away from the root, and $p(w)$ denote the parent vertex of $w$, defined similarly\footnote{see, for instance, \cite{GrossYellen2005graph}.}.
 
 \subsubsection{Example 1 - Colliding Subproblem Cones}
 In this section, we give a simple example of how subproblems can share information.
@@ -645,10 +654,10 @@ Thus, we run the information combination subroutine in stage 2 iteratively until
 This process terminates, as discussed in Lemma~\ref{lemma:termination}.
 After termination, we return to stage 1 with a new collection of active problems $\acto \leftarrow \actt$.
 
-In general, we would like to spend as much time as possible in the information combination stage, since this stage improves the progress of the search for $\fix(T)$ by using fast\footnote{Tarjan's algorithm for finding strong components of a graph $G = (V,E)$ runs in $\mathcal{O}(|V| + |E|)$, for instance.} digraph algorithms, as opposed to the often costly process of computing the operator $T$, which is equivalent to checking whether a given allocation is strict core.  
+In general, we would like to spend as much time as possible in the information combination stage, since this stage improves the progress of the search for $\fix(T)$ by using fast\footnote{Tarjan's algorithm for finding strong components of a graph $G = (V,E)$ runs in $\mathcal{O}(|V| + |E|)$, for instance.} digraph algorithms, as opposed to the often costly process of computing the operator $T$, which is equivalent to checking whether a given allocation is worl.  
 
 \subsection{Full Algorithm} \label{fullalgo}
-In this section, we state the full algorithm to find all strict core allocations $\strcore$. 
+In this section, we state the full algorithm to find all worl allocations $\strcore$. 
 Throughout what follows, we maintain global variables $\forest$, a rooted forest, and $\act$, a collection of active and previously solved problems.
 
 \emph{Initialization} To initialize the algorithm, set $\fixfind = \emptyset$ and create an empty forest $F = (\emptyset,\emptyset)$. 
@@ -792,11 +801,10 @@ Then the following are true
 \item[(iii)] $\depth(w,\forest') \geq \depth(w,\forest)$, the depth of a vertex $w \in \forest$ weakly increases.
 \end{enumerate}
 
-
 \end{lemma}
 
 \prf
-Note that a graph $G = (V,E)$ is a tree\footnote{\cite{GrossYellen2013graphs} p.116} if and only if $G$ is connected and $|E| = |V| - 1$. 
+Note that a graph $G = (V,E)$ is a tree\footnote{See \cite{GrossYellen2005graph} for a proof.} if and only if $G$ is connected and $|E| = |V| - 1$. 
 Consider the forest $\forest$ and let $\{t_i\}_{i \in I}$ be its constituent rooted trees. 
 That is, $\{t_i\}_{i \in I}$ is the collection of maximal connected components of $\forest$.
 For case (1), no edges were added, so the new collection of maximal connected components is now $\{t_i\}_{i \in I} \cup \{w\}$. 
@@ -1165,7 +1173,7 @@ We will make heavy use of the collision digraph and problem forest structure res
 
 \begin{thm} \label{thm:correct}
 FindStrictCore returns with $ \fixfind = \fix(T)$.
-In particular, the algorithm finds all strict core outcomes $\strcore = \{Y: \pre_Y \in \fixfind \}$. 
+In particular, the algorithm finds all worl outcomes $\strcore = \{Y: \pre_Y \in \fixfind \}$. 
 \end{thm}
 \prf
 We will show that at any point during the execution of FindStrictCore, a fixed point $\pre \in \fix(T)$ satisfies either (i) $\pre \in \fixfind$, the fixed points already found by the algorithm, or (ii) there exists a $\pre' \in \acto$ such that $\pre \peq \pre'$. 
@@ -1274,7 +1282,7 @@ We have exhausted both cases, so this completes the induction.
 By our termination analysis in Lemma~\ref{lemma:termination}, $\acto = \emptyset$ when the algorithm returns, so we have shown that $\fix(T) \sub \fix(\acto) \cup \fixfind = \fixfind$.
 Moreover, we only add $\pre$ to $\fixfind$ after checking that $T\pre = \pre$, so clearly $\fixfind \sub \fix(T)$.
 Then $\fixfind = \fix(T)$. 
-That is, by Lemma~\ref{lemma:strictcore} and Lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all strict core allocations.
+That is, by Lemma~\ref{lemma:strictcore} and Lemma~\ref{lemma:coordinated} above, for any $\pre \in \fixfind$, we have $\pre = \pre_Y$ for some $Y \in \strcore$, and this exhausts all worl allocations.
 \eprf
 
 \subsubsection{Discussion} 
@@ -1286,12 +1294,12 @@ Our algorithm uses the heuristic that evaluation of the $T$ operator is very cos
 
 \section{Maximal Domain Results and Generalizations} 
 \subsection{True Core Allocations}
-It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of true core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
-Indeed, for many classical matching models (subsumed by bilateral matching with contracts) $\strcore = \core$, so the construction extends directly.
-For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered considered in \cite{EcheniqueYenmez2013}
+It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of weak core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
+Indeed, for many classical matching models\footnote{See, for instance, \cite{Blair1988} and \cite{EcheniqueOviedo2006} for more on solution concept equivalences in a classical setting.}, $\strcore = \core$, so the construction extends directly.
+For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered considered in \cite{EcheniqueYenmez2013}.
 
 At first glance, it appears that such a generalization will be forthcoming. 
-Similarly to the strict core case, for $a \in A$ we define a set 
+Similarly to the worl case, for $a \in A$ we define a set 
 
 \[
 W(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_b \pre(b) \: \forall b \in d(Y)\setminus\{a\} \} \cup \{\pre(a)\}
@@ -1299,7 +1307,7 @@ W(\pre, a) = \{Z \in 2^{X_a}: \exists Y \in 2^X \, s.t. \,  Y_a = Z, \, Y_b \su_
 
 which can be thought of as the collection of allocations $Z \in 2^{X_a}$ with $Y \supseteq Z$ that agent $a$ could successfully propose to the coalition $d(Y)$.
 Define a new operator $\optwo: \prealloc \to \prealloc$ by $\optwo (\pre) (a) = \max\limits_{\suq_a} W(\pre,a)$.
-Note that in this case, the inequalities in the definition of $W(\pre,a)$ are \emph{strict}, and we are also forced to include $\pre(a) \in W(\pre,a)$, which is not necessary for strict core.
+Note that in this case, the inequalities in the definition of $W(\pre,a)$ are \emph{strict}, and we are also forced to include $\pre(a) \in W(\pre,a)$, which is not necessary for worl.
 Define the fixed allocation set $\fecon(\optwo) = \{Y \in 2^X: \optwo(\pre_Y) = \pre_Y\}$ as above.
 With these modifications, we get a similar characterization of $\core$ as the (coordinated) fixed points of an operator defined on the lattice $\prealloc$.
 \begin{lemma} \label{lemma:core}
@@ -1348,7 +1356,7 @@ Thus, $b$ prefers would like to execute two trades and prefers to buy from $s_2$
 The contract space is $X = \{(s_1,b), (s_2,b)^2, (s_2,b), \emptyset_{s_1}, \emptyset_{s_2}, \emptyset_b\}$, and we assume that all elements of $2^{X_a}$ not listed in the relations above are ranked below\footnote{Note that the specific order of allocations ranked below $\emptyset_a$ is irrelevant with respect to the evaluation of $\optwo$, since trivially $\emptyset_a \in W(\pre,a)$ for any $a$.} the single-agent contract $\emptyset_a$ for $a \in A$.
 
 Now define preallocations $\pre$ and $\pre'$ by setting $\pre'(a) = \emptyset_a$ for all $a \in A$ and $\pre(b) = \{(s_2,b)^2\}$, $\pre(s_1) = \emptyset_{s_1}$, $\pre(s_2) = \{(s_2,b)^2\}$.
-Note that $\pre = \pre_Y$, where $Y \in \core$ is the core allocation consisting of a single contract $\{(s_2,b)^2\}$. 
+Note that $\pre = \pre_Y$, where $Y \in \core$ is the weak core allocation consisting of a single contract $\{(s_2,b)^2\}$. 
 Then by Lemma~\ref{lemma:core} above $\optwo(\pre) = \pre$.
 Since $\pre'(a) = \emptyset_a$ for all $a$, any trade listed above is a strict improvement for each agent involved, so every agent can propose its most preferred network structure.
 Thus, we get $\pre'' = \optwo(\pre')$ defined by $\pre''(b) = \{(s_1,b),(s_2,b)\}$ and $\pre''(s_1) = \{(s_1,b)\}$ and $\pre''(s_2) = \{(s_2,b)^2\}$.
@@ -1361,9 +1369,9 @@ However, we have shown that $\optwo(\pre'') = \pre''$, so $\fix(\optwo) \not \su
 \eprf
 
 \subsubsection{Discussion} 
-These results, and the previous remark, show that the fixed point approach to finding all core allocations is doomed to fail on the lattice $\prealloc$.
+These results, and the previous remark, show that the fixed point approach to finding all weak core allocations is doomed to fail on the lattice $\prealloc$.
 Similar negative results can be shown, for instance, for an operator $\opthree: \prealloc \to \prealloc$ associated with the set of all stable matchings $\stable$.
-Our results do not prove, however, that there is no fixed point method for finding all true core allocations $\core$ on \emph{any lattice}.
+Our results do not prove, however, that there is no fixed point method for finding all core allocations $\core$ on \emph{any lattice}.
 Indeed, our construction of an algorithm to find all stable matchings relies on adapting the approach for $\strcore$ above to a lattice and partial order more appropriate for this solution concept. 
 
 \subsection{Generalized Information Sharing and Applications} \label{section:general}
@@ -1458,7 +1466,7 @@ Then for any $(Z,W) \in \fix(\Phi)$, we have $Z\cap W \in \stable$.
 Conversely, for any $Y\in \stable$, there exists a unique $(Z,W) \in \fix(\Phi)$ such that $Z \cap W = Y$.
 \end{lemma}
 
-\subsubsection{Definition of Sublattice Operators} - This lemma shows that finding all stable matchings $\stable$ is equivalent to finding all fixed points of the operator $\fix(\Phi)$.
+\subsubsection{Definition of Sublattice Operators} - This lemma shows that, for the case of substitutable preferences, finding all stable matchings $\stable$ is equivalent to finding all fixed points of the operator $\fix(\Phi)$.
 By isotonicity of $\Phi$, the standard Tarski argument from previous sections shows that the sequence formed by $\Phi^k(X, \emptyset)$ is monotonically decreasing, and fixes at $(\topx, \topy) = \max \fix(\Phi)$.
 Similarly, iterating $\Phi^k(\emptyset, X)$ eventually fixes at a $(\botx, \boty) = \min \fix( \Phi)$.
 Note then that any $(Z,W) \in \fix(\Phi)$ (corresponding to stable allocation $Z \cap W$) satisfies $\botx \sub Z \sub \topx$ and $\topy \sub W \sub \boty$.
@@ -1512,7 +1520,7 @@ Then we have shown $(Z,W) \in \fix(\Phi_i)$, so $\fix(\Phi) \cap \lattice_i \sub
 As in section~\ref{section:strcore}, for $i \in \mathcal{I}$ some index set we let $\lag (X_i, Y_i) \rag$ denote the problem of finding $\fix(\Phi_i) \sub \lattice_i = \{(X,Y) \peq (X_i, Y_i) \}$.
 Recall that we form the Tarski sequence $\Phi_i^k(X_i,Y_i)$, which, unless another stopping condition is triggered, converges to $\max \fix(\Phi_i) \suq \fix(\Phi) \cap \lattice_i$.
 After the Tarski sequence fixes, we need to initialize new problems to find elements of $\fix(\Phi)$ below $\max \fix(\Phi_i)$.
-For the strict core algorithm, the Euclidean structure gave a natural way to do this, by forming problems $\toppre - e_i$ for $1 \leq i \leq m$, where we identified $\prealloc$ with a subset of $\mr^m$. 
+For the worl algorithm, the Euclidean structure gave a natural way to do this, by forming problems $\toppre - e_i$ for $1 \leq i \leq m$, where we identified $\prealloc$ with a subset of $\mr^m$. 
 
 Here, the lattice has a less regular structure; however, we can show that there is still a simple way to initialize subproblems without missing any points of $\fix(\Phi)$.
 Suppose that a Tarski sequence converges to $(X',Y') = \max \fix(\Phi_i)$.
@@ -1521,7 +1529,9 @@ Thus, to ensure that we find the fixed point $(Z,W)$, we initialize $|X' \setmin
 
 \subsection{Full Algorithm for Finding all Stable Allocations} \label{section:algostable}
 
-In this section, we describe the full information sharing algorithm for finding all stable allocations in two-sided many-to-many matching with contracts assuming that agents' preferences are substitutable.
+In this section, we describe the full information sharing algorithm for finding all stable allocations in two-sided many-to-many matching with contracts.
+In what follows, we assume that agents' preferences are substitutable, so from work in \cite{HatfieldMilgrom2005} the collection of stable allocations $\stable$ must be non-empty. 
+
 
 \emph{Stopping Conditions}:
 As above, we let $\act$ be a collection of problems, which we think of as previously solved problems that still contain information useful for finding $\fix(\Phi)$. 
@@ -1599,7 +1609,7 @@ Return $(\acto, \coll)$.
 \end{subroutine}
 
 \subsubsection{Discussion} 
-We briefly note the substantive differences between this algorithm and Algorithm~\ref{alg:main} for finding all strict core outcomes.
+We briefly note the substantive differences between this algorithm and Algorithm~\ref{alg:main} for finding all worl outcomes.
 Here, when forming new problems during InformationCombine, we replace the pointwise minima used in Algorithm~\ref{alg:main} with the appropriate meet (greatest lower bound) for the lattice $2^X \times 2^X$.
 For the order ``$\peq$'', the meet is given by intersections in the first component and unions in the second, as shown above.
 Note that, for this algorithm, the number of subproblems initialized when a Tarski sequence fixes is \emph{not constant}.
