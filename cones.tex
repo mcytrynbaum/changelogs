@@ -174,47 +174,58 @@
 \date{Novemeber 21, 2015}
 \title{Using Lattice Geometry to Find All Stable Allocations}
 \author{Max Cytrynbaum} 
-\thanks{I am very grateful to Scott Kominers for continual guidance on this project. This project was completed with the help of an Economic Design Summer Fellowship from the Harvard Society of Fellows. Please send comments and suggestions to mcytrynbaum@gmail.com.}
+\thanks{I am very grateful to Scott Kominers for continual guidance and for providing the inspiration for this project. This project was completed with the help of an Economic Design Summer Fellowship from the Harvard Society of Fellows. Please send comments and suggestions to mcytrynbaum@gmail.com.}
 
 \begin{document}
 \maketitle
 \begin{abstract}
 In this paper, we give an algorithm to find all core allocations in a highly general model of multilateral many-to-many matching with contracts.
-We develop a notion of information sharing in lattices, showing how lattice geometry and information sharing can be exploited to produce a relatively fast algorithm that returns the full list of core outcomes in this general model.
-We show how to apply this technique to more general economic problems and, as an application, construct the first algorithm to find all stable allocations in bilateral matching with contracts and substitutable preferences. 
+We develop a notion of information sharing in lattices, showing how lattice geometry and information sharing can be exploited to produce a relatively fast algorithm that returns the full list of core outcomes.
+We show how to apply this technique to more general economic problems and, as an application, construct the first algorithm to find \emph{all} stable allocations in bilateral matching with contracts and substitutable preferences. 
 \end{abstract}
 
-\section{Introduction and Motivation}
-
+\section{Introduction}
+\subsection{Introduction and Motivation}
 This paper extends an algorithm pioneered in \cite{EcheniqueYenmez2013} to find \emph{all} core allocations in a general model of multilateral many-to-many matching with contracts.
-This model nests a great number of previously considered matching models.
-We show that, as in the case of matching with preferences over colleagues, core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
+Our model nests a large number of previously considered matching models.
+We show that, as in the case of matching with preferences over colleagues in \cite{EcheniqueYenmez2013}, core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
 Our main contribution is to show how to fully exploit the geometric relationships implied by the problem's lattice structure.
 We develop a notion of information sharing in lattices, construct and prove correctness for an algorithm that implements this idea, and show how this approach may be extended to a wider class of economic problems for which there is a complete lattice structure. 
 To conclude, we restrict our attention to two-sided many-to-many matching with contracts with substitutable preferences, showing how information sharing may be used to find \emph{all} stable allocations.
 
-There are a variety of results showing that, when preferences satisfy a ``substitutability'' condition, the set of stable matchings in matching with contracts takes the form of a lattice.
-Usually, these results proceed by showing that substitutability implies the existence of an isotone operator on some lattice containing the stable matchings\footnote{see references}.
+There are a variety of results showing the existence of a lattice of stable outcomes when preferences satisfy a substitutability condition.
+Usually, these results proceed by showing that substitutability implies the existence of an isotone operator on a complete lattice containing the stable matchings\footnote{See, for instance, \cite{HatfieldMilgrom2005} or \cite{HatfieldKominers2010}.}.
 By iteration from a maximal element, one eventually arrives at an extremal stable matching.
-Conversely, in the absence of substitutability, not only are stable matchings not guaranteed to exist, but the usual isotone operator is not guaranteed to find any that do exist\footnote{see references}.  
+Conversely, in the absence of substitutability, not only are stable matchings not guaranteed to exist, but the usual isotone operator is not guaranteed to find any that do exist.
 Even if substitutability does hold, it is often unclear how to find any but the extremal stable matchings.
 
 This paper aims to address some of these issues.
-Specifically we show that, even in the absence of substitutability, it is possible to develop a relatively fast algorithm that either returns all \emph{core} allocations (or the null set if none exist). 
-The core is a natural replacement for stability in the absence of substitutability guarantees; indeed, in many classical models such as the marriage problem, the core coincides with the set of stable matchings\footnote{ref roth and sotomayor}. 
-When substitutabity does hold, we show how our technique can be used to find \emph{all} stable matchings, not just the extremal ones.
+The core is a natural replacement for stability in the absence of substitutability guarantees; indeed, in many classical models, such as the marriage problem, the core coincides with the set of stable matchings\footnote{\cite{RothSotomayor1990}.}. 
+We show that, even without a substitutability guarantee, in which case the usual operator for finding stable matchings is not necessarily isotone, there still exists a relatively fast algorithm that returns all \emph{core} allocations or shows that none exist. 
+When substitutability does hold, we show how our technique can be modified to find \emph{all} stable matchings, not just the extremal ones.
+
+As noted by \cite{KlausKlijn2005}, substitutability is an unreastically stringent condition in many real world markets.
+Thus, our algorithm has practical value for a market designer interested in finding reasonable economic outcomes in such markets.
 
 Lattice structures arise frequently in economics.
-We show how lattice geometry can be combined with economic problem structure to develop a notion of information sharing in lattices, which allows us to more quickly compute objects of economic interest.  
+We show how lattice geometry can be combined with economic problem structure to develop a notion of information sharing in lattices that allows for faster computation of objects of economic interest.  
 The algorithm developed in this paper thus has independent economic value outside of matching theory. 
 
-In what follows we briefly survey the related literature.
+\subsection{Related Literature}
 
+This paper is related to a broad literature on finding stable outcomes.
+\cite{RothPeranson1999} is a well-known computational study examining the existence of stable outcomes in the National Residency Matching Program. 
+For classical matching problems, \cite{Martinezetal2004} develops an algorithm for finding all stable matchings in a many-to-many matching market, while \cite{McvitieWilson1971} and \cite{IrvingLeather1986} show how to find all stable matchings in one-to-one matching markets.
+More recently, papers such as \cite{Sethuramanetal2006} and \cite{SchwarzYenmez2011} have shown how to find ``median'' stable matchings, which in some sense balance the interest of market participants. 
+See \cite{GusfieldIrving1989} for a review of algorithms for finding all core matchings in the classical setting.
+
+The algorithm developed in this paper is an extension of antitone operator approach developed in \cite{Echenique2007Equilibria} and \cite{EcheniqueYenmez2013}.
+\cite{kominers2010matching} shows that this approach finds all stable matchings in classical matching, while \cite{Kojima2007b} shows how to extend the approach to the case of matching with couples.
 
 
 \section{Characterizing Core Allocations} \label{section:strcore}
 In this section, we show how core allocations can be characterized as the fixed points of an antitone operator on a certain complete lattice.
-First, we give detail on our model and notation.
+First, we give details on our model and notation.
 
 \subsection{Model and Solution Concepts}
 We consider a finite set of contracts $X$, each of which is associated with at least one agent $a\in A$. 
@@ -227,7 +238,6 @@ In particular, we \emph{do not} impose a two-sided market structure in this sect
 For $a\in A$, we let $Y_a = \{y\in Y: \, a\in d(y)\}$ denote the set of contracts associated with that agent (note that we may have $Y_a = \emptyset$). Thus, $2^{X_a}$ denotes the set of all allocations naming an agent $a\in A$. 
 We assume that each $a\in A$ has strict preferences over $Y \in 2^{X_a}$, where the utility of an allocation is given by the one-to-one function $U_a: 2^{X_a} \to \mr$.
 Let $\su_a$ denote the strict preference relation induced by these utility functions over bundles $Y \in 2^{X_a}$, with $\suq_a$ denoting the weak relation. Thus, $Y \suq_a  Z \iff$ $Y \su_a Z$ or $Y = Z$.
-
 Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
 
 An allocation $Y \sub X$ is said to be in the \emph{core}\footnote{The core concept defined here is sometimes also called the strong core or ``core by weak domination''; see \cite{RothSotomayor1996}, for instance.
@@ -239,7 +249,7 @@ U_b(Z_b) \geq U_b(Y_b) \qquad  \forall b\in d(Z)
 where \emph{at least one} of the above inequalities holds strictly.
 We denote the core by $\strcore$. 
 
-Similarly, an allocation $Y$ is said to be \emph{weak core} if there does not exist a non-empty blocking set $Z \sub X$ such that 
+Similarly, an allocation $Y$ is said to be in the \emph{weak core} if there does not exist a non-empty blocking set $Z \sub X$ such that 
 \[
 U_b(Z_b) > U_b(Y_b) \qquad  \forall b\in d(Z)
 \]
@@ -1449,7 +1459,6 @@ Lemmas 3 and 4 of \cite{Echenique2007Equilibria} show that the guarantee $\fix(\
 
 \section{Finding All Stable Matchings} 
 In this section, we extend the information sharing technique developed above to an algorithm for finding all stable allocations in the setting of two-sided many-to-many matching with contracts under the assumption of substitutable preferences.
-This relates to previous literature xxxx median matchings xxxx.
 
 \subsection{Model and Notation} 
 In this section, we restrict our attention to two-sided many-to-many matching with contracts, and we may think of the contract language as $X = D\times H \times E$, where $E$ is a finite set of contract terms. For instance, $E$ could be a set of wages.
@@ -1675,6 +1684,11 @@ Consider the worst case scenario where $\Phi_i: \lattice_i \to \lattice_i$ fixes
 If we were to initialize \emph{every} subproblem of the form $(X_i \setminus \{x\}, Y_i)$ and $(X_i, Y_i \cup \{y \})$, we would create $\lft |\topx| - |\botx| + |\boty|- |\topy|\rt !$ problems in total, whereas greedy search only needs to check $2^{|\topx| - |\botx| + |\boty|- |\topy|} $ points.
 However, in Subroutine~\ref{sub:infac2}, we only initialize non-redundant problems, so this does not happen, and the algorithm does weakly better than greedy search in all cases. 
 
+\section{Conclusion}
+The approach developed above gives an alternative method for computing reasonable economic outcomes in general matching markets when substitutability is not guaranteed. 
+We show how our technique has several applications to computing objects of interest in economic problems for which there is a lattice structure.
+The information sharing approach developed here also gives the first algorithm for finding all stable allocations in bilateral matching with contracts with substitutable preferences.
+
 \clearpage
 
 \subsubsection{Notes}
@@ -1719,7 +1733,7 @@ PERFORMANCE
 TODO
 can we track problems Q such that nothing is ever initialized twice? 
 look in the Echenique and Oviedo paper to find some core equivalences
-what does substituability have to do with $\strcore = \core$?
+what does substitutability have to do with $\strcore = \core$?
     possible note above, since I use non-sub prefs for bilateral matching
 note down cases where SC = C, tie in with substitutability
 ----ask scott about what should be appendix level material 
