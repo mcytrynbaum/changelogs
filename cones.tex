@@ -180,20 +180,43 @@
 \maketitle
 \begin{abstract}
 In this paper, we give an algorithm to find all core allocations in a highly general model of multilateral many-to-many matching with contracts.
-We develop a notion of information sharing in lattices, showing how lattice geometry and information sharing can be exploited to produce a relatively fast algorithm that returns the full list of core outcomes in our matching model.
-We show how to apply this technique to more general economic problems and, as an application, construct an algorithm that finds all stable allocations in bilateral matching with contracts and substitutable preferences. 
+We develop a notion of information sharing in lattices, showing how lattice geometry and information sharing can be exploited to produce a relatively fast algorithm that returns the full list of core outcomes in this general model.
+We show how to apply this technique to more general economic problems and, as an application, construct the first algorithm to find all stable allocations in bilateral matching with contracts and substitutable preferences. 
 \end{abstract}
 
 \section{Introduction and Motivation}
 
 This paper extends an algorithm pioneered in \cite{EcheniqueYenmez2013} to find \emph{all} core allocations in a general model of multilateral many-to-many matching with contracts.
+This model nests a great number of previously considered matching models.
 We show that, as in the case of matching with preferences over colleagues, core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
 Our main contribution is to show how to fully exploit the geometric relationships implied by the problem's lattice structure.
 We develop a notion of information sharing in lattices, construct and prove correctness for an algorithm that implements this idea, and show how this approach may be extended to a wider class of economic problems for which there is a complete lattice structure. 
 To conclude, we restrict our attention to two-sided many-to-many matching with contracts with substitutable preferences, showing how information sharing may be used to find \emph{all} stable allocations.
 
+There are a variety of results showing that, when preferences satisfy a ``substitutability'' condition, the set of stable matchings in matching with contracts takes the form of a lattice.
+Usually, these results proceed by showing that substitutability implies the existence of an isotone operator on some lattice containing the stable matchings\footnote{see references}.
+By iteration from a maximal element, one eventually arrives at an extremal stable matching.
+Conversely, in the absence of substitutability, not only are stable matchings not guaranteed to exist, but the usual isotone operator is not guaranteed to find any that do exist\footnote{see references}.  
+Even if substitutability does hold, it is often unclear how to find any but the extremal stable matchings.
 
-\subsection{Notation}
+This paper aims to address some of these issues.
+Specifically we show that, even in the absence of substitutability, it is possible to develop a relatively fast algorithm that either returns all \emph{core} allocations (or the null set if none exist). 
+The core is a natural replacement for stability in the absence of substitutability guarantees; indeed, in many classical models such as the marriage problem, the core coincides with the set of stable matchings\footnote{ref roth and sotomayor}. 
+When substitutabity does hold, we show how our technique can be used to find \emph{all} stable matchings, not just the extremal ones.
+
+Lattice structures arise frequently in economics.
+We show how lattice geometry can be combined with economic problem structure to develop a notion of information sharing in lattices, which allows us to more quickly compute objects of economic interest.  
+The algorithm developed in this paper thus has independent economic value outside of matching theory. 
+
+In what follows we briefly survey the related literature.
+
+
+
+\section{Characterizing Core Allocations} \label{section:strcore}
+In this section, we show how core allocations can be characterized as the fixed points of an antitone operator on a certain complete lattice.
+First, we give detail on our model and notation.
+
+\subsection{Model and Solution Concepts}
 We consider a finite set of contracts $X$, each of which is associated with at least one agent $a\in A$. 
 We call a subset $Y\sub X$ an \emph{allocation}, and let $2^X$ denote the set of all allocations. 
 Let $d(x)$ be the set agents associated with a contract $x\in X$, and extend this definition to allocations by writing $d(Y) \equiv \bigcup_{y\in Y} d(y)$.
@@ -207,28 +230,7 @@ Let $\su_a$ denote the strict preference relation induced by these utility funct
 
 Throughout this paper, we will assume that $\emptyset_a \in X$ for all $a \in A$, where $\emptyset_a$ denotes $a$ being unmatched. Note that $d(\emptyset_a) = \{a\}$. 
 
-\section{Characterizing Core Allocations} \label{section:strcore}
-In this section, we show how core allocations can be characterized as the fixed points of an antitone operator on a certain complete lattice.
-
-\subsection{Model}
-We construct an appropriate framework in which to generalize the fixed point construction discussed above. 
-We start by generalizing the classical notion of a \emph{prematching}. 
-
-\begin{defn}[Preallocation] We call a map $\pre: A \to 2^X$ a \emph{preallocation} if $\pre(a) \in 2^{X_a}$ for all $a\in A$. Let $(2^X)^A$ denote the set of all preallocations.  
-\end{defn}
-
-Intuitively, a preallocation assigns each agent to a bundle of contracts naming him or her. We may think of $\pre(a)$ as the set of contracts ``held'' by agent $a$.   
-
-We can associate each allocation $Y\subseteq X$ with a unique preallocation $\pre_Y$ in a natural way by setting $\pre_Y(a) = Y_a$ for $a \in d(Y)$ and $\pre_Y(a) = \emptyset_a$ otherwise.
-\begin{remark} Note, however, that not all preallocations can be derived from allocations in this way.
-For example, consider the case where $\emptyset \not = \pre(a)_b \not = \pre(b)_a$. In the preallocation $\pre$, $a$ holds contracts naming $b$ that are \emph{not} in the bundle of contracts held by $b$ naming $a$.  
-In particular, there does not exist an allocation $Y$ such that $\pre = \pre_Y$. 
-\end{remark}
-
-With this example in mind, we say that $\pre \in \prealloc$ is a \emph{coordinated} preallocation if there exists an allocation $Y$ such that $\pre = \pre_Y$. 
-We denote the set of all cooordinated preallocations by $\coordpre\sub \prealloc$.
-
-An allocation $Y \sub X$ is said to be in the \emph{core}\footnote{The core concept defined here is sometimes also called the strong core or ``core by weak domination''; see \cite{RothSotomayor1990}, for instance.
+An allocation $Y \sub X$ is said to be in the \emph{core}\footnote{The core concept defined here is sometimes also called the strong core or ``core by weak domination''; see \cite{RothSotomayor1996}, for instance.
 Here, we follow the core concept used in \cite{EcheniqueYenmez2013}.}
 if there does not exist a non-empty blocking set $Z \sub X$ such that 
 \[
@@ -248,6 +250,22 @@ It is easy to see that core allocations need not exist in such a general setting
 Our approach will be to construct an algorithm that either finds all core allocations or shows that none exist. 
 
 \subsection{Fixed Preallocations and the Core}
+We build an appropriate framework in which to generalize the fixed point construction discussed above. 
+We start by generalizing the classical notion of a \emph{prematching}. 
+
+\begin{defn}[Preallocation] We call a map $\pre: A \to 2^X$ a \emph{preallocation} if $\pre(a) \in 2^{X_a}$ for all $a\in A$. Let $(2^X)^A$ denote the set of all preallocations.  
+\end{defn}
+
+Intuitively, a preallocation assigns each agent to a bundle of contracts naming him or her. We may think of $\pre(a)$ as the set of contracts ``held'' by agent $a$.   
+
+We can associate each allocation $Y\subseteq X$ with a unique preallocation $\pre_Y$ in a natural way by setting $\pre_Y(a) = Y_a$ for $a \in d(Y)$ and $\pre_Y(a) = \emptyset_a$ otherwise.
+\begin{remark} Note, however, that not all preallocations can be derived from allocations in this way.
+For example, consider the case where $\emptyset \not = \pre(a)_b \not = \pre(b)_a$. In the preallocation $\pre$, $a$ holds contracts naming $b$ that are \emph{not} in the bundle of contracts held by $b$ naming $a$.  
+In particular, there does not exist an allocation $Y$ such that $\pre = \pre_Y$. 
+\end{remark}
+
+With this example in mind, we say that $\pre \in \prealloc$ is a \emph{coordinated} preallocation if there exists an allocation $Y$ such that $\pre = \pre_Y$. 
+We denote the set of all cooordinated preallocations by $\coordpre\sub \prealloc$.
 Our method proceeds by identifying allocations $Y \in \strcore$ with fixed points of an operator on preallocations, generalizing the construction in \cite{EcheniqueYenmez2013}.
 
 For each agent $a \in A$, we define 
@@ -456,7 +474,7 @@ The \emph{reachable set} from a vertex $v$ is the set of all $v' \in V$ such tha
 
 By a \emph{rooted tree}, we mean a graph that is connected with no cycles (paths starting and ending at the same vertex) and has one vertex designated as the \emph{root}. 
 Edges on a rooted tree are naturally oriented away from the root. 
-A collection of such rooted trees is called a \emph{forest} and, for such a collection, for a vertex $w$ we let $r(w)$ denote the root of the tree containing $w$, and we let $c(w)$ denote the \emph{children} of $w$, the vertices connected by an edge to $w$ on a path away from the root, and $p(w)$ denote the parent vertex of $w$, defined similarly\footnote{see, for instance, \cite{GrossYellen2005graph}.}.
+A collection of such rooted trees is called a \emph{forest} and, for such a collection, for a vertex $w$ we let $r(w)$ denote the root of the tree containing $w$, and we let $c(w)$ denote the \emph{children} of $w$, the vertices connected by an edge to $w$ on a path away from the root, and $p(w)$ denote the parent vertex of $w$, defined similarly\footnote{See, for instance, \cite{GrossYellen2005graph} for a more detailed introduction to graph-theoretic terminology.}.
 
 \subsubsection{Example 1 - Colliding Subproblem Cones}
 In this section, we give a simple example of how subproblems can share information.
@@ -1299,9 +1317,9 @@ Our algorithm uses the heuristic that evaluation of the $T$ operator is very cos
 
 \section{Maximal Domain Results and Generalizations} 
 \subsection{Weak Core Allocations}
-It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the class of weak core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
-Indeed, for many classical matching models\footnote{See, for instance, \cite{Blair1988} and \cite{EcheniqueOviedo2006} for more on solution concept equivalences in a classical setting.}, $\strcore = \core$, so the construction extends directly.
-For instance, this is the case in the model of many-to-one matching with preferences over colleagues considered considered in \cite{EcheniqueYenmez2013}.
+It is tempting to try to extend the fixed point construction $\strcore = \fecon(T)$ and associated algorithm on the lattice $\prealloc$ to the full class of weak core allocations $\core \supseteq \strcore$ in the general matching with contracts setting considered above. 
+Indeed, for many classical matching models\footnote{This is the case, for instance, in the marriage problem. 
+See \cite{Blair1988} and \cite{EcheniqueOviedo2006} for more on solution concept equivalences in a classical setting.} $\strcore = \core$, so the construction extends directly.
 
 At first glance, it appears that such a generalization will be forthcoming. 
 Similarly to the core case, for $a \in A$ we define a set 
