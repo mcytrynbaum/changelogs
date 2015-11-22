@@ -187,7 +187,7 @@ We show how to apply this technique to more general economic problems and, as an
 \section{Introduction}
 \subsection{Introduction and Motivation}
 This paper extends an algorithm pioneered in \cite{EcheniqueYenmez2013} to find \emph{all} core allocations in a general model of multilateral many-to-many matching with contracts.
-Our model nests a large number of previously considered matching models.
+Our model nests a large number of previous matching models.
 We show that, as in the case of matching with preferences over colleagues in \cite{EcheniqueYenmez2013}, core allocations can be characterized in terms of the fixed points of an antitone operator on a certain complete lattice.
 Our main contribution is to show how to fully exploit the geometric relationships implied by the problem's lattice structure.
 We develop a notion of information sharing in lattices, construct and prove correctness for an algorithm that implements this idea, and show how this approach may be extended to a wider class of economic problems for which there is a complete lattice structure. 
@@ -591,11 +591,11 @@ In particular, we make efficient use of both the geometric information shared be
 Due to space restrictions in this writing sample, we must content ourselves with the above intuition for our algorithm. 
 We omit most of the rest of the paper, including the formal definition of a problem forest and collision digraph, and skip straight to our main results, giving bits of context as needed. 
 
-Next, we give the algorithm. 
-Due to space constraints in this writing sample, we omit full descriptions of the relevant subroutines.
-For intuition, in ``InformationAcquire'' we solve subproblems and collect information about problem cone collisions, which we will eventually use to build a collision digraph.
+We give the algorithm but omit full descriptions of the relevant subroutines.
+For intuition, in the subroutine labeled ``InformationAcquire'' we solve subproblems and collect information about problem cone collisions.
 In ``InformationCombine'', we build the collision digraph and use it to combine problem information with the help of the problem forest $\forest$.
 Throughout what follows, we maintain global variables $\forest$, a rooted forest, and $\act$, a collection of active and previously solved problems.
+For the purposes of this writing sample, we may think of the input $\acto$ as an initial collection of problems of the form $\toppre - e_i$, where $\toppre$ is some maximal element.
 
 \begin{algorithm} 
 \caption{FindStrictCore} 
